@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
 
 interface LoginFormProps {
   role: "learner" | "professional";
@@ -18,8 +18,7 @@ const LoginForm = ({ role, onBack, onSwitchToSignup, onForgotPassword }: LoginFo
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{email?: string; password?: string}>({});
-
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,74 +35,62 @@ const LoginForm = ({ role, onBack, onSwitchToSignup, onForgotPassword }: LoginFo
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
-    const error = validateEmail(value);
-    setErrors(prev => ({ ...prev, email: error }));
+    setErrors(prev => ({ ...prev, email: validateEmail(value) }));
   };
 
   const handlePasswordChange = (value: string) => {
     setPassword(value);
-    const error = validatePassword(value);
-    setErrors(prev => ({ ...prev, password: error }));
+    setErrors(prev => ({ ...prev, password: validatePassword(value) }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
-    
+
     if (emailError || passwordError) {
       setErrors({ email: emailError, password: passwordError });
-      toast("please fix the error below");
-      
+      toast("Please fix the errors below");
       return;
     }
 
     setIsLoading(true);
-    
+
     // Simulate login process
     setTimeout(() => {
-      toast("login success");
+      toast("Login success");
       setIsLoading(false);
     }, 1500);
   };
 
   const handleGoogleSignIn = () => {
-    toast(
-       "Google authentication would be handled here",
-    );
+    toast("Google authentication would be handled here");
   };
 
   const roleTitle = role === "learner" ? "Learner" : "Professional";
-  const roleColor = role === "learner" ? "primary" : "accent";
 
   return (
     <div className="w-full max-w-md mx-auto animate-fade-in">
-      <Button
-        variant="ghost"
+      <button
         onClick={onBack}
-        className="mb-6 text-muted-foreground hover:text-foreground"
+        className="mb-6 flex items-center text-gray-500 hover:text-black"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Role Selection
-      </Button>
+      </button>
 
-      <Card className="shadow-soft border-border/50">
+      <Card className="shadow-md border border-gray-300">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
-            Sign in as {roleTitle}
-          </CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold">Sign in as {roleTitle}</CardTitle>
+          <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Google Sign In Button */}
-          <Button
+          {/* Google Sign In */}
+          <button
             type="button"
-            variant="outline"
-            className="w-full border-2 hover:bg-muted/50 transition-all duration-300"
             onClick={handleGoogleSignIn}
+            className="w-full flex items-center justify-center border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-md transition"
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
               <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -114,104 +101,98 @@ const LoginForm = ({ role, onBack, onSwitchToSignup, onForgotPassword }: LoginFo
               </g>
             </svg>
             Continue with Google
-          </Button>
+          </button>
 
+          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border/50" />
+              <span className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+              <span className="bg-gray-200 px-2 text-gray-500 rounded-2xl">
+                Or continue with email
+              </span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => handleEmailChange(e.target.value)}
-                  className={`pl-10 focus:ring-2 focus:ring-primary/20 ${
-                    errors.email ? "border-destructive focus:ring-destructive/20" : ""
+                  className={`pl-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                    errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
                   }`}
                   required
                 />
               </div>
-              {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
             </div>
 
+            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => handlePasswordChange(e.target.value)}
-                  className={`pl-10 pr-10 focus:ring-2 focus:ring-primary/20 ${
-                    errors.password ? "border-destructive focus:ring-destructive/20" : ""
+                  className={`pl-10 pr-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                    errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
                   }`}
                   required
                 />
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
+                  {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+                </button>
               </div>
-              {errors.password && (
-                <p className="text-sm text-destructive mt-1">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
             </div>
 
+            {/* Forgot password */}
             <div className="flex justify-end">
-              <Button
-                variant="link"
+              <button
+                type="button"
                 onClick={onForgotPassword}
-                className="text-sm text-muted-foreground hover:text-foreground h-auto p-0"
+                className="text-sm text-gray-500 hover:text-black"
               >
                 Forgot Password?
-              </Button>
+              </button>
             </div>
 
-            <Button
+            {/* Submit */}
+            <button
               type="submit"
-              className={`w-full ${
-                role === "learner" 
-                  ? "bg-gradient-primary hover:shadow-glow" 
-                  : "bg-gradient-accent hover:shadow-glow"
-              } transition-all duration-300`}
+              className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md"
               disabled={isLoading || !!errors.email || !!errors.password || !email || !password}
             >
               {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
+            </button>
           </form>
 
-          <div className="text-center">
-            <Button
-              variant="link"
+          {/* Switch to Signup */}
+          <div className="text-center mt-2">
+            <button
+              type="button"
               onClick={onSwitchToSignup}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-sm text-gray-500 hover:text-black"
             >
               Don't have an account? Sign up
-            </Button>
+            </button>
           </div>
         </CardContent>
       </Card>
