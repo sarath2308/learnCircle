@@ -3,6 +3,11 @@ import { IAuthController } from "../../types/common/learnerAuthController";
 import { Request,Response } from "express";
 
 export class LearnerAuthController implements IAuthController{
+
+    constructor()
+    {
+        
+    }
     async signup(req:Request,Res:Response)
     {
        
