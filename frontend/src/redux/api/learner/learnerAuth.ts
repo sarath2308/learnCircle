@@ -36,7 +36,7 @@ interface SignupAuthResponse {
 
 export const learnerAuthApi = createApi({
   reducerPath: 'learnerAuthApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api/auth' }),
   endpoints: (builder) => ({
     loginLearner: builder.mutation<LoginAuthResponse, LearnerLoginRequest>({
       query: (credentials) => ({
