@@ -8,7 +8,7 @@ export interface IlearnerAuthService
     login:(email:string,password:string)=>Promise<void>;
     forgotPassword:(email:string)=>Promise<void>
     resetPassword:(id:string,newPassword:string)=>Promise<void>
-    verifyOtp?:(email:string,otp:string)
+    verifyOtp?:(email:string,otp:string)=>Promise<void>
 
 }
 
