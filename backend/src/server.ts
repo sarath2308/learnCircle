@@ -1,33 +1,34 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { createDatabase } from './config/db/dbFactory.js';
-import { connectRedis } from './config/redis/redis.js';
+import { createDatabase } from './config/db/dbFactory';
+import { connectRedis } from './config/redis/redis';
+import cors from 'cors'
 
 //-----imports-------------------------
 //global services
-import { AccessToken } from './utils/access.jwt.js';
-import { GenerateOtp } from './utils/otp.utils..js';
-import { EmailService } from './services/emailSercice.js';
-import { PasswordService } from './services/passwordService.js';
+import { AccessToken } from './utils/access.jwt';
+import { GenerateOtp } from './utils/otp.utils.';
+import { EmailService } from './services/emailService';
+import { PasswordService } from './services/passwordService';
 
 //redis
-import redisClient from './config/redis/redis.js';
-import { RedisRepository } from './Repositories/redisRepo.js';
+import redisClient from './config/redis/redis';
+import { RedisRepository } from './Repositories/redisRepo';
 
 //learner
-import { Learner } from './models/Learner.js';
-import { LearnerRepo } from './Repositories/learner/learnerRepo.js';
-import { learnerAuthRoutes } from './routes/learner/learnerAuth.js';
-import { LearnerAuthController } from './controllers/learner/learnerAuthController.js';
-import { LearnerAuthService } from './services/learner/learnerAuthService.js';
+import { Learner } from './models/Learner';
+import { LearnerRepo } from './Repositories/learner/learnerRepo';
+import { learnerAuthRoutes } from './routes/learner/learnerAuth';
+import { LearnerAuthController } from './controllers/learner/learnerAuthController';
+import { LearnerAuthService } from './services/learner/learnerAuthService';
 
 //admin
-import { adminAuthRoutes } from './routes/admin/adminAuth.js';
-import { AdminAuthController } from './controllers/admin/adminAuthController.js';
+import { adminAuthRoutes } from './routes/admin/adminAuth';
+import { AdminAuthController } from './controllers/admin/adminAuthController';
 
 //profesional
-import { ProfesionalAuthController } from './controllers/profesional/profesionalAuthController.js';
-import { profesionalAuthRoutes } from './routes/profesional/profesionalAuth.js';
+import { ProfesionalAuthController } from './controllers/profesional/profesionalAuthController';
+import { profesionalAuthRoutes } from './routes/profesional/profesionalAuth';
 
 
 
@@ -35,8 +36,11 @@ import { profesionalAuthRoutes } from './routes/profesional/profesionalAuth.js';
 //usage-----------------------
 
 dotenv.config();
-
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173", // frontend URL
+  credentials: true,               // allow cookies/auth headers
+}));
 
 // Middleware
 app.use(express.json());
