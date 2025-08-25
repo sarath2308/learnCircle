@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
+import { learnerAuthApi, useSignupLearnerMutation } from "@/redux/api/learner/learnerAuth";
 
 interface SignupFormProps {
   role: "learner" | "professional";
@@ -11,6 +12,10 @@ interface SignupFormProps {
 const SignupForm = ({ role, onBack, onSwitchToLogin }: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  //learner signup hook
+
+const [signupLearner]=useSignupLearnerMutation()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -73,7 +78,7 @@ const SignupForm = ({ role, onBack, onSwitchToLogin }: SignupFormProps) => {
     setErrors(prev => ({ ...prev, [field]: error }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors = {
       name: validateName(formData.name),
@@ -89,10 +94,17 @@ const SignupForm = ({ role, onBack, onSwitchToLogin }: SignupFormProps) => {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      toast(`Welcome to the platform, ${formData.name}!`);
-      setIsLoading(false);
-    }, 1500);
+    try
+    {
+  if(role==='learner')
+  {
+    let res=await signupLearner({name:formData.name,email:formData.email,password:formData.password}).unwrap()
+    console.log(res)
+  }
+}catch(err)
+{
+  console.log(err)
+}
   };
 
   const roleTitle = role === "learner" ? "Learner" : "Professional";
@@ -219,7 +231,7 @@ const SignupForm = ({ role, onBack, onSwitchToLogin }: SignupFormProps) => {
             className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md"
             disabled={isLoading || Object.values(errors).some(err => err) || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
           >
-            {isLoading ? "Creating Account..." : "Create Account"}
+            {isLoading ? "Sending OTP..." : "Create Account"}
           </button>
         </form>
 

@@ -1,6 +1,6 @@
 import { ILearnerRepo } from "../../Repositories/learner/learnerRepo";
 import { ILearner } from "../../models/Learner";
-import { EmailService } from "../emailSercice";
+import { EmailService } from "../emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
 import { AccessToken } from "../../utils/access.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
@@ -44,7 +44,7 @@ export class LearnerAuthService implements IlearnerAuthService
          //email
          await this.emailService.sendSignupOtp(email,otp)
 
-         return {message:"otp sent fro verification"};
+         return {message:"otp sent for verification"};
 
         }catch(err:any) {
            if(err.code===11000)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -16,6 +16,8 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{otp?: string}>({});
+  const [timeLeft, setTimeLeft] = useState(60); 
+  const [canResend, setCanResend] = useState(false);
 
   const validateOTP = (otp: string) => {
     if (!otp) return "Verification code is required";
@@ -23,6 +25,18 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
     if (!/^\d{6}$/.test(otp)) return "Verification code must contain only numbers";
     return "";
   };
+
+  // Timer effect
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setCanResend(true);
+    }
+  }, [timeLeft]);
 
   const handleOTPChange = (value: string) => {
     setOtp(value);
@@ -36,9 +50,7 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
     const otpError = validateOTP(otp);
     if (otpError) {
       setErrors({ otp: otpError });
-      toast(
-        otpError
-      );
+      toast( otpError);
       return;
     }
 
@@ -48,16 +60,12 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
     setTimeout(() => {
       setIsLoading(false);
       if (otp === "123456") { // Mock verification
-        toast(
-          "Verification Successful"
-        
-        );
+        toast( "Verification Successful");
         onVerified();
       } else {
         const error = "Invalid verification code. Please try again.";
         setErrors({ otp: error });
-        toast("Invalid Code",
-        );
+        toast( "Invalid Code");
       }
     }, 1500);
   };
@@ -68,8 +76,11 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
     // Simulate API call
     setTimeout(() => {
       setIsResending(false);
+      setTimeLeft(60); // Reset timer
+      setCanResend(false); // Hide resend button
       toast(
-         "A new verification code has been sent to your email.");
+         "A new verification code has been sent to your email."
+      );
     }, 1500);
   };
 
@@ -133,22 +144,28 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
           <p className="text-sm text-muted-foreground mb-2">
             Didn't receive the code?
           </p>
-          <Button
-            type="button"
-            variant="link"
-            onClick={handleResendOTP}
-            disabled={isResending}
-            className="h-auto p-0"
-          >
-            {isResending ? (
-              <>
-                <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
-                Resending...
-              </>
-            ) : (
-              "Resend Code"
-            )}
-          </Button>
+          {canResend ? (
+            <Button
+              type="button"
+              variant="link"
+              onClick={handleResendOTP}
+              disabled={isResending}
+              className="h-auto p-0"
+            >
+              {isResending ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                  Resending...
+                </>
+              ) : (
+                "Resend Code"
+              )}
+            </Button>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Resend in {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+            </p>
+          )}
         </div>
       </form>
     </div>

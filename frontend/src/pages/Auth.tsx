@@ -6,7 +6,7 @@ import ForgotPasswordForm from "@/components/ForgotPasswordForm";
 import OTPVerificationForm from "@/components/OtpVerificationForm";
 import ResetPasswordForm from "@/components/ResetPassword";
 
-const Index = () => {
+const Auth = () => {
   const [selectedRole, setSelectedRole] = useState<"learner" | "professional" | null>(null);
   const [currentView, setCurrentView] = useState<"role" | "login" | "signup" | "forgot-password" | "otp-verification" | "reset-password">("role");
   const [resetEmail, setResetEmail] = useState("");
@@ -116,4 +116,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Auth;
