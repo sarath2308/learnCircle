@@ -11,12 +11,22 @@ export const useOtpVerify = () => {
       const response = await api.post(`/auth/${role}/verify-otp`, data,{withCredentials:true});
 
       
-      if (role === "learner") navigate("/learner/home");
-      else if (role === "professional") navigate("/professionals/dashboard");
-      else if (role === "admin") navigate("/admin/dashboard");
+      if (role === "learner"){
+        toast.success("OTP Verified")
+        navigate("/learner/home");
+      } 
+      else if (role === "professional") {
+         toast.success("OTP Verified")
+        navigate("/professionals/dashboard");
+        
+      }
+      else if (role === "admin")
+        { 
+             toast.success("OTP Verified")
+            navigate("/admin/dashboard");
+        }
 
     } catch (error: any) {
-      // Handle errors
       console.error("OTP verification failed", error);
       toast.error(error?.response?.data?.message || "OTP verification failed");
       throw error;

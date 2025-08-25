@@ -1,9 +1,9 @@
-import React from 'react'
+// import React from 'react'
 
-const AdminRoutes = () => {
-  return (
-    <div>AdminRoutes</div>
-  )
-}
+// const AdminRoutes = () => {
+//   return (
+//     <div>AdminRoutes</div>
+//   )
+// }
 
-export default AdminRoutes
+// export default AdminRoutes

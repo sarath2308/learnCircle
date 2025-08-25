@@ -22,7 +22,7 @@ const learnerSchema = new Schema<ILearner>(
     passwordHash: { type: String, required: true },
     isBlocked: { type: Boolean, default: false },
     currentSubject: { type: [String], default: [] },
-    role: { type: String, required: true, enum: ["learner", "professional", "admin"] },
+    role: { type: String, required: true,default:'learner', enum: ["learner", "professional", "admin"] },
   },
   {
     timestamps: true, // automatically manages createdAt, updatedAt

@@ -13,7 +13,7 @@ export interface IlearnerAuthService
     login:(email:string,password:string)=>Promise<void>;
     forgotPassword:(email:string)=>Promise<void>
     resetPassword:(id:string,newPassword:string)=>Promise<void>
-    verifyOtp?:(email:string,otp:string)=>Promise<void>
+    verifyOtp:(email:string,otp:string)=>Promise<any>
 
 }
 
@@ -38,9 +38,9 @@ export class LearnerAuthService implements IlearnerAuthService
             throw new Error("already exist")
          }
         const otp=this.OtpService.getOtp()
-        let hashPassword=this.passwordService.hashPassword(password)
+        let passwordHash=await this.passwordService.hashPassword(password)
         //redis
-         await this.redis.set(`signup:${email}`,{name,email,hashPassword,otp},60)
+         await this.redis.set(`signup:${email}`,JSON.stringify({name,email,passwordHash:passwordHash,otp}),60)
          //email
          await this.emailService.sendSignupOtp(email,otp)
 
@@ -70,8 +70,40 @@ export class LearnerAuthService implements IlearnerAuthService
     {
 
     }
-    async verifyOtp(email:string,otp:string)
-    {
+  async verifyOtp(email: string, otp: string) {
+  
+   const stored = await this.redis.get(`signup:${email}`);
+  if (!stored) {
+    throw new Error("OTP expired or not found");
+  }
 
+  const match = JSON.parse(stored);
+
+  if (match.otp !== otp) {
+    throw new Error("Invalid OTP");
+  }
+
+  try {
+   
+    const user = await this.userRepo.create({...match,passwordHash:match.passwordHash});
+
+    if (!user) {
+      throw new Error("User creation returned null/undefined");
     }
+
+    const jwt = await this.accesToken.signAccessToken({ id: user.id, role: match.role });
+
+   
+    await this.redis.delete(`signup:${email}`);
+
+    return { user, accessToken: jwt };
+  } catch (err: any) {
+    await this.redis.delete(`signup:${email}`).catch(() => {
+      console.warn(`Failed to remove OTP for ${email}`);
+    });
+    throw new Error(err.message || "Failed to create user");
+  }
+}
+
+
 }

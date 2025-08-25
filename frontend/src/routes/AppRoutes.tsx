@@ -1,9 +1,7 @@
-import { BrowserRouter, useRoutes } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 
 // Routes
 import LearnerRoutes from "./LearnerRoutes";
-import ProfessionalRoutes from "./ProfesionalRoute";
-import AdminRoutes from "./AdminRoutes";
 
 import Auth from "@/pages/Auth";
 // import LandingPage from "./pages/LandingPage";
@@ -11,9 +9,7 @@ import Auth from "@/pages/Auth";
 function AppRoutes() {
   const routes = [
     { path: "/", element: <Auth /> },
-    LearnerRoutes,
-    ProfessionalRoutes,
-    AdminRoutes,
+    ...LearnerRoutes,
   ];
   return useRoutes(routes);
 }

@@ -1,9 +1,14 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
 import { IlearnerAuthService } from "../../services/learner/learnerAuthService";
-
 import { Request,Response,NextFunction } from "express";
 
-export class LearnerAuthController implements Partial<IAuthController>{
+export interface IverifyOtpResponse
+{
+  user: any;        
+  accessToken: string;
+}
+
+export class LearnerAuthController implements IAuthController{
 
     constructor(private learnerAuth:IlearnerAuthService)
     {
@@ -25,9 +30,32 @@ export class LearnerAuthController implements Partial<IAuthController>{
             }
             
         }
-    
-
     }
+
+    async verifyOtp(req:Request,res:Response)
+        {
+          const {otp,email,type}=req.body;
+             if (!email || !otp) {
+                return res.status(400).json({ message: "Email and OTP are required" });
+                }
+          try {
+      const result:IverifyOtpResponse = await this.learnerAuth.verifyOtp(email, otp);
+
+      res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+      });
+
+  
+      res.status(200).json({ user: result.user });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message || "OTP verification failed" });
+    }
+        }
+
+
     async login(req:Request,res:Response):Promise<Response>
     {
          return res.json()

@@ -6,6 +6,7 @@ export function learnerAuthRoutes(controller:IAuthController) {
   const router = Router();
 
   router.post("/signup", controller.signup.bind(controller));
+  router.post('/verify-otp',controller.verifyOtp.bind(controller))
   // router.post('/login',controller.login)
   // router.post('/forgotPassword',controller.forgotPassword)
   // router.post("/reset",controller.resetPassword)
