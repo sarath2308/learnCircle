@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
-import { learnerAuthApi, useSignupLearnerMutation } from "@/redux/api/learner/learnerAuth";
 
 interface SignupFormProps {
-  role: "learner" | "professional";
+  role: "learner" | "professional"|"admin";
+  onSubmit:(role:'learner' | 'professional'|'admin',data:{name:string,email:string,password:string})=>Promise<void>;
   onBack: () => void;
   onSwitchToLogin: () => void;
 }
 
-const SignupForm = ({ role, onBack, onSwitchToLogin }: SignupFormProps) => {
+const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   //learner signup hook
 
-const [signupLearner]=useSignupLearnerMutation()
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -94,17 +94,7 @@ const [signupLearner]=useSignupLearnerMutation()
     }
 
     setIsLoading(true);
-    try
-    {
-  if(role==='learner')
-  {
-    let res=await signupLearner({name:formData.name,email:formData.email,password:formData.password}).unwrap()
-    console.log(res)
-  }
-}catch(err)
-{
-  console.log(err)
-}
+   onSubmit(role,{name:formData.name,email:formData.email,password:formData.password})
   };
 
   const roleTitle = role === "learner" ? "Learner" : "Professional";

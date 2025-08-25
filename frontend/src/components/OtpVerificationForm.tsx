@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import {RefreshCw } from "lucide-react";
 import {toast} from 'react-toastify'
 
 interface OTPVerificationFormProps {
-  email: string;
-  onBack: () => void;
-  onVerified: () => void;
+  email: string | null;
+  onVerified: (otp:string) => void;
+  onResend:()=>Promise<any>;
 }
 
-const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormProps) => {
+const OTPVerificationForm = ({ email ,onVerified,onResend }: OTPVerificationFormProps) => {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -56,45 +56,35 @@ const OTPVerificationForm = ({ email, onBack, onVerified }: OTPVerificationFormP
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      if (otp === "123456") { // Mock verification
-        toast( "Verification Successful");
-        onVerified();
-      } else {
-        const error = "Invalid verification code. Please try again.";
-        setErrors({ otp: error });
-        toast( "Invalid Code");
-      }
-    }, 1500);
-  };
+   
+  try {
+    await onVerified(otp); 
+  } catch (err) {
+    toast.error("OTP verification failed");
+  } finally {
+
+    setIsLoading(false);
+  }
+};
 
   const handleResendOTP = async () => {
-    setIsResending(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsResending(false);
-      setTimeLeft(60); // Reset timer
-      setCanResend(false); // Hide resend button
-      toast(
-         "A new verification code has been sent to your email."
-      );
-    }, 1500);
-  };
+  setIsResending(true);
+  try {
+    const res = await onResend(); 
+    toast( res||"otp send");
+    setTimeLeft(60);
+    setCanResend(false);
+  } catch (err: any) {
+    toast.error(err?.message || "Failed to resend OTP");
+  } finally {
+    setIsResending(false);
+  }
+};
+
 
   return (
     <div className="animate-fade-in">
       <div className="flex items-center mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          className="mr-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <h2 className="text-2xl font-bold">Verify Code</h2>
       </div>
 

@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { GraduationCap, Briefcase } from "lucide-react";
 
 interface RoleSelectorProps {
-  selectedRole: "learner" | "professional" | null;
+  selectedRole: "learner" | "professional"|"admin" | null;
   onRoleSelect: (role: "learner" | "professional") => void;
 }
 

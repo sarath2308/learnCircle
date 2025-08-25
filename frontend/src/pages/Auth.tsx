@@ -2,16 +2,17 @@ import { useState } from "react";
 import RoleSelector from "@/components/RoleSelector";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
-import ForgotPasswordForm from "@/components/ForgotPasswordForm";
-import OTPVerificationForm from "@/components/OtpVerificationForm";
-import ResetPasswordForm from "@/components/ResetPassword";
+import { useSignup } from "@/hooks/useSignup";
+import { useLogin } from "@/hooks/useLogin";
 
 const Auth = () => {
-  const [selectedRole, setSelectedRole] = useState<"learner" | "professional" | null>(null);
-  const [currentView, setCurrentView] = useState<"role" | "login" | "signup" | "forgot-password" | "otp-verification" | "reset-password">("role");
-  const [resetEmail, setResetEmail] = useState("");
+  const [selectedRole, setSelectedRole] = useState<"learner" | "professional" |"admin"| null>(null);
+  const [currentView, setCurrentView] = useState<"role" | "login" | "signup" | "forgot-password">("role");
 
-  const handleRoleSelect = (role: "learner" | "professional") => {
+  const {login}=useLogin()
+  const {signup}=useSignup()
+
+  const handleRoleSelect = (role: "learner" | "professional" |"admin") => {
     setSelectedRole(role);
     setCurrentView("login");
   };
@@ -33,23 +34,7 @@ const Auth = () => {
     setCurrentView("forgot-password");
   };
 
-  const handleOTPSent = (email: string) => {
-    setResetEmail(email);
-    setCurrentView("otp-verification");
-  };
 
-  const handleOTPVerified = () => {
-    setCurrentView("reset-password");
-  };
-
-  const handlePasswordResetSuccess = () => {
-    setCurrentView("login");
-    setResetEmail("");
-  };
-
-  const handleBackFromForgot = () => {
-    setCurrentView("login");
-  };
 
   return (
     <div className="min-h-screen bg-gradient-bg flex items-center justify-center p-4">
@@ -67,6 +52,7 @@ const Auth = () => {
           {currentView === "login" && selectedRole && (
             <LoginForm
               role={selectedRole}
+               onSubmit={login}
               onBack={handleBackToRoleSelection}
               onSwitchToSignup={handleSwitchToSignup}
               onForgotPassword={handleForgotPassword}
@@ -76,31 +62,9 @@ const Auth = () => {
           {currentView === "signup" && selectedRole && (
             <SignupForm
               role={selectedRole}
+              onSubmit={signup}
               onBack={handleBackToRoleSelection}
               onSwitchToLogin={handleSwitchToLogin}
-            />
-          )}
-
-          {currentView === "forgot-password" && (
-            <ForgotPasswordForm
-              onBack={handleBackFromForgot}
-              onOTPSent={handleOTPSent}
-            />
-          )}
-
-          {currentView === "otp-verification" && (
-            <OTPVerificationForm
-              email={resetEmail}
-              onBack={() => setCurrentView("forgot-password")}
-              onVerified={handleOTPVerified}
-            />
-          )}
-
-          {currentView === "reset-password" && (
-            <ResetPasswordForm
-              email={resetEmail}
-              onBack={() => setCurrentView("otp-verification")}
-              onSuccess={handlePasswordResetSuccess}
             />
           )}
         </div>

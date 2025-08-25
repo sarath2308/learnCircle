@@ -7,13 +7,14 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface LoginFormProps {
-  role: "learner" | "professional";
+  role: "learner" | "professional"|"admin";
+  onSubmit:(role:string,data:{email:string,password:string})=>Promise<void>
   onBack: () => void;
   onSwitchToSignup: () => void;
   onForgotPassword: () => void;
 }
 
-const LoginForm = ({ role, onBack, onSwitchToSignup, onForgotPassword }: LoginFormProps) => {
+const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,11 +58,7 @@ const LoginForm = ({ role, onBack, onSwitchToSignup, onForgotPassword }: LoginFo
 
     setIsLoading(true);
 
-    // Simulate login process
-    setTimeout(() => {
-      toast("Login success");
-      setIsLoading(false);
-    }, 1500);
+  onSubmit(role,{email:email,password:password})
   };
 
   const handleGoogleSignIn = () => {
