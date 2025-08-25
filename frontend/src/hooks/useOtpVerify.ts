@@ -12,12 +12,26 @@ export const useOtpVerify = () => {
 
       
       if (role === "learner"){
-        toast.success("OTP Verified")
+            toast.success("OTP Verified")
+        if(data.type==='forgot')
+        {
+          navigate("/learner/setPassword");
+        }
+        else
+        {
         navigate("/learner/home");
+        }
       } 
       else if (role === "professional") {
-         toast.success("OTP Verified")
-        navigate("/professionals/dashboard");
+            toast.success("OTP Verified")
+         if(data.type==='forgot')
+        {
+          navigate(`/${role}/setPassword`);
+        }
+        else
+        {
+        navigate(`/${role}/dashboard`);
+        }
         
       }
       else if (role === "admin")

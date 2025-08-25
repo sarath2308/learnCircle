@@ -37,16 +37,13 @@ const ForgotPasswordForm = ({ onBack, onOTPSent }: ForgotPasswordFormProps) => {
       toast("Please enter a valid email address",);
       return;
     }
-
+try{
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast("Please check your email for the verification code.")
-    
-      onOTPSent(email);
-    }, 1500);
+     await onOTPSent(email)
+}catch(err)
+{
+  setIsLoading(false)
+}
   };
 
   return (

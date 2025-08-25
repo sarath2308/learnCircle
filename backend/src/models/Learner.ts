@@ -6,7 +6,7 @@ export interface ILearner extends Document {
   lastLogin?: Date;
   profileImg?: string;
   name: string;
-  passwordHash: string;
+  passwordHash:string;
   isBlocked: boolean;
   currentSubject: string[];
   role: string;

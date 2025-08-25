@@ -2,7 +2,7 @@ import { IAuthController } from "../../types/common/learnerAuthController";
 import { IlearnerAuthService } from "../../services/learner/learnerAuthService";
 import { Request,Response,NextFunction } from "express";
 
-export interface IverifyOtpResponse
+export interface IResponse
 {
   user: any;        
   accessToken: string;
@@ -39,7 +39,16 @@ export class LearnerAuthController implements IAuthController{
                 return res.status(400).json({ message: "Email and OTP are required" });
                 }
           try {
-      const result:IverifyOtpResponse = await this.learnerAuth.verifyOtp(email, otp);
+      const result= await this.learnerAuth.verifyOtp(email, otp,type);
+
+      if(type==='forgot')
+      {
+        if (type === 'forgot') {
+      return res.status(200).json({ message: result.message,user: result.user });
+              }
+      }
+      else
+      {
 
       res.cookie("accessToken", result.accessToken, {
         httpOnly: true,
@@ -50,15 +59,31 @@ export class LearnerAuthController implements IAuthController{
 
   
       res.status(200).json({ user: result.user });
+    }
     } catch (error: any) {
       res.status(400).json({ message: error.message || "OTP verification failed" });
     }
         }
 
 
-    async login(req:Request,res:Response):Promise<Response>
+    async login(req:Request,res:Response)
     {
-         return res.json()
+      const {email,password}=req.body;
+       try {
+         let result:IResponse=await this.learnerAuth.login(email,password)
+         res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+      });
+
+  
+      res.status(200).json({ user: result.user });
+       } catch (error:any) {
+        console.log(error)
+        res.status(401).json({ message: error.message || "Login failed" });
+       }
     }
     async refreshToken(req:Request,res:Response):Promise<Response>
     {

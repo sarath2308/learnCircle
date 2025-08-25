@@ -57,8 +57,14 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
     }
 
     setIsLoading(true);
+    try{
+      await onSubmit(role,{email:email,password:password})
+    }catch(err)
+    {
+      setIsLoading(false)
+    }
 
-  onSubmit(role,{email:email,password:password})
+  
   };
 
   const handleGoogleSignIn = () => {
