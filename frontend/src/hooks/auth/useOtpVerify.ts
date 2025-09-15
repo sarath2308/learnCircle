@@ -10,12 +10,12 @@ export const useOtpVerify = () => {
     
       const response = await api.post(`/auth/${role}/verify-otp`, data,{withCredentials:true});
 
-      
+      console.log(response)
       if (role === "learner"){
             toast.success("OTP Verified")
         if(data.type==='forgot')
         {
-          navigate("/learner/setPassword");
+          navigate(`/auth/learner/reset-password?role=${role}&token=${response.data.token}`);
         }
         else
         {
@@ -26,7 +26,7 @@ export const useOtpVerify = () => {
             toast.success("OTP Verified")
          if(data.type==='forgot')
         {
-          navigate(`/${role}/setPassword`);
+          navigate(`/auth/${role}/setPassword`);
         }
         else
         {

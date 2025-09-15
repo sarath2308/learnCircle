@@ -59,14 +59,18 @@ async getUsers():Promise<Array<ILearner>>
         throw new Error("couldn't find the user")
       }
     }
-    async update(id:string,data:Partial<ILearner>):Promise<ILearner | null>
-    {
-      try {
-        const User=await this.Learner.findByIdAndUpdate({id},{data})
-        return User;
-      } catch (error) {
-        console.error(error)
-        throw new Error("couldn't find the user")
-      }
-    }
+   async update(id: string, data: Partial<ILearner>): Promise<ILearner | null> {
+  try {
+    const User = await this.Learner.findByIdAndUpdate(
+      id,               
+      { $set: data },   
+      { new: true }     
+    ).exec();
+    return User;
+  } catch (error) {
+    console.error(error);
+    throw new Error("couldn't update the user");
+  }
+}
+
 }

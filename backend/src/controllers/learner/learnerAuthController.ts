@@ -43,9 +43,8 @@ export class LearnerAuthController implements IAuthController{
 
       if(type==='forgot')
       {
-        if (type === 'forgot') {
-      return res.status(200).json({ message: result.message,user: result.user });
-              }
+        
+      return res.status(200).json({ message: result.message,token:result.tempToken });
       }
       else
       {
@@ -85,14 +84,43 @@ export class LearnerAuthController implements IAuthController{
         res.status(401).json({ message: error.message || "Login failed" });
        }
     }
+
+     async getOtp(req:Request,res:Response):Promise<Response>
+    {
+      const {email,type}=req.body;
+     try {
+      if(type==="forgot")
+      {
+        const res=await this.learnerAuth.forgotPassword(email)
+      }
+       return res.status(200).json({message:"OTP sent successfully."})
+     } catch (error:any) {
+      console.error(error)
+       return res.status(401).json({ message: error.message || "Failed to send OTP. Please try again" });
+     }
+    }
+
     async refreshToken(req:Request,res:Response):Promise<Response>
     {
       return res.json()
     }
-    async resetPassword(req:Request,res:Response):Promise<Response>
-    {
-       return res.json()
+    async resetPassword(req: Request, res: Response): Promise<Response> {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
     }
+
+    await this.learnerAuth.resetPassword(token, newPassword);
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error: any) {
+    return res.status(400).json({
+      message: error instanceof Error ? error.message : String(error) || "Server error occurred"
+    });
+  }
+}
+
     async forgotPassword(req:Request,res:Response):Promise<Response>
     {
          return res.json()
@@ -100,5 +128,17 @@ export class LearnerAuthController implements IAuthController{
     async logout(req:Request,res:Response):Promise<Response>
     {
          return res.json()
+    }
+
+    async resendOtp(req:Request,res:Response):Promise<Response>
+    {
+      try {
+        const {email,type}=req.body;
+        await this.learnerAuth.resendOtp(email,type)
+               return res.status(200).json({message:"OTP sent successfully."})
+      } catch (error:any) {
+        console.error(error)
+        return res.status(400).json({message: error.message || "Failed to send OTP. Please try again"})
+      }
     }
 }

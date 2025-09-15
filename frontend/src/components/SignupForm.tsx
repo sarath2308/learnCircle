@@ -78,32 +78,44 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps)
     setErrors(prev => ({ ...prev, [field]: error }));
   };
 
-  const handleSubmit =async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors = {
-      name: validateName(formData.name),
-      email: validateEmail(formData.email),
-      password: validatePassword(formData.password),
-      confirmPassword: validateConfirmPassword(formData.password, formData.confirmPassword)
-    };
-    setErrors(newErrors);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (Object.values(newErrors).some(error => error)) {
-      toast("Please fix the errors below");
-      return;
-    }
-
-    setIsLoading(true);
-   onSubmit(role,{name:formData.name,email:formData.email,password:formData.password})
+  const newErrors = {
+    name: validateName(formData.name),
+    email: validateEmail(formData.email),
+    password: validatePassword(formData.password),
+    confirmPassword: validateConfirmPassword(formData.password, formData.confirmPassword),
   };
+
+  setErrors(newErrors);
+
+  if (Object.values(newErrors).some(error => error)) {
+    return;
+  }
+
+  setIsLoading(true);
+  try {
+    await onSubmit(role, {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
+  } catch (err) {
+    console.error(err);
+    toast("Failed to create account. Try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const roleTitle = role === "learner" ? "Learner" : "Professional";
 
   return (
-    <div className="w-full max-w-md mx-auto animate-fade-in">
+    <div className="w-full max-w-md mx-auto my-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="mb-6 flex items-center text-gray-500 hover:text-black"
+        className="mb-6 flex border-2 p-2 rounded-2xl items-center text-gray-500 hover:text-black"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Role Selection
@@ -149,7 +161,6 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps)
               className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
-              required
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
           </div>
@@ -165,7 +176,6 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps)
               className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
-              required
             />
             {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
           </div>
@@ -181,7 +191,6 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps)
               className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
-              required
             />
             <button
               type="button"
@@ -204,7 +213,6 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps)
               className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
-              required
             />
             <button
               type="button"
@@ -218,8 +226,7 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps)
 
           <button
             type="submit"
-            className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md"
-            disabled={isLoading || Object.values(errors).some(err => err) || !formData.name || !formData.email || !formData.password || !formData.confirmPassword}
+            className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md cursor-pointer"
           >
             {isLoading ? "Sending OTP..." : "Create Account"}
           </button>

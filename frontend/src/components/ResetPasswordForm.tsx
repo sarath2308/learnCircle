@@ -6,12 +6,11 @@ import { ArrowLeft, Eye, EyeOff, Lock, CheckCircle } from "lucide-react";
 import {toast} from 'react-toastify'
 
 interface ResetPasswordFormProps {
-  email: string;
   onBack: () => void;
-  onSuccess: () => void;
+  onSuccess: (newPassword:string) => void;
 }
 
-const ResetPasswordForm = ({ email, onBack, onSuccess }: ResetPasswordFormProps) => {
+const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -83,16 +82,9 @@ const ResetPasswordForm = ({ email, onBack, onSuccess }: ResetPasswordFormProps)
       return;
     }
 
-    setIsLoading(true);
+   await onSuccess(newPassword)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast(  "Your password has been updated successfully."
-      );
-      onSuccess();
-    }, 1500);
-  };
+  }
 
   return (
     <div className="animate-fade-in">
@@ -110,7 +102,7 @@ const ResetPasswordForm = ({ email, onBack, onSuccess }: ResetPasswordFormProps)
 
       <div className="text-center mb-6">
         <p className="text-muted-foreground">
-          Create a strong password for <span className="font-medium">{email}</span>
+          Create a strong password 
         </p>
       </div>
 
@@ -218,7 +210,7 @@ const ResetPasswordForm = ({ email, onBack, onSuccess }: ResetPasswordFormProps)
 
         <Button
           type="submit"
-          className="w-full"
+           className="w-full !bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading || !!errors.newPassword || !!errors.confirmPassword || !isPasswordValid || !passwordsMatch}
         >
           {isLoading ? "Updating Password..." : "Update Password"}

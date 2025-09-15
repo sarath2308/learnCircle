@@ -34,13 +34,7 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function InputOTPSlot({
-  index,
-  className,
-  ...props
-}: React.ComponentProps<"div"> & {
-  index: number
-}) {
+function InputOTPSlot({ index, className, ...props }: { index: number } & React.ComponentProps<"div">) {
   const inputOTPContext = React.useContext(OTPInputContext)
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {}
 
@@ -49,7 +43,11 @@ function InputOTPSlot({
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        "data-[active=true]:border-ring data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-destructive data-[active=true]:aria-invalid:border-destructive dark:bg-input/30 border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md data-[active=true]:z-10 data-[active=true]:ring-[3px]",
+        "relative flex h-12 w-12 items-center justify-center text-lg font-medium transition-all",
+        "border-2 border-gray-300 rounded-md bg-white text-gray-900 shadow-sm",
+        "data-[active=true]:border-black data-[active=true]:ring-2 data-[active=true]:ring-black",
+        "dark:bg-gray-800 dark:text-white dark:border-gray-600",
+        "hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black",
         className
       )}
       {...props}
@@ -57,7 +55,7 @@ function InputOTPSlot({
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
+          <div className="animate-caret-blink h-5 w-px bg-black dark:bg-white" />
         </div>
       )}
     </div>
