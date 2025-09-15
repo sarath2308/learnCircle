@@ -12,9 +12,10 @@ export interface IlearnerAuthService
 {
     signup:(name:string,email:string,password:string)=>Promise<Object>;
     login:(email:string,password:string)=>Promise<any>;
-    forgotPassword:(email:string)=>Promise<void>
-    resetPassword:(id:string,newPassword:string)=>Promise<void>
+    forgotPassword:(email:string)=>Promise<Object>
+    resetPassword:(token:string,newPassword:string)=>Promise<{message:string}|void>
     verifyOtp:(email:string,otp:string,type:string)=>Promise<any>
+     resendOtp:(email:string,type:string)=>Promise<Object|void>
 
 }
 
@@ -85,20 +86,60 @@ export class LearnerAuthService implements IlearnerAuthService
     }
     async forgotPassword(email: string) 
     {
+        try{
         
-    }
-    async resetPassword(id:string,newPassword:string)
-    {
+        let match=await this.userRepo.findByEmail(email)
 
+        if(!match){
+            throw new Error("User not found")
+         }
+        const otp=this.OtpService.getOtp()
+    
+         await this.redis.set(`forgot:${email}`,JSON.stringify({email,otp}),60)
+         //email
+         await this.emailService.sendSignupOtp(email,otp)
+
+         return {message:"otp sent for verification"};
+
+        }catch(err:any) {
+          console.log(err)
+            throw err;
+          }
     }
-  async verifyOtp(email: string, otp: string, type: string) {
-  const stored = await this.redis.get(`signup:${email}`);
+
+async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  try {
+    const match = await this.redis.get(`reset:${token}`);
+    if (!match) {
+      throw new Error("Session expired");
+    }
+
+    const { id: userId } = JSON.parse(match);
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const hash = await this.passwordService.hashPassword(newPassword);
+
+    await this.userRepo.update(userId, { passwordHash: hash });
+
+    await this.redis.delete(`reset:${token}`);
+
+    return { message: "Password reset successfully" };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async verifyOtp(email: string, otp: string, type: string) {
+  const stored = await this.redis.get(`${type}:${email}`);
   if (!stored) {
     throw new Error("OTP expired or not found");
   }
 
   const match = JSON.parse(stored);
-
   if (match.otp !== otp) {
     throw new Error("Invalid OTP");
   }
@@ -107,14 +148,12 @@ export class LearnerAuthService implements IlearnerAuthService
     if (type === "signup") {
       const user = await this.userRepo.create({
         ...match,
-        passwordHash: match.passwordHash, 
+        passwordHash: match.passwordHash,
       });
-      // already hashed when stored
 
       if (!user) {
         throw new Error("User creation returned null/undefined");
       }
-
 
       await this.redis.delete(`signup:${email}`);
 
@@ -125,25 +164,63 @@ export class LearnerAuthService implements IlearnerAuthService
 
       return { user, accessToken: jwt };
     } else {
-      const User = await this.userRepo.findByEmail(email);
-
-      if (!User) {
+      // forgot-password or other OTP flows
+      const user = await this.userRepo.findByEmail(email);
+      if (!user) {
         throw new Error("User not found for OTP verification");
       }
 
-      await this.redis.delete(`signup:${email}`);
+      //  temporary token
+      const tempToken = await this.accesToken.signAccessToken(
+        { id: user.id, type: "reset" },
+        "5m" 
+      );
+
+      //  store in Redis
+      await this.redis.set(`reset:${tempToken}`,JSON.stringify({id: user.id}), 300); 
+
+      await this.redis.delete(`${type}:${email}`);
 
       return {
         message: "OTP verified",
-        user: { id: User.id, name: User.name,email:User.email },
+        tempToken,
       };
     }
   } catch (err: any) {
-    await this.redis.delete(`signup:${email}`).catch(() => {
+    await this.redis.delete(`${type}:${email}`).catch(() => {
       console.warn(`Failed to remove OTP for ${email}`);
     });
     throw new Error(err.message || "Failed to verify OTP");
   }
 }
+
+
+async resendOtp(email: string, type: string) {
+try {
+  if(type==='forgot')
+  {
+    const otp=this.OtpService.getOtp()
+    
+         await this.redis.set(`forgot:${email}`,JSON.stringify({email,otp}),60)
+         //email
+         await this.emailService.sendForgotPasswordOtp(email,otp)
+
+  }
+  else if(type==='signup')
+  {
+    const otp=this.OtpService.getOtp()
+    
+         await this.redis.set(`forgot:${email}`,JSON.stringify({email,otp}),60)
+         //email
+         await this.emailService.sendSignupOtp(email,otp)
+
+  }
+  return {message:"otp sent"}
+} catch (error) {
+  throw error;
+}
+}
+
+
 
 }

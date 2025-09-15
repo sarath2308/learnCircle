@@ -11,7 +11,7 @@ export const useGetOtp = () => {
       const response = await api.post(`/auth/${role}/get-otp`, data,{withCredentials:true});
 
       toast.success("Please check your email for the verification code.")
-        navigate(`/${role}/verify-otp?role=${role}&type=${data.type}&email=${data.email}`);
+        navigate(`/auth/${role}/verify-otp?role=${role}&type=${data.type}&email=${data.email}`);
 
     } catch (error: any) {
       console.error("OTP sending failed", error);

@@ -52,10 +52,9 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
 
     if (emailError || passwordError) {
       setErrors({ email: emailError, password: passwordError });
-      toast("Please fix the errors below");
       return;
     }
-
+      
     setIsLoading(true);
     try{
       await onSubmit(role,{email:email,password:password})
@@ -74,10 +73,10 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
   const roleTitle = role === "learner" ? "Learner" : "Professional";
 
   return (
-    <div className="w-full max-w-md mx-auto animate-fade-in">
+    <div className="w-full max-w-md mx-auto my-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="mb-6 flex items-center text-gray-500 hover:text-black"
+        className="mb-6 flex border-1 rounded-2xl  p-2 items-center text-gray-500 hover:text-black"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Role Selection
@@ -133,7 +132,7 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
                   className={`pl-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                     errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
                   }`}
-                  required
+              
                 />
               </div>
               {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
@@ -153,7 +152,7 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
                   className={`pl-10 pr-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                     errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
                   }`}
-                  required
+                
                 />
                 <button
                   type="button"
@@ -181,7 +180,7 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
             <button
               type="submit"
               className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md"
-              disabled={isLoading || !!errors.email || !!errors.password || !email || !password}
+             
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>

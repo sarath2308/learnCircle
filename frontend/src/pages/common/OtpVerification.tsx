@@ -1,11 +1,12 @@
 import OTPVerificationForm from '@/components/OtpVerificationForm'
 import { useSearchParams } from 'react-router-dom';
 import React from 'react'
-import { useOtpVerify } from '@/hooks/useOtpVerify';
-import { useOtpResend } from '@/hooks/useResendOtp';
+import { useOtpVerify } from '@/hooks/auth/useOtpVerify';
+import { useOtpResend } from '@/hooks/auth/useResendOtp';
+import { toast } from 'react-toastify';
 
 
-const LearnerOtpVerification:React.FC= () => {
+const OtpVerification:React.FC= () => {
   const {verifyOtp} =useOtpVerify()
   const {resendOtp}=useOtpResend()
   const [searchParams] = useSearchParams();
@@ -26,6 +27,7 @@ const  onResend=async()=>
   {
     try {
     let res=await resendOtp(role,{email,type})
+    toast.success("OTP Successfully sent")
     return res;
     } catch (error) {
      console.log(error)
@@ -42,4 +44,4 @@ const  onResend=async()=>
   )
 }
 
-export default LearnerOtpVerification
+export default OtpVerification

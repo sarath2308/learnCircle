@@ -29,36 +29,37 @@ const OTPVerificationForm = ({ email ,onVerified,onResend }: OTPVerificationForm
   const TIMER_KEY = "otp_timer_end";
 
 useEffect(() => {
-  let storedEnd = localStorage.getItem(TIMER_KEY);
-  let remaining = 60;
+  const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+  const isReload = navEntries.length > 0 && navEntries[0].type === "reload";
 
-  if (storedEnd) {
-    const endTime = parseInt(storedEnd);
-    remaining = Math.max(Math.ceil((endTime - Date.now()) / 1000), 0);
+  let endTime: number;
+
+  if (isReload && localStorage.getItem(TIMER_KEY)) {
+    // Refresh → continue old timer
+    endTime = parseInt(localStorage.getItem(TIMER_KEY)!);
   } else {
-    // First mount, store the timer end in localStorage
-    const endTime = Date.now() + 60 * 1000;
+    // Fresh navigation (back, forward, new tab, etc.) → restart timer
+    endTime = Date.now() + 60 * 1000;
     localStorage.setItem(TIMER_KEY, endTime.toString());
-    remaining = 60;
   }
 
-  setTimeLeft(remaining);
-  setCanResend(remaining === 0);
+  const updateTime = () => {
+    const remaining = Math.max(Math.ceil((endTime - Date.now()) / 1000), 0);
+    setTimeLeft(remaining);
 
-  const timer = setInterval(() => {
-    setTimeLeft((prev) => {
-      if (prev <= 1) {
-        clearInterval(timer);
-        setCanResend(true);
-        localStorage.removeItem(TIMER_KEY);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
+    if (remaining === 0) {
+      setCanResend(true);
+      localStorage.removeItem(TIMER_KEY);
+      clearInterval(timer);
+    }
+  };
+
+  updateTime(); // set immediately
+  const timer = setInterval(updateTime, 1000);
 
   return () => clearInterval(timer);
 }, []);
+
 
   const handleOTPChange = (value: string) => {
     setOtp(value);
@@ -82,7 +83,7 @@ useEffect(() => {
   try {
     await onVerified(otp); 
   } catch (err) {
-    toast.error("OTP verification failed");
+    console.error(err)
   } finally {
 
     setIsLoading(false);
@@ -94,6 +95,8 @@ useEffect(() => {
   try {
     const res = await onResend(); 
     toast( res||"otp send");
+    const newEndTime = Date.now() + 60 * 1000;
+    localStorage.setItem(TIMER_KEY, newEndTime.toString());
     setTimeLeft(60);
     setCanResend(false);
   } catch (err: any) {
@@ -105,7 +108,7 @@ useEffect(() => {
 
 
   return (
-    <div className="animate-fade-in max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="animate-fade-in max-w-md mx-auto mt-11 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-center mb-6">Verify Your Code</h2>
 
       <p className="text-center text-gray-600 mb-4">
@@ -143,7 +146,8 @@ useEffect(() => {
 
         <Button
           type="submit"
-          className="w-full bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full !bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+
           disabled={isLoading || !!errors.otp || otp.length !== 6}
         >
           {isLoading ? "Verifying..." : "Verify Code"}

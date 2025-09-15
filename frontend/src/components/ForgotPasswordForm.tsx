@@ -34,7 +34,6 @@ const ForgotPasswordForm = ({ onBack, onOTPSent }: ForgotPasswordFormProps) => {
     const emailError = validateEmail(email);
     if (emailError) {
       setErrors({ email: emailError });
-      toast("Please enter a valid email address",);
       return;
     }
 try{
@@ -74,11 +73,10 @@ try{
                 errors.email ? "border-destructive focus:ring-destructive/20" : ""
               }`}
               placeholder="Enter your email address"
-              required
             />
           </div>
           {errors.email && (
-            <p className="text-sm text-destructive mt-1">{errors.email}</p>
+            <p className="text-sm text-destructive  mt-1 text-red-600">{errors.email}</p>
           )}
           <p className="text-sm text-muted-foreground">
             We'll send you a verification code to reset your password.
@@ -87,8 +85,8 @@ try{
 
         <Button
           type="submit"
-          className="w-full"
-          disabled={isLoading || !!errors.email || !email}
+         className="w-full border-2 bg-black text-white hover:bg-gray-900"
+
         >
           {isLoading ? "Sending..." : "Send Verification Code"}
         </Button>

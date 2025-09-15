@@ -1,5 +1,4 @@
-import React from 'react'
-import { useGetOtp } from '@/hooks/useGetOtp'
+import { useGetOtp } from '@/hooks/auth/useGetOtp'
 import ForgotPasswordForm from '@/components/ForgotPasswordForm'
 import { useNavigate } from 'react-router-dom'
 
