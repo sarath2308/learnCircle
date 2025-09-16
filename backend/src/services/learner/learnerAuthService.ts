@@ -7,21 +7,9 @@ import { IRedisRepository } from "../../Repositories/redisRepo";
 import { error } from "console";
 import { IpasswordService } from "../passwordService";
 import {verifyGoogleToken} from '../../utils/googleAuth'
+import { IAuthService } from "../../types/common/IAuthService";
 
-
-export interface IlearnerAuthService
-{
-    signup:(name:string,email:string,password:string)=>Promise<Object>;
-    login:(email:string,password:string)=>Promise<any>;
-    forgotPassword:(email:string)=>Promise<Object>
-    resetPassword:(token:string,newPassword:string)=>Promise<{message:string}|void>
-    verifyOtp:(email:string,otp:string,type:string)=>Promise<any>
-     resendOtp:(email:string,type:string)=>Promise<Object|void>
-      googleSign:(token:string)=>Promise<{user:Partial<ILearner>,accessToken:string}>
-
-}
-
-export class LearnerAuthService implements IlearnerAuthService
+export class LearnerAuthService implements IAuthService<ILearner>
 {
     constructor(
         private userRepo:ILearnerRepo<ILearner>,

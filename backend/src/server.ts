@@ -30,6 +30,9 @@ import { AdminAuthController } from './controllers/admin/adminAuthController';
 //profesional
 import { ProfesionalAuthController } from './controllers/profesional/profesionalAuthController';
 import { profesionalAuthRoutes } from './routes/profesional/profesionalAuth';
+import Professional from './models/profesionals';
+import { ProfesionalAuthService } from './services/profesional/ProfesionalAuthService';
+import { ProfesionalRepo } from './Repositories/profesional/profesionalRepo';
 
 
 
@@ -50,21 +53,23 @@ app.use(cookieParser());
 //repository
 const learnerRepo=new LearnerRepo(Learner)
 const redisRepo=new RedisRepository<any>(redisClient)
-
+const profesionalRepo=new ProfesionalRepo(Professional)
 //services
 const accessToken=new AccessToken()
 const emailService=new EmailService()
 const generateOtp=new GenerateOtp()
 const passwordService=new PasswordService()
 const learnerAuthService=new LearnerAuthService(learnerRepo,emailService,generateOtp,accessToken,redisRepo,passwordService)
+const profesionalAuthService=new ProfesionalAuthService(profesionalRepo,emailService,generateOtp,accessToken,redisRepo,passwordService)
 
 //controllers
   const learnerAuthController=new LearnerAuthController(learnerAuthService) 
   const adminAuthController=new AdminAuthController()
-  const profesionalAuthController=new ProfesionalAuthController()
+  const profesionalAuthController=new ProfesionalAuthController(profesionalAuthService)
+  // const profesionalAuthController=new ProfesionalAuthController()
 // auth Routes
 app.use('/api/auth/learner', learnerAuthRoutes(learnerAuthController));
-// app.use('/api/auth/profesional', profesionalAuthRoutes(profesionalAuthController));
+app.use('/api/auth/profesional', profesionalAuthRoutes(profesionalAuthController));
 // app.use('/api/auth/admin', adminAuthRoutes(adminAuthController));
 
 

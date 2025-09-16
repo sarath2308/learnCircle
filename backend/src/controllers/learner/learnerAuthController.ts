@@ -1,7 +1,7 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
-import { IlearnerAuthService } from "../../services/learner/learnerAuthService";
+import { IAuthService } from "../../types/common/IAuthService";
 import { Request,Response,NextFunction } from "express";
-
+import { ILearner } from "../../models/Learner";
 export interface IResponse
 {
   user: any;        
@@ -10,7 +10,7 @@ export interface IResponse
 
 export class LearnerAuthController implements IAuthController{
 
-    constructor(private learnerAuth:IlearnerAuthService)
+    constructor(private learnerAuth:IAuthService<ILearner>)
     {
     }
     async signup(req:Request,res:Response,next:NextFunction):Promise<Response|void>

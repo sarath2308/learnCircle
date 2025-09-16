@@ -7,7 +7,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 interface LoginFormProps {
-  role: "learner" | "professional"|"admin";
+  role: "learner" | "profesional"|"admin";
   onSubmit:(role:string,data:{email:string,password:string})=>Promise<void>
   onBack: () => void;
   onSwitchToSignup: () => void;

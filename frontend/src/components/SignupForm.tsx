@@ -3,8 +3,8 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface SignupFormProps {
-  role: "learner" | "professional"|"admin";
-  onSubmit:(role:'learner' | 'professional'|'admin',data:{name:string,email:string,password:string})=>Promise<void>;
+  role: "learner" | "profesional"|"admin";
+  onSubmit:(role:'learner' | 'profesional'|'admin',data:{name:string,email:string,password:string})=>Promise<void>;
   onBack: () => void;
   onSwitchToLogin: () => void;
 }

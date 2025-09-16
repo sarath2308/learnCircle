@@ -65,7 +65,7 @@ const handleView = useCallback(() => {
     <div>
   {view==='login'&&
   <LoginForm 
-  role='learner'
+  role='profesional'
   onSubmit={onLogin}
   onBack={onBack}
   onSwitchToSignup={handleView}
@@ -75,7 +75,7 @@ const handleView = useCallback(() => {
 
     {view==='signup'&&
   <SignupForm
-  role='learner'
+  role='profesional'
   onSubmit={onSignUp}
   onBack={onBack}
   onSwitchToLogin={handleView}
