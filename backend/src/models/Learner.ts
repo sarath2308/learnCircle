@@ -2,16 +2,16 @@ import { Schema, model, Document } from "mongoose";
 
 export interface ILearner extends Document {
   email: string;
-  joinedAt: Date;
-  lastLogin?: Date;
-  profileImg?: string;
   name: string;
-  passwordHash:string;
-  isBlocked: boolean;
-  currentSubject: string[];
-  role: string;
+  role: string;            
+  passwordHash?: string;
+  googleId?: string;
+  profileImg?: string;
+  currentSubject?: string[];
+  joinedAt?: Date;
+  lastLogin?: Date;
+  isBlocked?: boolean;    
 }
-
 const learnerSchema = new Schema<ILearner>(
   {
     email: { type: String, required: true, unique: true },
@@ -19,10 +19,11 @@ const learnerSchema = new Schema<ILearner>(
     lastLogin: { type: Date },
     profileImg: { type: String },
     name: { type: String, required: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String },
     isBlocked: { type: Boolean, default: false },
     currentSubject: { type: [String], default: [] },
     role: { type: String, required: true,default:'learner', enum: ["learner", "professional", "admin"] },
+    googleId:{type:String,default:""}
   },
   {
     timestamps: true, // automatically manages createdAt, updatedAt

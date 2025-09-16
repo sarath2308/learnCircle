@@ -2,6 +2,7 @@ import ForgotPassword from "@/pages/common/ForgotPassword";
 import OtpVerification from "@/pages/common/OtpVerification";
 import ResetPassword from "@/pages/common/ResetPassword";
 import LearnerSign from "@/pages/Learner/LearnerSign";
+import ProfesionalSign from "@/pages/Profesional/ProfesionalSign";
 import type { RouteObject } from "react-router-dom";
 // import LearnerLayout from "@/layouts/LearnerLayout";
 // import LearnerHome from "@/pages/learner/Home";
@@ -18,6 +19,11 @@ const AuthRoutes: RouteObject[] = [
        { path: "learner/verify-otp", element: <OtpVerification /> },
          { path: "learner/reset-password", element:<ResetPassword /> },
 
+     //profesional auth
+      { path: "profesional", element: <ProfesionalSign/> },
+      { path: "profesional/forgot", element: <ForgotPassword role="profesional"/> },
+      { path: "profesional/verify-otp", element: <OtpVerification /> },
+         { path: "profesional/reset-password", element:<ResetPassword /> },
       
       {
         element: <div>{/* LearnerLayout can go here */}</div>,

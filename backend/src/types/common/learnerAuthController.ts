@@ -10,4 +10,5 @@ export interface IAuthController{
     resetPassword:(req:Request,res:Response,next:NextFunction)=>Promise<Response|void>
     verifyOtp:(req:Request,res:Response,next:NextFunction)=>Promise<Response|void>
     resendOtp:(req:Request,res:Response,next:NextFunction)=>Promise<Response|void>
+    googleSign:(req:Request,res:Response,next:NextFunction)=>Promise<Response|void>
 }

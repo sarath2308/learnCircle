@@ -5,16 +5,17 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
-
+import { GoogleLogin } from "@react-oauth/google";
 interface LoginFormProps {
   role: "learner" | "professional"|"admin";
   onSubmit:(role:string,data:{email:string,password:string})=>Promise<void>
   onBack: () => void;
   onSwitchToSignup: () => void;
   onForgotPassword: () => void;
+  handleGoogleSign:(role:string,credentials:any)=>void;
 }
 
-const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }: LoginFormProps) => {
+const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,handleGoogleSign}: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,10 +67,6 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
   
   };
 
-  const handleGoogleSignIn = () => {
-    toast("Google authentication would be handled here");
-  };
-
   const roleTitle = role === "learner" ? "Learner" : "Professional";
 
   return (
@@ -89,7 +86,7 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Google Sign In */}
-          <button
+          {/* <button
             type="button"
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-md transition"
@@ -103,7 +100,8 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword }
               </g>
             </svg>
             Continue with Google
-          </button>
+          </button> */}
+          <GoogleLogin onSuccess={(credentialRes)=>handleGoogleSign(role,credentialRes)} onError={() => console.log("Login Failed")} />
 
           {/* Divider */}
           <div className="relative">

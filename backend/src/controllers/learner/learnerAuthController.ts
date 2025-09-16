@@ -141,4 +141,28 @@ export class LearnerAuthController implements IAuthController{
         return res.status(400).json({message: error.message || "Failed to send OTP. Please try again"})
       }
     }
+
+    async googleSign(req:Request,res:Response)
+    {
+      try {
+        const {token}=req.body;
+        if(!token)
+        {
+          throw new Error("token missing")
+        }
+        let result=await this.learnerAuth.googleSign(token)
+          res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24, //1 day
+      });
+
+  
+      res.status(200).json({ user: result.user });
+      } catch (error:any) {
+       console.error("ithoke sradikande......",error)
+        return res.status(400).json({message:"something went wrong try after sometime"})
+      }
+    }
 }
