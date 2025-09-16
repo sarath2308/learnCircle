@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { createDatabase } from './config/db/dbFactory';
 import { connectRedis } from './config/redis/redis';
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 //-----imports-------------------------
 //global services
@@ -44,6 +45,7 @@ app.use(cors({
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 //repository
 const learnerRepo=new LearnerRepo(Learner)

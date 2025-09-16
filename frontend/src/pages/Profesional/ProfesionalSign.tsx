@@ -8,7 +8,7 @@ import { useLogin } from '@/hooks/auth/useLogin'
 import { useGoogle } from '@/hooks/auth/useGoogleAuth'
 import {toast} from "react-toastify"
 
-const LearnerSign = () => {
+const ProfesionalSign = () => {
   const[view,setView]=useState('login')
   const navigate=useNavigate()
   const {login}=useLogin()
@@ -44,12 +44,11 @@ const handleView = useCallback(() => {
  
    const onForgotPassword=useCallback(()=>
   {
-    navigate('/auth/learner/forgot')
+    navigate(`/auth/profesional/forgot`)
   },[])
 
   const handleGoogleSign=async(role:string,response:any)=>
   {
-    console.log("fired...."+response.credential)
      try {
       await mutateAsync({
           role,
@@ -85,4 +84,4 @@ const handleView = useCallback(() => {
   )
 }
 
-export default LearnerSign
+export default ProfesionalSign

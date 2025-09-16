@@ -1,9 +1,12 @@
 import type { ILearner } from "../../models/Learner";
 import { Model,Document } from "mongoose";
+import { CreateLearnerDTO } from "../../DTO/createLearnerDto"
+
+
 export interface ILearnerRepo<T>
 {
     getUsers:()=>Promise<Array<T>>
-    create:(userData:ILearner)=>Promise<T| null>;
+    create:(userData:CreateLearnerDTO)=>Promise<T| null>;
     findById:(id:string)=>Promise<T| null>
     findByEmail:(email:string)=>Promise<T | null>
     update:(id:string,data:Partial<T>)=>Promise<T| null>
@@ -25,7 +28,7 @@ async getUsers():Promise<Array<ILearner>>
         }
  }
     constructor(private Learner:Model<ILearner & Document>){}
-    async create(userData:ILearner):Promise<ILearner>
+    async create(userData:CreateLearnerDTO):Promise<ILearner>
     {
         try
         {

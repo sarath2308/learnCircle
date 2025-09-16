@@ -6,6 +6,7 @@ import { AccessToken } from "../../utils/access.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
 import { error } from "console";
 import { IpasswordService } from "../passwordService";
+import {verifyGoogleToken} from '../../utils/googleAuth'
 
 
 export interface IlearnerAuthService
@@ -16,6 +17,7 @@ export interface IlearnerAuthService
     resetPassword:(token:string,newPassword:string)=>Promise<{message:string}|void>
     verifyOtp:(email:string,otp:string,type:string)=>Promise<any>
      resendOtp:(email:string,type:string)=>Promise<Object|void>
+      googleSign:(token:string)=>Promise<{user:Partial<ILearner>,accessToken:string}>
 
 }
 
@@ -66,6 +68,10 @@ export class LearnerAuthService implements IlearnerAuthService
        let match=await this.userRepo.findByEmail(email)
        if(match)
        {
+        if(!match.passwordHash)
+        {
+          throw new Error("password not set please use google Auth")
+        }
         let check=await this.passwordService.comparePassword(match.passwordHash,password)
         if(!check)
         {
@@ -210,7 +216,7 @@ try {
   {
     const otp=this.OtpService.getOtp()
     
-         await this.redis.set(`forgot:${email}`,JSON.stringify({email,otp}),60)
+         await this.redis.set(`signup:${email}`,JSON.stringify({email,otp}),60)
          //email
          await this.emailService.sendSignupOtp(email,otp)
 
@@ -219,6 +225,51 @@ try {
 } catch (error) {
   throw error;
 }
+}
+ async googleSign(token: string) {
+  try {
+    const payload = await verifyGoogleToken(token);
+
+    if (!payload) {
+      throw new Error("Invalid Google token");
+    }
+
+    const {
+      email,
+      name = "No Name",
+      picture = "",
+      emailVerified,
+      sub,
+    } = payload;
+
+    if (!email || !emailVerified) {
+      throw new Error("Google account not verified");
+    }
+
+    let user = await this.userRepo.findByEmail(email);
+
+    if (!user) {
+      user = await this.userRepo.create({
+        name,
+        email,
+        googleId: sub,
+        profileImg: picture,
+      });
+
+      if (!user) {
+        throw new Error("User creation failed");
+      }
+    }
+
+    const jwt = await this.accesToken.signAccessToken({
+      id: user.id,
+      role: user.role,
+    });
+
+    return { user, accessToken: jwt };
+  } catch (err: any) {
+    throw new Error(err.message || "Google sign-in failed");
+  }
 }
 
 
