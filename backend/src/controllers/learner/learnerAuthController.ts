@@ -1,7 +1,7 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
-import { IlearnerAuthService } from "../../services/learner/learnerAuthService";
+import { IAuthService } from "../../types/common/IAuthService";
 import { Request,Response,NextFunction } from "express";
-
+import { ILearner } from "../../models/Learner";
 export interface IResponse
 {
   user: any;        
@@ -10,27 +10,29 @@ export interface IResponse
 
 export class LearnerAuthController implements IAuthController{
 
-    constructor(private learnerAuth:IlearnerAuthService)
+    constructor(private learnerAuth:IAuthService<ILearner>)
     {
     }
-    async signup(req:Request,res:Response,next:NextFunction):Promise<Response|void>
+    async signup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  try {
+    const { name, email, password } = req.body;
+    if(!name||!email||!password)
     {
-        try {
-               const {name,email,password}=req.body;
-               const response=await this.learnerAuth.signup(name,email,password)
-               return res.status(200).json(response)
-        } catch (error:any) {
-            console.error(error)
-            if(error.message==='duplicate_error')
-            {
-               return res.status(409).json({message:"email already exists please login"})
-            }
-            else{
-              next(error)
-            }
-            
-        }
+      throw new Error("credential missing")
     }
+    const response = await this.learnerAuth.signup(name, email, password);
+    return res.status(200).json(response);
+  } catch (error: any) {
+    console.error(error);
+
+    if (error.message === "already exist" || error.message === "duplicate_error") {
+      return res.status(409).json({ message: "Email already exists. Please login." });
+    }
+
+    return res.status(500).json({ message: error.message || "Internal Server Error" });
+  }
+}
+
 
     async verifyOtp(req:Request,res:Response)
         {
@@ -57,10 +59,10 @@ export class LearnerAuthController implements IAuthController{
       });
 
   
-      res.status(200).json({ user: result.user });
+     return res.status(200).json({ user: result.user });
     }
     } catch (error: any) {
-      res.status(400).json({ message: error.message || "OTP verification failed" });
+     return res.status(400).json({ message: error.message || "OTP verification failed" });
     }
         }
 
@@ -116,7 +118,7 @@ export class LearnerAuthController implements IAuthController{
     return res.status(200).json({ message: "Password changed successfully" });
   } catch (error: any) {
     return res.status(400).json({
-      message: error instanceof Error ? error.message : String(error) || "Server error occurred"
+      message:"Server error occurred"
     });
   }
 }

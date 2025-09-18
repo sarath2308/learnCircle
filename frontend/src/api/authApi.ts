@@ -5,5 +5,7 @@ export const authApi = {
     api.put(`/auth/${payload.role}/reset-password`, payload).then((res) => res.data),
   googleAuth: (payload: { role: string|null; token:string|null,}) =>
     api.post(`/auth/${payload.role}/google`, payload).then((res) => res.data),
+   logOut: () =>
+    api.post(`/auth/logout`).then((res) => res.data),
 };
 

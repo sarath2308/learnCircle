@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 
 interface SignupFormProps {
-  role: "learner" | "professional"|"admin";
-  onSubmit:(role:'learner' | 'professional'|'admin',data:{name:string,email:string,password:string})=>Promise<void>;
+  role: "learner" | "profesional"|"admin";
+  onSubmit:(role:'learner' | 'profesional'|'admin',data:{name:string,email:string,password:string})=>Promise<void>;
   onBack: () => void;
   onSwitchToLogin: () => void;
+  handleGoogleSign:(role:string,credential:any)=>void;
 }
 
-const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin }: SignupFormProps) => {
+const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin,handleGoogleSign}: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -128,7 +130,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
 
         {/* Google Sign Up */}
-        <button className="w-full flex items-center justify-center border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-md mb-4 transition">
+        {/* <button className="w-full flex items-center justify-center border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-md mb-4 transition">
           <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
             <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
               <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
@@ -138,7 +140,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             </g>
           </svg>
           Continue with Google
-        </button>
+        </button> */}
+        <GoogleLogin onSuccess={(credentialRes)=>handleGoogleSign(role,credentialRes)} onError={() => console.log("Login Failed")} />
 
         <div className="relative mb-4">
           <div className="absolute inset-0 flex items-center">

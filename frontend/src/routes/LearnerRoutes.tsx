@@ -1,3 +1,4 @@
+import LearnerHome from "@/pages/Learner/LearnerHome";
 import type { RouteObject } from "react-router-dom";
 
 // import LearnerLayout from "@/layouts/LearnerLayout";
@@ -10,7 +11,7 @@ const learnerRoutes: RouteObject[] = [
     path: "/learner",
     children: [
      
-      // { path: "verify-otp", element: <LearnerOtpVerification /> },
+      { path: "home", element: <LearnerHome /> },
 
       
       {

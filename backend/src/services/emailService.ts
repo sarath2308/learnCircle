@@ -24,7 +24,7 @@ export class EmailService {
 
   private async sendMail(options: EmailOptions) {
     await this.transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: process.env.SMTP_USER,
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -37,8 +37,8 @@ export class EmailService {
       <h2 style="color: #4CAF50;">Welcome to LearnCircle!</h2>
       <p>Hi there,</p>
       <p>Thank you for signing up. Your One-Time Password (OTP) to complete the signup process is:</p>
-      <h1 style="color: #FF5722;">${otp}</h1>
-      <p>Please enter this code within the next 10 minutes.</p>
+      <h3 style="color: #FF5722;">${otp}</h3>
+      <p>Please enter this code within the next 1 minutes.</p>
       <p>If you did not sign up for this account, please ignore this email.</p>
       <hr>
       <p style="font-size: 12px; color: #888;">LearnCircle Team</p>
@@ -54,7 +54,7 @@ async sendForgotPasswordOtp(to: string, otp: string) {
       <p>Hi there,</p>
       <p>We received a request to reset your password. Your OTP to reset your password is:</p>
       <h1 style="color: #FF5722;">${otp}</h1>
-      <p>This OTP is valid for 10 minutes only.</p>
+      <p>This OTP is valid for 1 minutes only.</p>
       <p>If you did not request a password reset, please ignore this email.</p>
       <hr>
       <p style="font-size: 12px; color: #888;">LearnCircle Team</p>

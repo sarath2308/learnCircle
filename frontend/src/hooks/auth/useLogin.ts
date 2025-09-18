@@ -13,7 +13,7 @@ export const useLogin = () => {
     const res = await api.post(`/auth/${role}/login`, data);
     toast.success("login success")
     dispatch(setCurrentUser({ ...res.data, role }));
-    navigate('/learner/home');
+    navigate(`/${role}/home`);
     }catch(err:any)
     {
       toast.error(err.message)

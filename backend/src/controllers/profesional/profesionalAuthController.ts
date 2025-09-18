@@ -1,30 +1,18 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
+import { Request,Response,NextFunction } from "express";
+import { LearnerAuthController } from "../learner/learnerAuthController";
+import { IAuthService } from "../../types/common/IAuthService";
+import { IProfessional } from "../../models/profesionals";
+export interface IResponse
+{
+  user: any;        
+  accessToken: string;
+}
 
-import { Request,Response } from "express";
-
-export class ProfesionalAuthController implements IAuthController{
-    async signup(req:Request,Res:Response)
+export class ProfesionalAuthController extends LearnerAuthController
+{
+    constructor(private profesionalService:IAuthService<IProfessional>)
     {
-       
-    }
-    async login(req:Request,res:Response)
-    {
-
-    }
-    async refreshToken(req:Request,res:Response)
-    {
-
-    }
-    async resetPassword(req:Request,res:Response)
-    {
-
-    }
-    async forgotPassword(req:Request,res:Response)
-    {
-
-    }
-    async logout(req:Request,res:Response)
-    {
-
+      super(profesionalService)
     }
 }
