@@ -2,7 +2,7 @@ import { ILearnerRepo } from "../../Repositories/learner/learnerRepo";
 import { ILearner } from "../../models/Learner";
 import { EmailService } from "../emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
-import { IToken } from "../../utils/access.jwt";
+import { IToken } from "../../utils/token.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
 import { IpasswordService } from "../passwordService";
 import { verifyGoogleToken } from "../../utils/googleAuth";
@@ -80,7 +80,7 @@ export class LearnerAuthService implements IAuthService<ILearner> {
       await this.emailService.sendSignupOtp(email, otp);
 
       return { message: "otp sent for verification" };
-    } catch (err: any) {
+    } catch (err) {
       console.log(err);
       throw err;
     }

@@ -3,7 +3,7 @@ import { IProfessional } from "../../models/profesionals";
 import { ProfesionalRepo } from "../../Repositories/profesional/profesionalRepo";
 import { EmailService } from "../emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
-import { IToken } from "../../utils/access.jwt";
+import { IToken } from "../../utils/token.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
 import { IpasswordService } from "../passwordService";
 import { verifyGoogleToken } from "../../utils/googleAuth";

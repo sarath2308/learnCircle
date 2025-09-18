@@ -1,7 +1,7 @@
 import { Learner } from "../models/Learner";
 import Professional from "../models/profesionals";
 // import { Admin } from '../models/admin.model';
-import { tokenService } from "../utils/access.jwt";
+import { tokenService } from "../utils/token.jwt";
 
 const service = new tokenService();
 
