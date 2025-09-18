@@ -1,6 +1,6 @@
 import { BaseRepo } from "../Base/base";
 import { IProfessional } from "../../models/profesionals";
-import { Model, Document } from "mongoose"; // ✅ make sure Document is imported
+import { Model, Document } from "mongoose"; 
 
 export class ProfesionalRepo extends BaseRepo<IProfessional> {
   constructor(profesionalModel: Model<IProfessional & Document>) {

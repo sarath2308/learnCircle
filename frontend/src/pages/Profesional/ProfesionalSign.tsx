@@ -79,6 +79,7 @@ const handleView = useCallback(() => {
   onSubmit={onSignUp}
   onBack={onBack}
   onSwitchToLogin={handleView}
+  handleGoogleSign={handleGoogleSign}
   />}
       </div>
   )

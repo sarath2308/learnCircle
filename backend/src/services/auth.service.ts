@@ -1,0 +1,38 @@
+import { Learner } from '../models/Learner';
+import Professional from '../models/profesionals'
+// import { Admin } from '../models/admin.model';
+import { tokenService } from '../utils/access.jwt';
+
+const service=new tokenService()
+
+export class AuthService {
+  static async refreshToken(token: string) {
+    try {
+      const payload: any =service.verifyRefreshToken(token);
+      let user;
+
+      switch (payload.role) {
+        case 'learner':
+          user = await Learner.findById(payload.userId);
+          break;
+        case 'professional':
+          user = await Professional.findById(payload.userId);
+          break;
+        // case 'admin':
+        //   user = await Admin.findById(payload.userId);
+        //   break;
+        default:
+          throw new Error('Invalid role in token');
+      }
+
+      if (!user) throw new Error('User not found');
+
+      // Generate new access token
+      const newAccessToken = service.signAccessToken({ id: user._id, role: payload.role });
+
+      return { accessToken: newAccessToken, user };
+    } catch (err) {
+      throw new Error('Invalid refresh token');
+    }
+  }
+}

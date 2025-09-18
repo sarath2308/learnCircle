@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser'
 
 //-----imports-------------------------
 //global services
-import { AccessToken } from './utils/access.jwt';
+import { tokenService } from './utils/access.jwt';
 import { GenerateOtp } from './utils/otp.utils.';
 import { EmailService } from './services/emailService';
 import { PasswordService } from './services/passwordService';
@@ -55,7 +55,7 @@ const learnerRepo=new LearnerRepo(Learner)
 const redisRepo=new RedisRepository<any>(redisClient)
 const profesionalRepo=new ProfesionalRepo(Professional)
 //services
-const accessToken=new AccessToken()
+const accessToken=new tokenService()
 const emailService=new EmailService()
 const generateOtp=new GenerateOtp()
 const passwordService=new PasswordService()
@@ -70,6 +70,7 @@ const profesionalAuthService=new ProfesionalAuthService(profesionalRepo,emailSer
 // auth Routes
 app.use('/api/auth/learner', learnerAuthRoutes(learnerAuthController));
 app.use('/api/auth/profesional', profesionalAuthRoutes(profesionalAuthController));
+// app.use('/auth/logout')
 // app.use('/api/auth/admin', adminAuthRoutes(adminAuthController));
 
 

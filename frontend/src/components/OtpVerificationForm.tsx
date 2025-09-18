@@ -6,12 +6,13 @@ import {RefreshCw } from "lucide-react";
 import {toast} from 'react-toastify'
 
 interface OTPVerificationFormProps {
+  role:string | null
   email: string | null;
   onVerified: (otp:string) => void;
   onResend:()=>Promise<any>;
 }
 
-const OTPVerificationForm = ({ email ,onVerified,onResend }: OTPVerificationFormProps) => {
+const OTPVerificationForm = ({role,email ,onVerified,onResend }: OTPVerificationFormProps) => {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -26,19 +27,23 @@ const OTPVerificationForm = ({ email ,onVerified,onResend }: OTPVerificationForm
     return "";
   };
 
-  const TIMER_KEY = "otp_timer_end";
+const TIMER_KEY = `otp_timer_end_${email}_${role}`; // unique per email+role
 
 useEffect(() => {
+  if (!email || !role) return;
+
   const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
   const isReload = navEntries.length > 0 && navEntries[0].type === "reload";
 
   let endTime: number;
 
-  if (isReload && localStorage.getItem(TIMER_KEY)) {
-    // Refresh → continue old timer
-    endTime = parseInt(localStorage.getItem(TIMER_KEY)!);
+  const storedTime = localStorage.getItem(TIMER_KEY);
+
+  if (isReload && storedTime) {
+    // Continue old timer if page reloaded
+    endTime = parseInt(storedTime);
   } else {
-    // Fresh navigation (back, forward, new tab, etc.) → restart timer
+    // Fresh session → restart timer
     endTime = Date.now() + 60 * 1000;
     localStorage.setItem(TIMER_KEY, endTime.toString());
   }
@@ -54,12 +59,11 @@ useEffect(() => {
     }
   };
 
-  updateTime(); // set immediately
+  updateTime(); // update immediately
   const timer = setInterval(updateTime, 1000);
 
   return () => clearInterval(timer);
-}, []);
-
+}, [email, role]);
 
   const handleOTPChange = (value: string) => {
     setOtp(value);
@@ -94,7 +98,6 @@ useEffect(() => {
   setIsResending(true);
   try {
     const res = await onResend(); 
-    toast( res||"otp send");
     const newEndTime = Date.now() + 60 * 1000;
     localStorage.setItem(TIMER_KEY, newEndTime.toString());
     setTimeLeft(60);

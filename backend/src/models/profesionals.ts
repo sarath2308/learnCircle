@@ -19,9 +19,9 @@ interface ProfileInfo {
 export interface IProfessional extends Document {
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   profileImg?: string;
-  joinedAt: Date;
+  joinedAt?: Date;
   isBlocked: boolean;
   ProfileInfo: ProfileInfo;
   RejectReason?: string;
@@ -48,7 +48,7 @@ const ProfileInfoSchema = new Schema<ProfileInfo>({
 const ProfessionalSchema: Schema = new Schema<IProfessional>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  passwordHash: { type: String, required: true },
+  passwordHash: { type: String },
   profileImg: { type: String },
   joinedAt: { type: Date, default: Date.now },
   isBlocked: { type: Boolean, default: false },

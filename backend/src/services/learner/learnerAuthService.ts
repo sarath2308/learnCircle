@@ -2,7 +2,7 @@ import { ILearnerRepo } from "../../Repositories/learner/learnerRepo";
 import { ILearner } from "../../models/Learner";
 import { EmailService } from "../emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
-import { AccessToken } from "../../utils/access.jwt";
+import { IToken } from "../../utils/access.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
 import { error } from "console";
 import { IpasswordService } from "../passwordService";
@@ -15,7 +15,7 @@ export class LearnerAuthService implements IAuthService<ILearner>
         private userRepo:ILearnerRepo<ILearner>,
         private emailService:EmailService,
         private OtpService:GenerateOtp,
-        private accesToken:AccessToken,
+        private accesToken:IToken,
         private redis:IRedisRepository<any>,
         private passwordService:IpasswordService
      )

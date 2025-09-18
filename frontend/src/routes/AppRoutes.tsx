@@ -5,11 +5,13 @@ import LearnerRoutes from "./LearnerRoutes";
 import AuthRoutes from "./AuthRoutes";
 
 import Auth from "@/pages/Auth";
+import Landing from "@/pages/common/Landing";
 // import LandingPage from "./pages/LandingPage";
 
 function AppRoutes() {
   const routes = [
-    { path: "/", element: <Auth /> },
+    { path: "/", element: <Landing/> },
+      { path: "/auth", element: <Auth/> },
     ...LearnerRoutes,
     ...AuthRoutes
   ];
