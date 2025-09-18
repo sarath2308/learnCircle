@@ -26,6 +26,7 @@ export default defineConfig([
         localStorage: "readonly",
         sessionStorage: "readonly",
         React: "readonly",
+        console: "readonly",
       },
     },
     plugins: {

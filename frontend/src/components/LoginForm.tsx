@@ -90,7 +90,7 @@ const LoginForm = ({
         <CardContent className="space-y-6">
           <GoogleLogin
             onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
-            onError={() => console.log("Login Failed")}
+            onError={() => console.error("Login Failed")}
           />
 
           {/* Divider */}
@@ -182,7 +182,7 @@ const LoginForm = ({
               onClick={onSwitchToSignup}
               className="text-sm text-gray-500 hover:text-black"
             >
-              Don't have an account? Sign up
+              Don`t have an account? Sign up
             </button>
           </div>
         </CardContent>

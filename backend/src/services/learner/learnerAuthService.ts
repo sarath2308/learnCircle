@@ -4,7 +4,6 @@ import { EmailService } from "../emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
 import { IToken } from "../../utils/access.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
-import { error } from "console";
 import { IpasswordService } from "../passwordService";
 import { verifyGoogleToken } from "../../utils/googleAuth";
 import { IAuthService } from "../../types/common/IAuthService";
@@ -88,29 +87,19 @@ export class LearnerAuthService implements IAuthService<ILearner> {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-    try {
-      const match = await this.redis.get(`reset:${token}`);
-      if (!match) {
-        throw new Error("Session expired");
-      }
-
-      const { id: userId } = JSON.parse(match);
-
-      const user = await this.userRepo.findById(userId);
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const hash = await this.passwordService.hashPassword(newPassword);
-
-      await this.userRepo.update(userId, { passwordHash: hash });
-
-      await this.redis.delete(`reset:${token}`);
-
-      return { message: "Password reset successfully" };
-    } catch (error) {
-      throw error;
+    const match = await this.redis.get(`reset:${token}`);
+    if (!match) {
+      throw new Error("Session expired");
     }
+    const { id: userId } = JSON.parse(match);
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const hash = await this.passwordService.hashPassword(newPassword);
+    await this.userRepo.update(userId, { passwordHash: hash });
+    await this.redis.delete(`reset:${token}`);
+    return { message: "Password reset successfully" };
   }
 
   async verifyOtp(email: string, otp: string, type: string) {
@@ -175,25 +164,20 @@ export class LearnerAuthService implements IAuthService<ILearner> {
   }
 
   async resendOtp(email: string, type: string) {
-    try {
-      if (type === "forgot") {
-        const otp = this.OtpService.getOtp();
-
-        await this.redis.set(`forgot:${email}`, JSON.stringify({ email, otp }), 60);
-        //email
-        await this.emailService.sendForgotPasswordOtp(email, otp);
-      } else if (type === "signup") {
-        const otp = this.OtpService.getOtp();
-
-        await this.redis.set(`signup:${email}`, JSON.stringify({ email, otp }), 60);
-        //email
-        await this.emailService.sendSignupOtp(email, otp);
-      }
-      return { message: "otp sent" };
-    } catch (error) {
-      throw error;
+    if (type === "forgot") {
+      const otp = this.OtpService.getOtp();
+      await this.redis.set(`forgot:${email}`, JSON.stringify({ email, otp }), 60);
+      //email
+      await this.emailService.sendForgotPasswordOtp(email, otp);
+    } else if (type === "signup") {
+      const otp = this.OtpService.getOtp();
+      await this.redis.set(`signup:${email}`, JSON.stringify({ email, otp }), 60);
+      //email
+      await this.emailService.sendSignupOtp(email, otp);
     }
+    return { message: "otp sent" };
   }
+
   async googleSign(token: string) {
     try {
       const payload = await verifyGoogleToken(token);

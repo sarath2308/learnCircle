@@ -81,7 +81,7 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
       toast("Please fix the errors below");
       return;
     }
-
+    setIsLoading(true);
     await onSuccess(newPassword);
   };
 
