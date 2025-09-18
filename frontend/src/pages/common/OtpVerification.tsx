@@ -1,9 +1,9 @@
-import OTPVerificationForm from '@/components/OtpVerificationForm'
-import { useSearchParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react'
-import { useOtpVerify } from '@/hooks/auth/useOtpVerify';
-import { useOtpResend } from '@/hooks/auth/useResendOtp';
-import { toast } from 'react-toastify';
+import OTPVerificationForm from "@/components/OtpVerificationForm";
+import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useOtpVerify } from "@/hooks/auth/useOtpVerify";
+import { useOtpResend } from "@/hooks/auth/useResendOtp";
+import { toast } from "react-toastify";
 
 const OtpVerification: React.FC = () => {
   const { verifyOtp } = useOtpVerify();
@@ -17,12 +17,12 @@ const OtpVerification: React.FC = () => {
 
   // Set query params after mount
   useEffect(() => {
-    const r = searchParams.get('role');
-    const t = searchParams.get('type');
-    const e = searchParams.get('email');
+    const r = searchParams.get("role");
+    const t = searchParams.get("type");
+    const e = searchParams.get("email");
 
     if (!r || !t || !e) {
-      toast.error('Missing required query parameters');
+      toast.error("Missing required query parameters");
       return;
     }
 
@@ -57,12 +57,7 @@ const OtpVerification: React.FC = () => {
 
   return (
     <div>
-      <OTPVerificationForm
-        role={role}
-        email={email}
-        onVerified={onVerified}
-        onResend={onResend}
-      />
+      <OTPVerificationForm role={role} email={email} onVerified={onVerified} onResend={onResend} />
     </div>
   );
 };

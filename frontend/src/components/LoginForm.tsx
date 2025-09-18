@@ -1,21 +1,26 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
-import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 interface LoginFormProps {
-  role: "learner" | "profesional"|"admin";
-  onSubmit:(role:string,data:{email:string,password:string})=>Promise<void>
+  role: "learner" | "profesional" | "admin";
+  onSubmit: (role: string, data: { email: string; password: string }) => Promise<void>;
   onBack: () => void;
   onSwitchToSignup: () => void;
   onForgotPassword: () => void;
-  handleGoogleSign:(role:string,credentials:any)=>void;
+  handleGoogleSign: (role: string, credentials: object) => void;
 }
 
-const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,handleGoogleSign}: LoginFormProps) => {
+const LoginForm = ({
+  role,
+  onSubmit,
+  onBack,
+  onSwitchToSignup,
+  onForgotPassword,
+  handleGoogleSign,
+}: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,12 +42,12 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
-    setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+    setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
   };
 
   const handlePasswordChange = (value: string) => {
     setPassword(value);
-    setErrors(prev => ({ ...prev, password: validatePassword(value) }));
+    setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,16 +60,14 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,
       setErrors({ email: emailError, password: passwordError });
       return;
     }
-      
-    setIsLoading(true);
-    try{
-      await onSubmit(role,{email:email,password:password})
-    }catch(err)
-    {
-      setIsLoading(false)
-    }
 
-  
+    setIsLoading(true);
+    try {
+      await onSubmit(role, { email: email, password: password });
+    } catch (err) {
+      console.log(err);
+      setIsLoading(false);
+    }
   };
 
   const roleTitle = role === "learner" ? "Learner" : "Professional";
@@ -85,8 +88,10 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,
           <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-         
-          <GoogleLogin onSuccess={(credentialRes)=>handleGoogleSign(role,credentialRes)} onError={() => console.log("Login Failed")} />
+          <GoogleLogin
+            onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
+            onError={() => console.log("Login Failed")}
+          />
 
           {/* Divider */}
           <div className="relative">
@@ -115,7 +120,6 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,
                   className={`pl-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                     errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
                   }`}
-              
                 />
               </div>
               {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
@@ -135,14 +139,17 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,
                   className={`pl-10 pr-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                     errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
                   }`}
-                
                 />
                 <button
                   type="button"
                   className="absolute right-0 top-0 h-full px-3"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
                 </button>
               </div>
               {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
@@ -163,7 +170,6 @@ const LoginForm = ({ role,onSubmit, onBack, onSwitchToSignup, onForgotPassword ,
             <button
               type="submit"
               className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md"
-             
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>

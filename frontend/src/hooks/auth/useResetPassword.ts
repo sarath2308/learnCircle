@@ -3,7 +3,6 @@ import { authApi } from "@/api/authApi";
 import { toast } from "react-toastify";
 
 export const useResetPassword = () => {
-
   return useMutation({
     mutationFn: authApi.resetPassword,
     onSuccess: () => {

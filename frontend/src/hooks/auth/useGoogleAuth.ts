@@ -3,7 +3,6 @@ import { authApi } from "@/api/authApi";
 import { toast } from "react-toastify";
 
 export const useGoogle = () => {
-
   return useMutation({
     mutationFn: authApi.googleAuth,
     onSuccess: () => {

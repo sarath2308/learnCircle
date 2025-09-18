@@ -10,7 +10,7 @@ export const useOtpVerify = () => {
 
   const verifyOtp = async (
     role: string | null,
-    data: { email: string | null; otp: string; type: string | null }
+    data: { email: string | null; otp: string; type: string | null },
   ) => {
     try {
       const response = await api.post(`/auth/${role}/verify-otp`, data, {
@@ -22,11 +22,9 @@ export const useOtpVerify = () => {
 
       if (data.type === "forgot") {
         if (role === "learner") {
-          navigate(
-            `/auth/learner/reset-password?role=${role}&token=${response.data.token}`
-          );
+          navigate(`/auth/learner/reset-password?role=${role}&token=${response.data.token}`);
         } else {
-          navigate( `/auth/profesional/reset-password?role=${role}&token=${response.data.token}`);
+          navigate(`/auth/profesional/reset-password?role=${role}&token=${response.data.token}`);
         }
       } else {
         // 👉 Save user in redux

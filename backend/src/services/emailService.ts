@@ -1,12 +1,12 @@
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
-dotenv.config()
-interface EmailOptions { 
-    to: string;
-     subject: string;
-      html: string; 
-    }
-    
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
+interface EmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+}
+
 export class EmailService {
   private transporter: nodemailer.Transporter;
 
@@ -14,7 +14,7 @@ export class EmailService {
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
-      secure: false, 
+      secure: false,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -32,7 +32,7 @@ export class EmailService {
   }
 
   async sendSignupOtp(to: string, otp: string) {
-  const html = `
+    const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
       <h2 style="color: #4CAF50;">Welcome to LearnCircle!</h2>
       <p>Hi there,</p>
@@ -44,11 +44,11 @@ export class EmailService {
       <p style="font-size: 12px; color: #888;">LearnCircle Team</p>
     </div>
   `;
-  await this.sendMail({ to, subject: "Your LearnCircle Signup OTP", html });
-}
+    await this.sendMail({ to, subject: "Your LearnCircle Signup OTP", html });
+  }
 
-async sendForgotPasswordOtp(to: string, otp: string) {
-  const html = `
+  async sendForgotPasswordOtp(to: string, otp: string) {
+    const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333;">
       <h2 style="color: #2196F3;">Reset Your Password</h2>
       <p>Hi there,</p>
@@ -60,7 +60,6 @@ async sendForgotPasswordOtp(to: string, otp: string) {
       <p style="font-size: 12px; color: #888;">LearnCircle Team</p>
     </div>
   `;
-  await this.sendMail({ to, subject: "Password Reset OTP", html });
-}
-
+    await this.sendMail({ to, subject: "Password Reset OTP", html });
+  }
 }

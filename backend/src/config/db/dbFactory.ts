@@ -1,6 +1,6 @@
 // db/DatabaseFactory.ts
-import type { Idatabase } from './Idatabase.ts';
-import { MongoDB } from './mongo/mongo';
+import type { Idatabase } from "./Idatabase.ts";
+import { MongoDB } from "./mongo/mongo";
 
 export function createDatabase(type: string, config: any): Idatabase {
   const map: Record<string, () => Idatabase> = {

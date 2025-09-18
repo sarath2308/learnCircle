@@ -50,8 +50,8 @@ export class BaseRepo<T> implements IBaseRepo<T> {
 
   async update(id: string, data: Partial<T>): Promise<(T & Document) | null> {
     try {
-    const user = await this.model.findByIdAndUpdate(id, data as any, { new: true }).exec();
-    return user;
+      const user = await this.model.findByIdAndUpdate(id, data as any, { new: true }).exec();
+      return user;
     } catch (error) {
       console.error(error);
       throw new Error("Couldn't update the user");

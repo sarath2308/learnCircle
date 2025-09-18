@@ -2,7 +2,6 @@
 // import type { PayloadAction } from "@reduxjs/toolkit";
 // import type { SignupAuthResponse } from "../api/learner/learnerAuth";
 
-
 // export interface UserData extends SignupAuthResponse {
 //   id: string;
 //   name: string;

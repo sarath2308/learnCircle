@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Eye, EyeOff, Lock, CheckCircle } from "lucide-react";
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
 
 interface ResetPasswordFormProps {
   onBack: () => void;
-  onSuccess: (newPassword:string) => void;
+  onSuccess: (newPassword: string) => void;
 }
 
 const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
@@ -35,7 +35,8 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
     if (!/(?=.*[a-z])/.test(password)) return "Password must contain at least one lowercase letter";
     if (!/(?=.*[A-Z])/.test(password)) return "Password must contain at least one uppercase letter";
     if (!/(?=.*\d)/.test(password)) return "Password must contain at least one number";
-    if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(password)) return "Password must contain at least one special character";
+    if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(password))
+      return "Password must contain at least one special character";
     return "";
   };
 
@@ -48,62 +49,53 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
   const handlePasswordChange = (value: string) => {
     setNewPassword(value);
     const error = validatePassword(value);
-    setErrors(prev => ({ ...prev, newPassword: error }));
-    
+    setErrors((prev) => ({ ...prev, newPassword: error }));
+
     // Also revalidate confirm password if it exists
     if (confirmPassword) {
       const confirmError = validateConfirmPassword(value, confirmPassword);
-      setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
+      setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
     }
   };
 
   const handleConfirmPasswordChange = (value: string) => {
     setConfirmPassword(value);
     const error = validateConfirmPassword(newPassword, value);
-    setErrors(prev => ({ ...prev, confirmPassword: error }));
+    setErrors((prev) => ({ ...prev, confirmPassword: error }));
   };
 
-  const isPasswordValid = passwordRequirements.every(req => req.met);
+  const isPasswordValid = passwordRequirements.every((req) => req.met);
   const passwordsMatch = newPassword === confirmPassword && newPassword.length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const passwordError = validatePassword(newPassword);
     const confirmError = validateConfirmPassword(newPassword, confirmPassword);
-    
+
     if (passwordError || confirmError) {
       setErrors({
         newPassword: passwordError,
-        confirmPassword: confirmError
+        confirmPassword: confirmError,
       });
-      toast( "Please fix the errors below"
-       );
+      toast("Please fix the errors below");
       return;
     }
 
-   await onSuccess(newPassword)
-
-  }
+    await onSuccess(newPassword);
+  };
 
   return (
     <div className="animate-fade-in">
       <div className="flex items-center mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          className="mr-2"
-        >
+        <Button variant="ghost" size="icon" onClick={onBack} className="mr-2">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h2 className="text-2xl font-bold">Set New Password</h2>
       </div>
 
       <div className="text-center mb-6">
-        <p className="text-muted-foreground">
-          Create a strong password 
-        </p>
+        <p className="text-muted-foreground">Create a strong password</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -129,11 +121,7 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
               className="absolute right-0 top-0 h-full px-3"
               onClick={() => setShowNewPassword(!showNewPassword)}
             >
-              {showNewPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </Button>
           </div>
         </div>
@@ -145,24 +133,20 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
               {passwordRequirements.map((req, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <CheckCircle
-                    className={`h-3 w-3 ${
-                      req.met ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                    className={`h-3 w-3 ${req.met ? "text-green-500" : "text-muted-foreground"}`}
                   />
                   <span
-                    className={`text-xs ${
-                      req.met ? "text-green-500" : "text-muted-foreground"
-                    }`}
+                    className={`text-xs ${req.met ? "text-green-500" : "text-muted-foreground"}`}
                   >
                     {req.text}
                   </span>
                 </div>
               ))}
+            </div>
+            {errors.newPassword && (
+              <p className="text-sm text-destructive mt-1">{errors.newPassword}</p>
+            )}
           </div>
-          {errors.newPassword && (
-            <p className="text-sm text-destructive mt-1">{errors.newPassword}</p>
-          )}
-        </div>
         )}
 
         <div className="space-y-2">
@@ -187,22 +171,14 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
               className="absolute right-0 top-0 h-full px-3"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </Button>
           </div>
           {errors.confirmPassword && (
             <p className="text-sm text-destructive mt-1">{errors.confirmPassword}</p>
           )}
           {confirmPassword.length > 0 && !errors.confirmPassword && (
-            <p
-              className={`text-xs ${
-                passwordsMatch ? "text-green-500" : "text-destructive"
-              }`}
-            >
+            <p className={`text-xs ${passwordsMatch ? "text-green-500" : "text-destructive"}`}>
               {passwordsMatch ? "Passwords match" : "Passwords do not match"}
             </p>
           )}
@@ -210,8 +186,14 @@ const ResetPasswordForm = ({ onBack, onSuccess }: ResetPasswordFormProps) => {
 
         <Button
           type="submit"
-           className="w-full !bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isLoading || !!errors.newPassword || !!errors.confirmPassword || !isPasswordValid || !passwordsMatch}
+          className="w-full !bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={
+            isLoading ||
+            !!errors.newPassword ||
+            !!errors.confirmPassword ||
+            !isPasswordValid ||
+            !passwordsMatch
+          }
         >
           {isLoading ? "Updating Password..." : "Update Password"}
         </Button>

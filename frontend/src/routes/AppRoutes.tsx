@@ -10,12 +10,12 @@ import Landing from "@/pages/common/Landing";
 
 function AppRoutes() {
   const routes = [
-    { path: "/", element: <Landing/> },
-      { path: "/auth", element: <Auth/> },
+    { path: "/", element: <Landing /> },
+    { path: "/auth", element: <Auth /> },
     ...LearnerRoutes,
-    ...AuthRoutes
+    ...AuthRoutes,
   ];
   return useRoutes(routes);
 }
 
-export default AppRoutes
+export default AppRoutes;

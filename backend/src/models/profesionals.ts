@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-
 interface ProfileInfo {
   bio?: string;
   companyName?: string;
@@ -15,7 +14,6 @@ interface ProfileInfo {
   typesOfSessions?: string[];
 }
 
-
 export interface IProfessional extends Document {
   name: string;
   email: string;
@@ -26,7 +24,7 @@ export interface IProfessional extends Document {
   ProfileInfo: ProfileInfo;
   RejectReason?: string;
   role: string;
-  googleId?:string
+  googleId?: string;
 }
 
 // Mongoose Schema
@@ -42,7 +40,6 @@ const ProfileInfoSchema = new Schema<ProfileInfo>({
   title: { type: String },
   totalSessions: { type: String },
   typesOfSessions: [{ type: String }],
-
 });
 
 const ProfessionalSchema: Schema = new Schema<IProfessional>({
@@ -54,8 +51,8 @@ const ProfessionalSchema: Schema = new Schema<IProfessional>({
   isBlocked: { type: Boolean, default: false },
   ProfileInfo: { type: ProfileInfoSchema, default: {} },
   RejectReason: { type: String },
-  role: { type: String,default:'Professional' },
-  googleId:{type:String}
+  role: { type: String, default: "Professional" },
+  googleId: { type: String },
 });
 
 // Export model

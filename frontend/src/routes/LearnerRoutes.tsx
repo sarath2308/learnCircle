@@ -10,10 +10,8 @@ const learnerRoutes: RouteObject[] = [
   {
     path: "/learner",
     children: [
-     
       { path: "home", element: <LearnerHome /> },
 
-      
       {
         element: <div>{/* LearnerLayout can go here */}</div>,
         children: [

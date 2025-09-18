@@ -13,18 +13,17 @@ const AuthRoutes: RouteObject[] = [
   {
     path: "/auth",
     children: [
-     
-      { path: "learner", element: <LearnerSign/> },
-       { path: "learner/forgot", element: <ForgotPassword role="learner"/> },
-       { path: "learner/verify-otp", element: <OtpVerification /> },
-         { path: "learner/reset-password", element:<ResetPassword /> },
+      { path: "learner", element: <LearnerSign /> },
+      { path: "learner/forgot", element: <ForgotPassword role="learner" /> },
+      { path: "learner/verify-otp", element: <OtpVerification /> },
+      { path: "learner/reset-password", element: <ResetPassword /> },
 
-     //profesional auth
-      { path: "profesional", element: <ProfesionalSign/> },
-      { path: "profesional/forgot", element: <ForgotPassword role="profesional"/> },
+      //profesional auth
+      { path: "profesional", element: <ProfesionalSign /> },
+      { path: "profesional/forgot", element: <ForgotPassword role="profesional" /> },
       { path: "profesional/verify-otp", element: <OtpVerification /> },
-         { path: "profesional/reset-password", element:<ResetPassword /> },
-      
+      { path: "profesional/reset-password", element: <ResetPassword /> },
+
       {
         element: <div>{/* LearnerLayout can go here */}</div>,
         children: [

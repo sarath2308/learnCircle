@@ -1,12 +1,12 @@
-import { createSlice} from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface ICurrentUserState {
   currentUser?: {
     id: string;
     name: string;
     email: string;
-    role: 'learner' | 'professional' | 'admin';
+    role: "learner" | "professional" | "admin";
     courses?: string[];
     skills?: string[];
     permissions?: string[];
@@ -17,7 +17,7 @@ export interface ICurrentUserState {
 const initialState: ICurrentUserState = {};
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setCurrentUser: (state, action: PayloadAction<any>) => {

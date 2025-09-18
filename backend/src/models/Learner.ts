@@ -3,14 +3,14 @@ import { Schema, model, Document } from "mongoose";
 export interface ILearner extends Document {
   email: string;
   name: string;
-  role: string;            
+  role: string;
   passwordHash?: string;
   googleId?: string;
   profileImg?: string;
   currentSubject?: string[];
   joinedAt?: Date;
   lastLogin?: Date;
-  isBlocked?: boolean;    
+  isBlocked?: boolean;
 }
 const learnerSchema = new Schema<ILearner>(
   {
@@ -22,12 +22,17 @@ const learnerSchema = new Schema<ILearner>(
     passwordHash: { type: String },
     isBlocked: { type: Boolean, default: false },
     currentSubject: { type: [String], default: [] },
-    role: { type: String, required: true,default:'learner', enum: ["learner", "professional", "admin"] },
-    googleId:{type:String,default:""}
+    role: {
+      type: String,
+      required: true,
+      default: "learner",
+      enum: ["learner", "professional", "admin"],
+    },
+    googleId: { type: String, default: "" },
   },
   {
     timestamps: true, // automatically manages createdAt, updatedAt
-  }
+  },
 );
 
 export const Learner = model<ILearner>("Learners", learnerSchema);

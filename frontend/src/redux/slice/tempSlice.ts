@@ -1,11 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-
-export interface UserData{
+export interface UserData {
   name: string;
   email: string;
-  role: 'learner'|'profesional'|'admin';
+  role: "learner" | "profesional" | "admin";
 }
 
 interface tempState {
@@ -17,7 +16,7 @@ const initialState: tempState = {
 };
 
 const tempSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<UserData>) => {

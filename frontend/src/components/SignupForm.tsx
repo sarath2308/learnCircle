@@ -4,25 +4,33 @@ import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 
 interface SignupFormProps {
-  role: "learner" | "profesional"|"admin";
-  onSubmit:(role:'learner' | 'profesional'|'admin',data:{name:string,email:string,password:string})=>Promise<void>;
+  role: "learner" | "profesional" | "admin";
+  onSubmit: (
+    role: "learner" | "profesional" | "admin",
+    data: { name: string; email: string; password: string },
+  ) => Promise<void>;
   onBack: () => void;
   onSwitchToLogin: () => void;
-  handleGoogleSign:(role:string,credential:any)=>void;
+  handleGoogleSign: (role: string, credential: object) => void;
 }
 
-const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin,handleGoogleSign}: SignupFormProps) => {
+const SignupForm = ({
+  role,
+  onSubmit,
+  onBack,
+  onSwitchToLogin,
+  handleGoogleSign,
+}: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   //learner signup hook
 
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{
@@ -51,7 +59,8 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin,handleGoogleSign}: 
     if (!/(?=.*[a-z])/.test(password)) return "Password must contain a lowercase letter";
     if (!/(?=.*[A-Z])/.test(password)) return "Password must contain an uppercase letter";
     if (!/(?=.*\d)/.test(password)) return "Password must contain a number";
-    if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(password)) return "Password must contain a special character";
+    if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(password))
+      return "Password must contain a special character";
     return "";
   };
   const validateConfirmPassword = (password: string, confirmPassword: string) => {
@@ -61,55 +70,61 @@ const SignupForm = ({ role,onSubmit, onBack, onSwitchToLogin,handleGoogleSign}: 
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
     // Real-time validation
     let error = "";
     switch (field) {
-      case "name": error = validateName(value); break;
-      case "email": error = validateEmail(value); break;
+      case "name":
+        error = validateName(value);
+        break;
+      case "email":
+        error = validateEmail(value);
+        break;
       case "password":
         error = validatePassword(value);
         if (formData.confirmPassword) {
           const confirmError = validateConfirmPassword(value, formData.confirmPassword);
-          setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
+          setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
         }
         break;
-      case "confirmPassword": error = validateConfirmPassword(formData.password, value); break;
+      case "confirmPassword":
+        error = validateConfirmPassword(formData.password, value);
+        break;
     }
-    setErrors(prev => ({ ...prev, [field]: error }));
+    setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const newErrors = {
-    name: validateName(formData.name),
-    email: validateEmail(formData.email),
-    password: validatePassword(formData.password),
-    confirmPassword: validateConfirmPassword(formData.password, formData.confirmPassword),
+    const newErrors = {
+      name: validateName(formData.name),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+      confirmPassword: validateConfirmPassword(formData.password, formData.confirmPassword),
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error)) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await onSubmit(role, {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+    } catch (err) {
+      console.error(err);
+      toast("Failed to create account. Try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  setErrors(newErrors);
-
-  if (Object.values(newErrors).some(error => error)) {
-    return;
-  }
-
-  setIsLoading(true);
-  try {
-    await onSubmit(role, {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    });
-  } catch (err) {
-    console.error(err);
-    toast("Failed to create account. Try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
 
   const roleTitle = role === "learner" ? "Learner" : "Professional";
 
@@ -129,15 +144,19 @@ const handleSubmit = async (e: React.FormEvent) => {
           <p className="text-gray-500 mt-1">Sign up to get started on your learning journey</p>
         </div>
 
-       
-        <GoogleLogin onSuccess={(credentialRes)=>handleGoogleSign(role,credentialRes)} onError={() => console.log("Login Failed")} />
+        <GoogleLogin
+          onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
+          onError={() => console.log("Login Failed")}
+        />
 
         <div className="relative mb-4">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-gray-300" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-gray-200 px-2 text-gray-500 rounded-2xl">Or continue with email</span>
+            <span className="bg-gray-200 px-2 text-gray-500 rounded-2xl">
+              Or continue with email
+            </span>
           </div>
         </div>
 
@@ -149,7 +168,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               type="text"
               placeholder="Full Name"
               value={formData.name}
-              onChange={e => handleInputChange("name", e.target.value)}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
@@ -164,7 +183,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               type="email"
               placeholder="Email"
               value={formData.email}
-              onChange={e => handleInputChange("email", e.target.value)}
+              onChange={(e) => handleInputChange("email", e.target.value)}
               className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
@@ -179,7 +198,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={formData.password}
-              onChange={e => handleInputChange("password", e.target.value)}
+              onChange={(e) => handleInputChange("password", e.target.value)}
               className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
@@ -189,7 +208,11 @@ const handleSubmit = async (e: React.FormEvent) => {
               className="absolute right-0 top-0 h-full px-3"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff className="h-4 w-4 text-gray-400"/> : <Eye className="h-4 w-4 text-gray-400"/>}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4 text-gray-400" />
+              ) : (
+                <Eye className="h-4 w-4 text-gray-400" />
+              )}
             </button>
             {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
           </div>
@@ -201,7 +224,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
               value={formData.confirmPassword}
-              onChange={e => handleInputChange("confirmPassword", e.target.value)}
+              onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
               className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                 errors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300"
               }`}
@@ -211,9 +234,15 @@ const handleSubmit = async (e: React.FormEvent) => {
               className="absolute right-0 top-0 h-full px-3"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-400"/> : <Eye className="h-4 w-4 text-gray-400"/>}
+              {showConfirmPassword ? (
+                <EyeOff className="h-4 w-4 text-gray-400" />
+              ) : (
+                <Eye className="h-4 w-4 text-gray-400" />
+              )}
             </button>
-            {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>
+            )}
           </div>
 
           <button

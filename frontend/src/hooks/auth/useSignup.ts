@@ -9,18 +9,13 @@ export const useSignup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const signup = async (
-    role: string,
-    data: { name: string; email: string; password: string }
-  ) => {
+  const signup = async (role: string, data: { name: string; email: string; password: string }) => {
     try {
       const res = await api.post(`/auth/${role}/signup`, data);
 
       dispatch(setUser({ ...res.data, role }));
 
-      navigate(
-        `/auth/${role}/verify-otp?role=${role}&type=signup&email=${data.email}`
-      );
+      navigate(`/auth/${role}/verify-otp?role=${role}&type=signup&email=${data.email}`);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         toast.error(err.response?.data?.message || "Signup failed");

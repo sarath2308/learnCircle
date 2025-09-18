@@ -13,9 +13,7 @@ const Landing = () => {
           <Button variant="outline">Login</Button>
         </Link>
         <Link to="/auth">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            Signup
-          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">Signup</Button>
         </Link>
       </div>
     </nav>
