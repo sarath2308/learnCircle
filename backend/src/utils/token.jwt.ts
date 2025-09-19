@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthConfig } from "../config/authConfig";
 dotenv.config();
-type Tpayload = { userId: string };
+type Tpayload = { userId: string; role: string };
 
 export interface IToken {
   signAccessToken(payload: Tpayload, expiresIn?: string): string;

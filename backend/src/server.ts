@@ -14,6 +14,7 @@ import { PasswordService } from "./services/passwordService";
 import { RefreshController } from "./controllers/refreshController";
 import { RefreshTokenService } from "./services/refreshToken.service";
 import { refreshRoutes } from "./routes/refresh.route";
+import { AuthService } from "./services/auth.service";
 //redis
 import redisClient from "./config/redis/redis";
 import { RedisRepository } from "./Repositories/redisRepo";
@@ -23,7 +24,6 @@ import { Learner } from "./models/Learner";
 import { LearnerRepo } from "./Repositories/learner/learnerRepo";
 import { learnerAuthRoutes } from "./routes/learner/learnerAuth";
 import { LearnerAuthController } from "./controllers/learner/learnerAuthController";
-import { LearnerAuthService } from "./services/learner/learnerAuthService";
 
 //admin
 // import { adminAuthRoutes } from "./routes/admin/adminAuth";
@@ -33,7 +33,6 @@ import { LearnerAuthService } from "./services/learner/learnerAuthService";
 import { ProfesionalAuthController } from "./controllers/profesional/profesionalAuthController";
 import { profesionalAuthRoutes } from "./routes/profesional/profesionalAuth";
 import Professional from "./models/profesionals";
-import { ProfesionalAuthService } from "./services/profesional/ProfesionalAuthService";
 import { ProfesionalRepo } from "./Repositories/profesional/profesionalRepo";
 
 //usage-----------------------
@@ -60,7 +59,7 @@ const accessToken = new TokenService();
 const emailService = new EmailService();
 const generateOtp = new GenerateOtp();
 const passwordService = new PasswordService();
-const learnerAuthService = new LearnerAuthService(
+const learnerAuthService = new AuthService(
   learnerRepo,
   emailService,
   generateOtp,
@@ -68,7 +67,7 @@ const learnerAuthService = new LearnerAuthService(
   redisRepo,
   passwordService,
 );
-const profesionalAuthService = new ProfesionalAuthService(
+const profesionalAuthService = new AuthService(
   profesionalRepo,
   emailService,
   generateOtp,

@@ -19,7 +19,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-bg flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-bg flex items-center justify-center ">
       <div className="w-full max-w-lg mx-auto">
         {/* Main Content */}
         <div className="transition-all duration-500 ease-smooth">

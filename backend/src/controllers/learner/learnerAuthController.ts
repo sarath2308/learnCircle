@@ -1,14 +1,15 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
 import { IAuthService } from "../../types/common/IAuthService";
 import { Request, Response, NextFunction } from "express";
-import { ILearner } from "../../models/Learner";
+import { timeStringToMs } from "../../utils/timeString";
+import { AuthConfig } from "../../config/authConfig";
 export interface IResponse {
   user: any;
   accessToken: string;
 }
 
 export class LearnerAuthController implements IAuthController {
-  constructor(private learnerAuth: IAuthService<ILearner>) {}
+  constructor(private learnerAuth: IAuthService) {}
   async signup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const { name, email, password } = req.body;
@@ -29,7 +30,7 @@ export class LearnerAuthController implements IAuthController {
   }
 
   async verifyOtp(req: Request, res: Response) {
-    const { otp, email, type } = req.body;
+    const { role, otp, email, type } = req.body;
     if (!email || !otp) {
       return res.status(400).json({ message: "Email and OTP are required" });
     }
@@ -39,11 +40,11 @@ export class LearnerAuthController implements IAuthController {
       if (type === "forgot") {
         return res.status(200).json({ message: result.message, token: result.tempToken });
       } else {
-        res.cookie("accessToken", result.accessToken, {
+        res.cookie(`accessToken`, result.accessToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
-          maxAge: 1000 * 60 * 60 * 24, // 1 day
+          maxAge: timeStringToMs(AuthConfig.accessTokenExpiresIn),
         });
 
         return res.status(200).json({ user: result.user });
@@ -54,14 +55,14 @@ export class LearnerAuthController implements IAuthController {
   }
 
   async login(req: Request, res: Response) {
-    const { email, password } = req.body;
+    const { role, email, password } = req.body;
     try {
       const result: IResponse = await this.learnerAuth.login(email, password);
-      res.cookie("accessToken", result.accessToken, {
+      res.cookie(`accessToken`, result.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        maxAge: timeStringToMs(AuthConfig.accessTokenExpiresIn), // 1 day
       });
 
       res.status(200).json({ user: result.user });
@@ -86,9 +87,6 @@ export class LearnerAuthController implements IAuthController {
     }
   }
 
-  async refreshToken(req: Request, res: Response): Promise<Response> {
-    return res.json();
-  }
   async resetPassword(req: Request, res: Response): Promise<Response> {
     try {
       const { token, newPassword } = req.body;
@@ -106,9 +104,6 @@ export class LearnerAuthController implements IAuthController {
     }
   }
 
-  async forgotPassword(req: Request, res: Response): Promise<Response> {
-    return res.json();
-  }
   async logout(req: Request, res: Response): Promise<Response> {
     return res.json();
   }
@@ -137,7 +132,7 @@ export class LearnerAuthController implements IAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24, //1 day
+        maxAge: timeStringToMs(AuthConfig.accessTokenExpiresIn), //1 day
       });
 
       res.status(200).json({ user: result.user });

@@ -1,4 +1,4 @@
-export interface IAuthService<T> {
+export interface IAuthService {
   signup: (name: string, email: string, password: string) => Promise<object>;
   login: (email: string, password: string) => Promise<any>;
   forgotPassword: (email: string) => Promise<object>;

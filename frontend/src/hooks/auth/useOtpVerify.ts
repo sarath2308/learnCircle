@@ -13,9 +13,13 @@ export const useOtpVerify = () => {
     data: { email: string | null; otp: string; type: string | null },
   ) => {
     try {
-      const response = await api.post(`/auth/${role}/verify-otp`, data, {
-        withCredentials: true,
-      });
+      const response = await api.post(
+        `/auth/${role}/verify-otp`,
+        { ...data, role },
+        {
+          withCredentials: true,
+        },
+      );
 
       console.log("[useOtpVerify] response:", response.data);
       toast.success("OTP Verified");
