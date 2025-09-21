@@ -1,13 +1,11 @@
-import ForgotPassword from "@/pages/common/ForgotPassword";
-import OtpVerification from "@/pages/common/OtpVerification";
-import ResetPassword from "@/pages/common/ResetPassword";
-import LearnerSign from "@/pages/Learner/LearnerSign";
-import ProfesionalSign from "@/pages/Profesional/ProfesionalSign";
+import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
-// import LearnerLayout from "@/layouts/LearnerLayout";
-// import LearnerHome from "@/pages/learner/Home";
-// import LearnerCourses from "@/pages/learner/Courses";
-// import LearnerProfile from "@/pages/learner/Profile";
+
+const ForgotPassword = lazy(() => import("@/pages/common/ForgotPassword"));
+const OtpVerification = lazy(() => import("@/pages/common/OtpVerification"));
+const ResetPassword = lazy(() => import("@/pages/common/ResetPassword"));
+const LearnerSign = lazy(() => import("@/pages/Learner/LearnerSign"));
+const ProfesionalSign = lazy(() => import("@/pages/Profesional/ProfesionalSign"));
 
 const AuthRoutes: RouteObject[] = [
   {
@@ -23,15 +21,6 @@ const AuthRoutes: RouteObject[] = [
       { path: "profesional/forgot", element: <ForgotPassword role="profesional" /> },
       { path: "profesional/verify-otp", element: <OtpVerification /> },
       { path: "profesional/reset-password", element: <ResetPassword /> },
-
-      {
-        element: <div>{/* LearnerLayout can go here */}</div>,
-        children: [
-          // { path: "home", element: <LearnerHome /> },
-          // { path: "courses", element: <LearnerCourses /> },
-          // { path: "profile", element: <LearnerProfile /> },
-        ],
-      },
     ],
   },
 ];
