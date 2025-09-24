@@ -3,15 +3,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface ICurrentUserState {
   currentUser?: {
-    id: string;
-    name: string;
-    email: string;
-    role: "learner" | "professional" | "admin";
-    courses?: string[];
-    skills?: string[];
-    permissions?: string[];
-    token?: string;
-  };
+  email: string;
+  name: string;
+  role: string;
+  passwordHash?:Boolean;
+  profileImg?: string;
+  joinedAt?: Date;
+  lastLogin?: Date;
+}
 }
 
 const initialState: ICurrentUserState = {};

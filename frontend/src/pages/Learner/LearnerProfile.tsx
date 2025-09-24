@@ -44,8 +44,9 @@ export default function LearnerProfile() {
   const handleImageChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      let Pic=URL.createObjectURL(file)
+      setProfilePic(Pic)
       await mutateAsync(file);
-      
     }
   };
  const handleUpdateProfile=()=>
