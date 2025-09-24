@@ -2,9 +2,10 @@ import { Learner } from "../models/Learner";
 import Professional from "../models/profesionals";
 // import { Admin } from '../models/admin.model';
 import { TokenService } from "../utils/token.jwt";
+import { injectable } from "inversify";
 
 const service = new TokenService();
-
+@injectable()
 export class RefreshService {
   static async refreshToken(token: string) {
     try {
@@ -28,7 +29,7 @@ export class RefreshService {
       if (!user) throw new Error("User not found");
 
       // Generate new access token
-      const newAccessToken = service.signAccessToken({ id: user._id, role: payload.role });
+      const newAccessToken = service.signAccessToken({ userId: user._id, role: payload.role });
 
       return { accessToken: newAccessToken, user };
     } catch (err) {

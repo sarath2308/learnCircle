@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
+import { injectable } from "inversify";
 
+@injectable()
 export interface IpasswordService {
   hashPassword(password: string): Promise<string>;
   comparePassword: (hash: string, password: string) => Promise<boolean>;

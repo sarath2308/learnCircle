@@ -1,15 +1,17 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
-import { IAuthService } from "../../types/common/IAuthService";
 import { Request, Response, NextFunction } from "express";
 import { timeStringToMs } from "../../utils/timeString";
 import { AuthConfig } from "../../config/authConfig";
+import { inject, injectable } from "inversify";
+import { LearnerAuthService } from "../../services/learner/learnerAuthService";
+import { TYPES } from "../../types/types";
 export interface IResponse {
   user: any;
   accessToken: string;
 }
-
+@injectable()
 export class LearnerAuthController implements IAuthController {
-  constructor(private learnerAuth: IAuthService) {}
+  constructor(@inject(TYPES.LearnerAuthService) private learnerAuth: LearnerAuthService) {}
   async signup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const { name, email, password } = req.body;

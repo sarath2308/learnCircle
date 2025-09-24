@@ -4,45 +4,33 @@ import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { authenticate } from "./middleware/authorization";
 
-//-----imports-------------------------
-//global services
-import { TokenService } from "./utils/token.jwt";
-import { GenerateOtp } from "./utils/otp.utils.";
-import { EmailService } from "./services/emailService";
-import { PasswordService } from "./services/passwordService";
-import { RefreshController } from "./controllers/refreshController";
-import { RefreshTokenService } from "./services/refreshToken.service";
-import { refreshRoutes } from "./routes/refresh.route";
-import { AuthService } from "./services/auth.service";
-//redis
-import redisClient from "./config/redis/redis";
-import { RedisRepository } from "./Repositories/redisRepo";
+// Inversify Dependency Injection
+import { container } from "./config/inversify/inversify.config"; // Import TYPES
+import { TYPES } from "./types/types";
 
-//learner
-import { Learner } from "./models/Learner";
-import { LearnerRepo } from "./Repositories/learner/learnerRepo";
+// Common
+// import { RefreshController } from "./controllers/refreshController";
+// import { refreshRoutes } from "./routes/refresh.route";
+
+// Learner Controllers and Routes
+import { LearnerAuthController } from "./controllers/learner/learner.auth.controller";
 import { learnerAuthRoutes } from "./routes/learner/learnerAuth";
-import { LearnerAuthController } from "./controllers/learner/learnerAuthController";
+import { learnerHomeRoute } from "./routes/learner/LearnerHomeRoute";
+import { LearnerHomeController } from "./controllers/learner/learner.home.controller";
 
-//admin
-// import { adminAuthRoutes } from "./routes/admin/adminAuth";
-// import { AdminAuthController } from "./controllers/admin/adminAuthController";
-
-//profesional
-import { ProfesionalAuthController } from "./controllers/profesional/profesionalAuthController";
+// Professional Controllers and Routes
+import { ProfesionalAuthController } from "./controllers/profesional/profesional.auth.controller";
 import { profesionalAuthRoutes } from "./routes/profesional/profesionalAuth";
-import Professional from "./models/profesionals";
-import { ProfesionalRepo } from "./Repositories/profesional/profesionalRepo";
-
-//usage-----------------------
+import { authorizeRoles } from "./middleware/authorizedRoles";
 
 dotenv.config();
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend URL
-    credentials: true, // allow cookies/auth headers
+    origin: "http://localhost:5173",
+    credentials: true,
   }),
 );
 
@@ -50,61 +38,36 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-//repository
-const learnerRepo = new LearnerRepo(Learner);
-const redisRepo = new RedisRepository<any>(redisClient);
-const profesionalRepo = new ProfesionalRepo(Professional);
-//services
-const accessToken = new TokenService();
-const emailService = new EmailService();
-const generateOtp = new GenerateOtp();
-const passwordService = new PasswordService();
-const learnerAuthService = new AuthService(
-  learnerRepo,
-  emailService,
-  generateOtp,
-  accessToken,
-  redisRepo,
-  passwordService,
-);
-const profesionalAuthService = new AuthService(
-  profesionalRepo,
-  emailService,
-  generateOtp,
-  accessToken,
-  redisRepo,
-  passwordService,
-);
-
-const refreshTokenService = new RefreshTokenService(accessToken, redisRepo);
-
-//controllers
-const learnerAuthController = new LearnerAuthController(learnerAuthService);
-// const adminAuthController = new AdminAuthController();
-const profesionalAuthController = new ProfesionalAuthController(profesionalAuthService);
-
-const refreshController = new RefreshController(refreshTokenService);
-// const profesionalAuthController=new ProfesionalAuthController()
-// auth Routes
-app.use("/api/auth/learner", learnerAuthRoutes(learnerAuthController));
-app.use("/api/auth/profesional", profesionalAuthRoutes(profesionalAuthController));
-app.use("/api/auth", refreshRoutes(refreshController));
-// app.use('/auth/logout')
-// app.use('/api/auth/admin', adminAuthRoutes(adminAuthController));
-
-// Connect db
-
-const db = createDatabase(process.env.DB_TYPE!, { uri: process.env.DB_URI });
-db.connect();
-
-// Start server
-const PORT: number = Number(process.env.PORT) || 5000;
-
 async function startServer() {
+  // Connect to MongoDB
+  const db = createDatabase(process.env.DB_TYPE!, { uri: process.env.DB_URI });
+  await db.connect();
+  console.log("MongoDB connected");
+
+  // Resolve controllers using TYPES identifiers
+  const learnerAuthController = container.get<LearnerAuthController>(TYPES.LearnerAuthController);
+  const learnerHomeController = container.get<LearnerHomeController>(TYPES.LearnerHomeController);
+  const profesionalAuthController = container.get<ProfesionalAuthController>(
+    TYPES.ProfesionalAuthController,
+  );
+
+  // Routes
+  app.use("/api/auth/learner", learnerAuthRoutes(learnerAuthController));
+  app.use("/api/auth/profesional", profesionalAuthRoutes(profesionalAuthController));
+
+  app.use(authenticate);
+  app.use("/api/learner/home", authorizeRoles("learner"), learnerHomeRoute(learnerHomeController));
+  // app.use("/api/auth", refreshRoutes(refreshController));
+
+  // Connect to Redis
   await connectRedis();
   console.log("Server is ready!");
 
-  app.listen(PORT | 5000, () => console.log("Server running on http://localhost:5000"));
+  const PORT: number = Number(process.env.PORT) || 5000;
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 }
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+});

@@ -1,6 +1,7 @@
 import { IToken } from "../utils/token.jwt";
 import { IRedisRepository } from "../Repositories/redisRepo";
 import { RedisKeys } from "../constants/redisKeys";
+import { injectable } from "inversify";
 
 type refreshRes = {
   access: string;
@@ -9,7 +10,7 @@ type refreshRes = {
 export default interface IRefreshTokenService {
   refreshToken: (token: string) => Promise<refreshRes>;
 }
-
+@injectable()
 export class RefreshTokenService implements IRefreshTokenService {
   constructor(
     private jwtService: IToken,

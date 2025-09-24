@@ -1,8 +1,11 @@
 import type { ILearner } from "../../models/Learner";
-import { Model, Document } from "mongoose";
+import { Model } from "mongoose";
 import { BaseRepo } from "../Base/base";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/types";
+@injectable()
 export class LearnerRepo extends BaseRepo<ILearner> {
-  constructor(private Learner: Model<ILearner & Document>) {
+  constructor(@inject(TYPES.LearnerModel) private Learner: Model<ILearner>) {
     super(Learner);
   }
 }

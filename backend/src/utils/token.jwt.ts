@@ -2,16 +2,23 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthConfig } from "../config/authConfig";
 dotenv.config();
-type Tpayload = { userId: string; role: string };
+type Tpayload = { userId: string; role?: string; type?: string };
 
 export interface IToken {
   signAccessToken(payload: Tpayload, expiresIn?: string): string;
+  signTempToken(payload: Tpayload, expiresIn?: string): string;
   generateRefreshToken(payload: Tpayload): string;
   verifyAccessToken(token: string): JwtPayload | null;
   verifyRefreshToken(token: string): JwtPayload | null;
 }
 
 export class TokenService {
+  signTempToken(payload: Tpayload): string {
+    return jwt.sign(payload, AuthConfig.accessTokenSecret, {
+      expiresIn: "5m",
+    });
+  }
+
   signAccessToken(payload: Tpayload): string {
     return jwt.sign(payload, AuthConfig.accessTokenSecret, {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m",

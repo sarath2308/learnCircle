@@ -11,8 +11,10 @@
     "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
-    "types": ["node"],  
-    "isolatedModules": true
+    "types": ["node"],
+    "isolatedModules": true,
+    "experimentalDecorators": true,     // ✅ enable decorators
+    "emitDecoratorMetadata": true       // ✅ emit type metadata for Inversify
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

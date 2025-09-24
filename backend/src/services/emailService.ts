@@ -1,12 +1,13 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { injectable } from "inversify";
 dotenv.config();
 interface EmailOptions {
   to: string;
   subject: string;
   html: string;
 }
-
+@injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
 

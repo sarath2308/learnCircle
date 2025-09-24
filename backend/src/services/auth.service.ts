@@ -1,4 +1,3 @@
-import { LearnerRepo } from "../Repositories/learner/learnerRepo";
 import { EmailService } from "./emailService";
 import { GenerateOtp } from "../utils/otp.utils.";
 import { IToken } from "../utils/token.jwt";
@@ -6,16 +5,20 @@ import { IRedisRepository } from "../Repositories/redisRepo";
 import { IpasswordService } from "./passwordService";
 import { verifyGoogleToken } from "../utils/googleAuth";
 import { IAuthService } from "../types/common/IAuthService";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../config/inversify/inversify.config";
+import { LearnerRepo } from "../Repositories/learner/learnerRepo";
 import { ProfesionalRepo } from "../Repositories/profesional/profesionalRepo";
 
+@injectable()
 export class AuthService implements IAuthService {
   constructor(
-    private userRepo: LearnerRepo|ProfesionalRepo,
-    private emailService: EmailService,
-    private OtpService: GenerateOtp,
-    private accesToken: IToken,
-    private redis: IRedisRepository<any>,
-    private passwordService: IpasswordService,
+    protected userRepo: LearnerRepo | ProfesionalRepo,
+    protected emailService: EmailService,
+    protected OtpService: GenerateOtp,
+    protected accesToken: IToken,
+    protected redis: IRedisRepository<any>,
+    protected passwordService: IpasswordService,
   ) {}
   async signup(name: string, email: string, password: string): Promise<object> {
     try {
@@ -140,10 +143,7 @@ export class AuthService implements IAuthService {
         }
 
         //  temporary token
-        const tempToken = await this.accesToken.signAccessToken(
-          { id: user.id, type: "reset" },
-          "5m",
-        );
+        const tempToken = await this.accesToken.signTempToken({ userId: user.id, type: "reset" });
 
         //  store in Redis
         await this.redis.set(`reset:${tempToken}`, JSON.stringify({ id: user.id }), 300);

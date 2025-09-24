@@ -1,9 +1,12 @@
 import { BaseRepo } from "../Base/base";
 import { IProfessional } from "../../models/profesionals";
-import { Model, Document } from "mongoose";
+import { Model } from "mongoose";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/types";
 
+injectable();
 export class ProfesionalRepo extends BaseRepo<IProfessional> {
-  constructor(profesionalModel: Model<IProfessional & Document>) {
+  constructor(@inject(TYPES.ProfesionalModel) profesionalModel: Model<IProfessional>) {
     super(profesionalModel);
   }
 
