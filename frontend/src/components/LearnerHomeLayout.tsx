@@ -102,7 +102,7 @@ export default function LearnerHomeLayout() {
               variant="ghost"
               size="sm"
               className="flex items-center gap-2"
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/learner/profile")}
             >
               <Avatar className="h-8 w-8">
                 <AvatarFallback>

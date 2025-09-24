@@ -15,18 +15,14 @@ export default defineConfig([
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: { jsx: true },
       },
+      // Instead of manually listing globals, set the env
       globals: {
-        window: "readonly",
-        document: "readonly",
-        navigator: "readonly",
-        localStorage: "readonly",
-        sessionStorage: "readonly",
-        React: "readonly",
-        console: "readonly",
+        ...js.environments.es2021.globals,
+        ...js.environments.browser.globals, // ✅ adds URL, window, document, etc.
       },
     },
     plugins: {

@@ -26,7 +26,6 @@ const learnerSchema = new Schema<ILearner>(
       type: String,
       required: true,
       default: "learner",
-      enum: ["learner", "professional", "admin"],
     },
     googleId: { type: String, default: "" },
   },

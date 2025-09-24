@@ -15,7 +15,7 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
           className={`p-6 cursor-pointer border-2 transition-all duration-300 hover:shadow-soft ${
             selectedRole === "learner"
               ? "border-primary bg-primary/5 shadow-glow"
-              : "border-border hover:border-primary/50"
+              : "border-[hsl(var(--border))] hover:border-primary/50"
           }`}
           onClick={() => onRoleSelect("learner")}
         >
@@ -42,7 +42,7 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
           className={`p-6 cursor-pointer border-2 transition-all duration-300 hover:shadow-soft ${
             selectedRole === "professional"
               ? "border-accent bg-accent/5 shadow-glow"
-              : "border-border hover:border-accent/50"
+              : "border-[hsl(var(--border))] hover:border-accent/50"
           }`}
           onClick={() => onRoleSelect("professional")}
         >

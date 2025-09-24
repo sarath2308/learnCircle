@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../api";
 
 export const learnerApi = {
   getAll: () => api.get("/users").then((res) => res.data),
