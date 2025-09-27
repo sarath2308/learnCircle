@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import { AuthService } from "../auth.service";
 import { TYPES } from "../../types/types";
-import { EmailService } from "../emailService";
+import { EmailService } from "../../utils/emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
 import { IToken } from "../../utils/token.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
-import { IpasswordService } from "../passwordService";
+import { IpasswordService } from "../../utils/passwordService";
 import { ProfesionalRepo } from "../../Repositories/profesional/profesionalRepo";
-
+import { CloudinaryService } from "../../utils/cloudinary.service";
 @injectable()
 export class ProfesionalAuthService extends AuthService {
   constructor(
@@ -17,7 +17,16 @@ export class ProfesionalAuthService extends AuthService {
     @inject(TYPES.TokenService) protected accesToken: IToken,
     @inject(TYPES.RedisRepository) protected redis: IRedisRepository<any>,
     @inject(TYPES.PasswordService) protected passwordService: IpasswordService,
+    @inject(TYPES.CloudinaryService) protected cloudinary: CloudinaryService,
   ) {
-    super(ProfesionalRepo, emailService, OtpService, accesToken, redis, passwordService);
+    super(
+      ProfesionalRepo,
+      emailService,
+      OtpService,
+      accesToken,
+      redis,
+      passwordService,
+      cloudinary,
+    );
   }
 }

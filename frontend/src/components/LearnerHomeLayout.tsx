@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
+
+import { React } from "react";
 import {
   Home,
   BookOpen,
@@ -35,6 +39,9 @@ export default function LearnerHomeLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+
+  //user data from redux
+  const currentUser = useSelector((state: RootState) => state.currentUser.currentUser);
 
   useEffect(() => {
     setActiveItem(location.pathname);
@@ -105,10 +112,15 @@ export default function LearnerHomeLayout() {
               onClick={() => navigate("/learner/profile")}
             >
               <Avatar className="h-8 w-8">
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
+                {currentUser?.profileImg ? (
+                  <img src={currentUser.profileImg} alt={currentUser.name} />
+                ) : (
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                )}
               </Avatar>
+
               <span className="hidden sm:block">Profile</span>
             </Button>
 

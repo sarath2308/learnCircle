@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/api/authApi";
 import { toast } from "react-toastify";
-
+import { setCurrentUser } from "@/redux/slice/currentUserSlice";
+import { useDispatch } from "react-redux";
 export const useGoogle = () => {
+  const dispatch = useDispatch();
   return useMutation({
     mutationFn: authApi.googleAuth,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      dispatch(setCurrentUser(res.user));
       toast.success("Sign successfull");
     },
     onError: (err: any) => {

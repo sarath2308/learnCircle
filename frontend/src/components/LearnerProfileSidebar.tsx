@@ -38,19 +38,16 @@ export function LearnerProfileSidebar() {
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton asChild>
                       <NavLink
-  to={item.path}
-  className={({ isActive }) =>
-    `flex items-center space-x-2 w-full ${
-      isActive
-        ? "bg-primary text-primary-foreground"
-        : "hover:bg-muted"
-    } ${collapsed ? "justify-center" : "justify-start"}`
-  }
->
-  <Icon className="h-4 w-4" />
-  {!collapsed && <span>{item.label}</span>}
-</NavLink>
-
+                        to={item.path}
+                        className={({ isActive }) =>
+                          `flex items-center space-x-2 w-full ${
+                            isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                          } ${collapsed ? "justify-center" : "justify-start"}`
+                        }
+                      >
+                        <Icon className="h-4 w-4" />
+                        {!collapsed && <span>{item.label}</span>}
+                      </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );

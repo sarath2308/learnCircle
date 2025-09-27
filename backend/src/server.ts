@@ -7,19 +7,20 @@ import cookieParser from "cookie-parser";
 import { authenticate } from "./middleware/authorization";
 
 // Inversify Dependency Injection
-import { container } from "./config/inversify/inversify.config"; // Import TYPES
+import { container } from "./config/inversify/inversify.config";
 import { TYPES } from "./types/types";
 
 // Common
-// import { RefreshController } from "./controllers/refreshController";
-// import { refreshRoutes } from "./routes/refresh.route";
+import { RefreshController } from "./controllers/refreshController";
+import { refreshRoutes } from "./routes/refresh.route";
 
 // Learner Controllers and Routes
 import { LearnerAuthController } from "./controllers/learner/learner.auth.controller";
-import { learnerAuthRoutes } from "./routes/learner/learnerAuth";
-import { learnerHomeRoute } from "./routes/learner/LearnerHomeRoute";
+import { learnerAuthRoutes } from "./routes/learner/learner.auth.routes.";
+import { learnerHomeRoute } from "./routes/learner/learner.home.route.";
 import { LearnerHomeController } from "./controllers/learner/learner.home.controller";
-
+import { LearnerProfileController } from "./controllers/learner/learner.profile.controller";
+import { learnerProfileRoute } from "./routes/learner/learner.profile.route";
 // Professional Controllers and Routes
 import { ProfesionalAuthController } from "./controllers/profesional/profesional.auth.controller";
 import { profesionalAuthRoutes } from "./routes/profesional/profesionalAuth";
@@ -44,20 +45,34 @@ async function startServer() {
   await db.connect();
   console.log("MongoDB connected");
 
-  // Resolve controllers using TYPES identifiers
+  // Resolved controllers
   const learnerAuthController = container.get<LearnerAuthController>(TYPES.LearnerAuthController);
   const learnerHomeController = container.get<LearnerHomeController>(TYPES.LearnerHomeController);
   const profesionalAuthController = container.get<ProfesionalAuthController>(
     TYPES.ProfesionalAuthController,
   );
-
+  const learnerProfileController = container.get<LearnerProfileController>(
+    TYPES.LearnerProfileController,
+  );
+  //refresh controller
+  const refreshController = container.get<RefreshController>(TYPES.RefreshController);
   // Routes
   app.use("/api/auth/learner", learnerAuthRoutes(learnerAuthController));
   app.use("/api/auth/profesional", profesionalAuthRoutes(profesionalAuthController));
 
-  app.use(authenticate);
-  app.use("/api/learner/home", authorizeRoles("learner"), learnerHomeRoute(learnerHomeController));
-  // app.use("/api/auth", refreshRoutes(refreshController));
+  app.use(
+    "/api/learner/home",
+    authenticate,
+    authorizeRoles("learner"),
+    learnerHomeRoute(learnerHomeController),
+  );
+  app.use(
+    "/api/learner/profile",
+    authenticate,
+    authorizeRoles("learner"),
+    learnerProfileRoute(learnerProfileController),
+  );
+  app.use("/api/auth", refreshRoutes(refreshController));
 
   // Connect to Redis
   await connectRedis();

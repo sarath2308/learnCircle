@@ -31,7 +31,7 @@ export const useOtpVerify = () => {
           navigate(`/auth/profesional/reset-password?role=${role}&token=${response.data.token}`);
         }
       } else {
-        // 👉 Save user in redux
+        // saving to redux
         if (response.data.user) {
           dispatch(setUser({ ...response.data.user, role }));
         }

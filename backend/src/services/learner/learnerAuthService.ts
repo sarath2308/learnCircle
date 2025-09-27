@@ -1,12 +1,13 @@
 import { inject, injectable } from "inversify";
 import { AuthService } from "../auth.service";
 import { TYPES } from "../../types/types";
-import { EmailService } from "../emailService";
+import { EmailService } from "../../utils/emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
 import { IToken } from "../../utils/token.jwt";
 import { IRedisRepository } from "../../Repositories/redisRepo";
-import { IpasswordService } from "../passwordService";
+import { IpasswordService } from "../../utils/passwordService";
 import { LearnerRepo } from "../../Repositories/learner/learnerRepo";
+import { CloudinaryService } from "../../utils/cloudinary.service";
 
 @injectable()
 export class LearnerAuthService extends AuthService {
@@ -17,7 +18,8 @@ export class LearnerAuthService extends AuthService {
     @inject(TYPES.TokenService) protected accesToken: IToken,
     @inject(TYPES.RedisRepository) protected redis: IRedisRepository<any>,
     @inject(TYPES.PasswordService) protected passwordService: IpasswordService,
+    @inject(TYPES.CloudinaryService) protected cloudinary: CloudinaryService,
   ) {
-    super(LearnerRepo, emailService, OtpService, accesToken, redis, passwordService);
+    super(LearnerRepo, emailService, OtpService, accesToken, redis, passwordService, cloudinary);
   }
 }

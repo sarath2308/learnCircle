@@ -6,34 +6,29 @@ import { Badge } from "@/components/ui/badge";
 import profilePicture from "@/assets/profile.jpg";
 import EditProfileDialog from "@/components/EditProfile";
 import { useUpdateAvatar } from "@/hooks/learner/useUpdateAvatar";
-
+import { toast } from "react-toastify";
+import { React } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 export default function LearnerProfile() {
   const [profilePic, setProfilePic] = useState(profilePicture);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const {mutateAsync,isPending}=useUpdateAvatar()
-  
+  const { mutateAsync } = useUpdateAvatar();
 
-  const [userData] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    joinDate: "January 2024",
-    lastLogin: "2 hours ago",
-    streak: 15,
-    totalCourses: 12,
-    completedCourses: 8,
-    skillProgress: {
-      "Web Development": 85,
-      "Data Science": 60,
-      "UI/UX Design": 45,
-      "Project Management": 75,
-    },
-    stats: {
-      hoursLearned: 156,
-      certificatesEarned: 5,
-      rank: "#23",
-    },
-  });
+  const userData = useSelector((state: RootState) => state.currentUser.currentUser);
+
+  // Fallback values if undefined
+  const name = userData?.name ?? "Guest";
+  const email = userData?.email ?? "-";
+  const profileImg = userData?.profileImg ?? profilePicture;
+  const streak = 0;
+  const joinDate ="-";
+  const lastLogin = userData?.lastLogin ?? "-";
+  const stats = { hoursLearned: 0, certificatesEarned: 0, rank: "-" };
+  const skillProgress =  {};
+  const completedCourses = 0;
+  const totalCourses = 1; // avoid division by 0
 
   const getInitials = (name: string) =>
     name
@@ -41,18 +36,29 @@ export default function LearnerProfile() {
       .map((n) => n[0])
       .join("");
 
-  const handleImageChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      let Pic=URL.createObjectURL(file)
-      setProfilePic(Pic)
-      await mutateAsync(file);
+      if (!file.type.startsWith("image/")) {
+        toast.warning("Only image files are allowed.");
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast.warning("File size should not exceed 5MB.");
+        return;
+      }
+
+      try {
+        const previewUrl = URL.createObjectURL(file);
+        await mutateAsync(file);
+        setProfilePic(previewUrl);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
- const handleUpdateProfile=()=>
- {
-  
- }
+  // const handleUpdateProfile = () => {};
   return (
     <div className="space-y-6 p-4">
       {/* Profile Header */}
@@ -60,15 +66,13 @@ export default function LearnerProfile() {
         <CardContent className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6 p-6">
           <div className="relative group">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={profilePic} alt={userData.name} />
-              <AvatarFallback className="text-2xl">
-                {getInitials(userData.name)}
-              </AvatarFallback>
+              <AvatarImage src={profileImg} alt={name} />
+              <AvatarFallback className="text-2xl">{getInitials(name)}</AvatarFallback>
             </Avatar>
 
             {/* Streak Badge */}
             <Badge className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
-              {userData.streak} day streak
+              {streak} day streak
             </Badge>
 
             {/* Change Picture Button */}
@@ -93,25 +97,18 @@ export default function LearnerProfile() {
           </div>
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-900">
-                {userData.name}
-              </h1>
-                <EditProfileDialog 
-                  userData={userData}
-                  onUpdateProfile={handleUpdateProfile}
-                />
+              <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
+              {/* <EditProfileDialog userData={userData} onUpdateProfile={handleUpdateProfile} /> */}
             </div>
-            <p className="text-gray-500 dark:text-gray-400">
-              {userData.email}
-            </p>
+            <p className="text-gray-500 dark:text-gray-400">{email}</p>
             <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>Joined {userData.joinDate}</span>
+                <span>Joined {joinDate}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
-                <span>Last login: {userData.lastLogin}</span>
+                <span>Last login: {lastLogin}</span>
               </div>
             </div>
           </div>
@@ -128,11 +125,9 @@ export default function LearnerProfile() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {userData.stats.hoursLearned}h
+              {stats.hoursLearned}h
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              +12h this week
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">+12h this week</p>
           </CardContent>
         </Card>
 
@@ -144,11 +139,9 @@ export default function LearnerProfile() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-500 dark:text-yellow-400">
-              {userData.stats.certificatesEarned}
+              {stats.certificatesEarned}
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              2 in progress
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">2 in progress</p>
           </CardContent>
         </Card>
 
@@ -160,11 +153,9 @@ export default function LearnerProfile() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-500 dark:text-green-400">
-              {userData.stats.rank}
+              {stats.rank}
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Top 5% learners
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Top 5% learners</p>
           </CardContent>
         </Card>
       </div>
@@ -181,14 +172,12 @@ export default function LearnerProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Skill Progress */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                Skill Development
-              </h3>
-              {Object.entries(userData.skillProgress).map(([skill, value]) => (
+              <h3 className="font-semibold text-gray-900 dark:text-white">Skill Development</h3>
+              {Object.entries(skillProgress).map(([skill, value]) => (
                 <div key={skill} className="space-y-1">
                   <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                     <span>{skill}</span>
-                    <span>{value}%</span>
+                    <span>67%</span>
                   </div>
                   <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
                     <div
@@ -202,34 +191,23 @@ export default function LearnerProfile() {
 
             {/* Course Completion */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                Course Completion
-              </h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Course Completion</h3>
               <div className="space-y-1">
                 <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                   <span>Overall Progress</span>
-                  <span>
-                    {Math.round(
-                      (userData.completedCourses / userData.totalCourses) * 100
-                    )}
-                    %
-                  </span>
+                  <span>{Math.round((completedCourses / totalCourses) * 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
                   <div
                     className="bg-green-500 h-2 rounded-full"
                     style={{
-                      width: `${
-                        (userData.completedCourses / userData.totalCourses) *
-                        100
-                      }%`,
+                      width: `${(completedCourses / totalCourses) * 100}%`,
                     }}
                   ></div>
                 </div>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {userData.completedCourses} of {userData.totalCourses} courses
-                completed
+                {completedCourses} of {totalCourses} courses completed
               </p>
 
               <div className="pt-4 flex flex-wrap gap-2">

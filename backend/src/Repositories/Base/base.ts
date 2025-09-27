@@ -1,4 +1,4 @@
-import { Model, Document, UpdateQuery } from "mongoose";
+import { Model, Document } from "mongoose";
 
 export interface IBaseRepo<T> {
   getAll: () => Promise<Array<T & Document>>;
@@ -32,7 +32,8 @@ export class BaseRepo<T> implements IBaseRepo<T> {
 
   async findById(id: string): Promise<(T & Document) | null> {
     try {
-      return await this.model.findById(id).exec();
+      let result = await this.model.findById(id).exec();
+      return result;
     } catch (err) {
       console.error(err);
       throw new Error("Error occurred while finding record by ID");

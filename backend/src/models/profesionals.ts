@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 interface ProfileInfo {
   bio?: string;
@@ -15,10 +15,11 @@ interface ProfileInfo {
 }
 
 export interface IProfessional extends Document {
+  _id: Types.ObjectId;
   name: string;
   email: string;
   passwordHash?: string;
-  profileImg?: string;
+  publicId?: string;
   joinedAt?: Date;
   isBlocked: boolean;
   ProfileInfo: ProfileInfo;
@@ -46,7 +47,7 @@ const ProfessionalSchema: Schema = new Schema<IProfessional>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String },
-  profileImg: { type: String },
+  publicId: { type: String },
   joinedAt: { type: Date, default: Date.now },
   isBlocked: { type: Boolean, default: false },
   ProfileInfo: { type: ProfileInfoSchema, default: {} },

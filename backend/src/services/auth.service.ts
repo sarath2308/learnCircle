@@ -1,16 +1,14 @@
-import { EmailService } from "./emailService";
+import { EmailService } from "../utils/emailService";
 import { GenerateOtp } from "../utils/otp.utils.";
 import { IToken } from "../utils/token.jwt";
 import { IRedisRepository } from "../Repositories/redisRepo";
-import { IpasswordService } from "./passwordService";
+import { IpasswordService } from "../utils/passwordService";
 import { verifyGoogleToken } from "../utils/googleAuth";
 import { IAuthService } from "../types/common/IAuthService";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../config/inversify/inversify.config";
 import { LearnerRepo } from "../Repositories/learner/learnerRepo";
 import { ProfesionalRepo } from "../Repositories/profesional/profesionalRepo";
+import { CloudinaryService } from "../utils/cloudinary.service";
 
-@injectable()
 export class AuthService implements IAuthService {
   constructor(
     protected userRepo: LearnerRepo | ProfesionalRepo,
@@ -19,6 +17,7 @@ export class AuthService implements IAuthService {
     protected accesToken: IToken,
     protected redis: IRedisRepository<any>,
     protected passwordService: IpasswordService,
+    protected cloudinary: CloudinaryService,
   ) {}
   async signup(name: string, email: string, password: string): Promise<object> {
     try {
@@ -60,6 +59,11 @@ export class AuthService implements IAuthService {
           throw new Error("incorrect Password");
         }
         const jwt = await this.accesToken.signAccessToken({ userId: match.id, role: match.role });
+        let imageUrl = "";
+        //signed url
+        if (match?.publicId) {
+          imageUrl = await this.cloudinary.generateSignedUrl(match.publicId);
+        }
 
         return { user: match, accessToken: jwt };
       } else {
@@ -186,7 +190,7 @@ export class AuthService implements IAuthService {
         throw new Error("Invalid Google token");
       }
 
-      const { email, name = "No Name", picture = "", emailVerified, sub } = payload;
+      const { email, name = "No Name", emailVerified, sub } = payload;
 
       if (!email || !emailVerified) {
         throw new Error("Google account not verified");
@@ -199,7 +203,6 @@ export class AuthService implements IAuthService {
           name,
           email,
           googleId: sub,
-          profileImg: picture,
         });
 
         if (!user) {

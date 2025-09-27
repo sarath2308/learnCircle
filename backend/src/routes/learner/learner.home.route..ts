@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { LearnerHomeController } from "../../controllers/learner/learner.home.controller";
-const router = Router();
 export function learnerHomeRoute(controller: LearnerHomeController) {
-  router.get("");
+  const router = Router();
+  router.get("/", controller.getHome.bind(controller));
+  return router;
 }
-
-export default router;

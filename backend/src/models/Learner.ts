@@ -1,12 +1,13 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface ILearner extends Document {
+  _id: Types.ObjectId;
   email: string;
   name: string;
   role: string;
   passwordHash?: string;
   googleId?: string;
-  profileImg?: string;
+  publicId?: string;
   currentSubject?: string[];
   joinedAt?: Date;
   lastLogin?: Date;
@@ -17,7 +18,7 @@ const learnerSchema = new Schema<ILearner>(
     email: { type: String, required: true, unique: true },
     joinedAt: { type: Date, default: Date.now },
     lastLogin: { type: Date },
-    profileImg: { type: String },
+    publicId: { type: String },
     name: { type: String, required: true },
     passwordHash: { type: String },
     isBlocked: { type: Boolean, default: false },

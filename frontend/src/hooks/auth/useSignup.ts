@@ -1,17 +1,14 @@
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 export const useSignup = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const signup = async (role: string, data: { name: string; email: string; password: string }) => {
     try {
-      const res = await api.post(`/auth/${role}/signup`, data);
-
+      await api.post(`/auth/${role}/signup`, data);
       navigate(`/auth/${role}/verify-otp?role=${role}&type=signup&email=${data.email}`);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

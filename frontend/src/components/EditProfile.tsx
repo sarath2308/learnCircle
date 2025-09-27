@@ -1,49 +1,48 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Edit, Lock, Send, Check } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
 
 interface EditProfileDialogProps {
   userData: {
     name: string;
     email: string;
-    password:Boolean;
+    password: boolean;
   };
   onUpdateProfile: (data: { name: string; email: string; profileImage?: string }) => void;
 }
 
 export default function EditProfileDialog({ userData, onUpdateProfile }: EditProfileDialogProps) {
   const [open, setOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<'profile' | 'email' | 'password'>('profile');
+  const [activeSection, setActiveSection] = useState<"profile" | "email" | "password">("profile");
   const [formData, setFormData] = useState({
     name: userData.name,
     email: userData.email,
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [emailOtp, setEmailOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
 
- 
-
   const handleSendOtp = () => {
     // Simulate OTP sending
-   
   };
 
-  const handleVerifyOtp = () => {
-   
-  };
+  const handleVerifyOtp = () => {};
 
   const handleSaveProfile = () => {
-    
-
     setOpen(false);
     resetForm();
   };
@@ -51,8 +50,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
   const handleSavePassword = () => {
     // Validate passwords
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("New passwords don't match"
-       );
+      toast.error("New passwords don't match");
       return;
     }
 
@@ -61,16 +59,14 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
       return;
     }
 
-    toast.success(
-       "Your password has been changed successfully"
-    );
+    toast.success("Your password has been changed successfully");
 
     setOpen(false);
     resetForm();
   };
 
   const resetForm = () => {
-    setActiveSection('profile');
+    setActiveSection("profile");
     setIsOtpSent(false);
     setIsOtpVerified(false);
     setEmailOtp("");
@@ -79,7 +75,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
       email: userData.email,
       currentPassword: "",
       newPassword: "",
-      confirmPassword: ""
+      confirmPassword: "",
     });
   };
 
@@ -95,24 +91,24 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6 py-4">
           {/* Profile Picture with Camera Button */}
 
           {/* Action Buttons */}
           <div className="flex flex-col space-y-3">
-            <Button 
-              variant="outline" 
-              onClick={() => setActiveSection('profile')}
-              className={activeSection === 'profile' ? 'border-primary' : ''}
+            <Button
+              variant="outline"
+              onClick={() => setActiveSection("profile")}
+              className={activeSection === "profile" ? "border-primary" : ""}
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit Profile & Email
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => setActiveSection('password')}
-              className={activeSection === 'password' ? 'border-primary' : ''}
+              onClick={() => setActiveSection("password")}
+              className={activeSection === "password" ? "border-primary" : ""}
             >
               <Lock className="h-4 w-4 mr-2" />
               Change Password
@@ -122,10 +118,10 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
           <Separator />
 
           {/* Profile & Email Section */}
-          {activeSection === 'profile' && (
+          {activeSection === "profile" && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-foreground">Profile Information</h3>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
@@ -135,7 +131,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
                   <div className="flex space-x-2">
@@ -147,13 +143,9 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
                       disabled={isOtpSent && !isOtpVerified}
                     />
                     {formData.email !== userData.email && !isOtpVerified && (
-                      <Button 
-                        variant="outline" 
-                        onClick={handleSendOtp}
-                        disabled={isOtpSent}
-                      >
+                      <Button variant="outline" onClick={handleSendOtp} disabled={isOtpSent}>
                         <Send className="h-4 w-4 mr-2" />
-                        {isOtpSent ? 'Sent' : 'Send OTP'}
+                        {isOtpSent ? "Sent" : "Send OTP"}
                       </Button>
                     )}
                   </div>
@@ -193,7 +185,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleSaveProfile}
                   disabled={formData.email !== userData.email && !isOtpVerified}
                 >
@@ -204,10 +196,10 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
           )}
 
           {/* Password Section */}
-          {activeSection === 'password' && (
+          {activeSection === "password" && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-foreground">Change Password</h3>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="current-password">Current Password</Label>
@@ -219,7 +211,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
                     onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="new-password">New Password</Label>
                   <Input
@@ -230,7 +222,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">Confirm New Password</Label>
                   <Input
@@ -247,9 +239,7 @@ export default function EditProfileDialog({ userData, onUpdateProfile }: EditPro
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleSavePassword}>
-                  Update Password
-                </Button>
+                <Button onClick={handleSavePassword}>Update Password</Button>
               </div>
             </div>
           )}

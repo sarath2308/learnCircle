@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar";
 import { LearnerProfileSidebar } from "../../components/LearnerProfileSidebar";
+import { React } from "react";
 
 export default function LearnerProfileLayout() {
   return (

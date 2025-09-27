@@ -5,9 +5,9 @@ import "reflect-metadata";
 import { LearnerRepo } from "../../Repositories/learner/learnerRepo";
 import { Learner } from "../../models/Learner";
 import { TokenService } from "../..//utils/token.jwt";
-import { EmailService } from "../..//services/emailService";
+import { EmailService } from "../../utils/emailService";
 import { GenerateOtp } from "../../utils/otp.utils.";
-import { PasswordService } from "../../services/passwordService";
+import { PasswordService } from "../../utils/passwordService";
 import { RedisRepository } from "../../Repositories/redisRepo";
 import redisClient from "../../config/redis/redis";
 import { LearnerAuthController } from "../../controllers/learner/learner.auth.controller";
@@ -24,7 +24,9 @@ import { IProfessional } from "../../models/profesionals";
 import { TYPES } from "../../types/types";
 import { LearnerHomeController } from "../../controllers/learner/learner.home.controller";
 import { LearnerHomeService } from "../../services/learner/learner.home.service.ts";
-
+import { LearnerProfileService } from "../../services/learner/learner.profile.service";
+import { LearnerProfileController } from "../../controllers/learner/learner.profile.controller";
+import { CloudinaryService } from "../../utils/cloudinary.service";
 export const container = new Container();
 
 // Bindings
@@ -41,6 +43,7 @@ container.bind(TYPES.TokenService).to(TokenService).inSingletonScope();
 container.bind(TYPES.EmailService).to(EmailService).inSingletonScope();
 container.bind(TYPES.GenerateOtp).to(GenerateOtp).inSingletonScope();
 container.bind(TYPES.PasswordService).to(PasswordService).inSingletonScope();
+container.bind(TYPES.CloudinaryService).to(CloudinaryService).inSingletonScope();
 container.bind(TYPES.RedisRepository).toConstantValue(new RedisRepository<any>(redisClient));
 
 //learner auth service
@@ -52,11 +55,24 @@ container.bind(TYPES.LearnerAuthService).toDynamicValue(() => {
     container.get(TYPES.TokenService),
     container.get(TYPES.RedisRepository),
     container.get(TYPES.PasswordService),
+    container.get(TYPES.CloudinaryService),
   );
 });
 
 container.bind(TYPES.LearnerHomeService).toDynamicValue(() => {
   return new LearnerHomeService(container.get(TYPES.LearnerRepo));
+});
+
+//learner profile
+container.bind(TYPES.LearnerProfileService).toDynamicValue(() => {
+  return new LearnerProfileService(
+    container.get(TYPES.LearnerRepo),
+    container.get(TYPES.EmailService),
+    container.get(TYPES.GenerateOtp),
+    container.get(TYPES.RedisRepository),
+    container.get(TYPES.PasswordService),
+    container.get(TYPES.CloudinaryService),
+  );
 });
 //profesional-auth service
 container.bind(TYPES.ProfesionalAuthService).toDynamicValue(() => {
@@ -67,7 +83,13 @@ container.bind(TYPES.ProfesionalAuthService).toDynamicValue(() => {
     container.get(TYPES.TokenService),
     container.get(TYPES.RedisRepository),
     container.get(TYPES.PasswordService),
+    container.get(TYPES.CloudinaryService),
   );
+});
+
+//refresh service
+container.bind(TYPES.RefreshService).toDynamicValue(() => {
+  return new RefreshService(container.get(TYPES.TokenService));
 });
 // learner-Auth-Controller
 container.bind(TYPES.LearnerAuthController).toDynamicValue(() => {
@@ -78,8 +100,15 @@ container.bind(TYPES.LearnerHomeController).toDynamicValue(() => {
   return new LearnerHomeController(container.get(TYPES.LearnerHomeService));
 });
 
+container.bind(TYPES.LearnerProfileController).toDynamicValue(() => {
+  return new LearnerProfileController(container.get(TYPES.LearnerProfileService));
+});
+
 container.bind(TYPES.ProfesionalAuthController).toDynamicValue(() => {
   return new ProfesionalAuthController(container.get(TYPES.ProfesionalAuthService));
 });
 
+container.bind(TYPES.RefreshController).toDynamicValue(() => {
+  return new RefreshController(container.get(TYPES.RefreshService));
+});
 export default container;
