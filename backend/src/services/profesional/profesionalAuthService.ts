@@ -8,6 +8,7 @@ import { IRedisRepository } from "../../Repositories/redisRepo";
 import { IpasswordService } from "../../utils/passwordService";
 import { ProfesionalRepo } from "../../Repositories/profesional/profesionalRepo";
 import { CloudinaryService } from "../../utils/cloudinary.service";
+import { RoleDtoMapper } from "../../dtos/mapper/dtos.mapper";
 @injectable()
 export class ProfesionalAuthService extends AuthService {
   constructor(
@@ -18,6 +19,7 @@ export class ProfesionalAuthService extends AuthService {
     @inject(TYPES.RedisRepository) protected redis: IRedisRepository<any>,
     @inject(TYPES.PasswordService) protected passwordService: IpasswordService,
     @inject(TYPES.CloudinaryService) protected cloudinary: CloudinaryService,
+    @inject(TYPES.RoleDtoMapper) protected roleMapper: RoleDtoMapper,
   ) {
     super(
       ProfesionalRepo,
@@ -27,6 +29,7 @@ export class ProfesionalAuthService extends AuthService {
       redis,
       passwordService,
       cloudinary,
+      roleMapper,
     );
   }
 }

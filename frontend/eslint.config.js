@@ -16,17 +16,18 @@ export default defineConfig([
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaVersion: "latest", // includes ES2021+
+        ecmaVersion: "latest", // supports ES2021+
         sourceType: "module",
         ecmaFeatures: { jsx: true },
       },
-      // Define necessary globals instead of env
       globals: {
         window: "readonly",
         document: "readonly",
         console: "readonly",
         process: "readonly",
         URL: "readonly",
+        FormData: "readonly", // Added for browser FormData
+        fetch: "readonly",    // optional if using fetch
       },
     },
 

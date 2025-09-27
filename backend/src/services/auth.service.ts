@@ -8,6 +8,7 @@ import { IAuthService } from "../types/common/IAuthService";
 import { LearnerRepo } from "../Repositories/learner/learnerRepo";
 import { ProfesionalRepo } from "../Repositories/profesional/profesionalRepo";
 import { CloudinaryService } from "../utils/cloudinary.service";
+import { RoleDtoMapper } from "../dtos/mapper/dtos.mapper";
 
 export class AuthService implements IAuthService {
   constructor(
@@ -18,6 +19,7 @@ export class AuthService implements IAuthService {
     protected redis: IRedisRepository<any>,
     protected passwordService: IpasswordService,
     protected cloudinary: CloudinaryService,
+    protected roleDto: RoleDtoMapper,
   ) {}
   async signup(name: string, email: string, password: string): Promise<object> {
     try {
@@ -63,9 +65,16 @@ export class AuthService implements IAuthService {
         //signed url
         if (match?.publicId) {
           imageUrl = await this.cloudinary.generateSignedUrl(match.publicId);
+        } else {
+          imageUrl = process.env.DEFAULT_PROFILE_IMAGE!;
         }
+        const userWithImg = {
+          ...match.toObject(),
+          profileImg: imageUrl,
+        };
+        let userDto = await this.roleDto.roleDtoMapper(userWithImg);
 
-        return { user: match, accessToken: jwt };
+        return { user: userDto, accessToken: jwt };
       } else {
         throw new Error("user not found");
       }
@@ -137,8 +146,20 @@ export class AuthService implements IAuthService {
           userId: user.id,
           role: match.role,
         });
+        let imageUrl = "";
+        //signed url
+        if (user?.publicId) {
+          imageUrl = await this.cloudinary.generateSignedUrl(user.publicId);
+        } else {
+          imageUrl = process.env.DEFAULT_PROFILE_IMAGE!;
+        }
+        const userWithImg = {
+          ...user.toObject(),
+          profileImg: imageUrl,
+        };
+        let userDto = await this.roleDto.roleDtoMapper(userWithImg);
 
-        return { user, accessToken: jwt };
+        return { user: userDto, accessToken: jwt };
       } else {
         // forgot-password or other OTP flows
         const user = await this.userRepo.findByEmail(email);
@@ -214,8 +235,20 @@ export class AuthService implements IAuthService {
         userId: user.id,
         role: user.role,
       });
+      let imageUrl = "";
+      //signed url
+      if (user?.publicId) {
+        imageUrl = await this.cloudinary.generateSignedUrl(user.publicId);
+      } else {
+        imageUrl = process.env.DEFAULT_PROFILE_IMAGE!;
+      }
+      const userWithImg = {
+        ...user.toObject(),
+        profileImg: imageUrl,
+      };
+      let userDto = await this.roleDto.roleDtoMapper(userWithImg);
 
-      return { user, accessToken: jwt };
+      return { user: userDto, accessToken: jwt };
     } catch (err: any) {
       throw new Error(err.message || "Google sign-in failed");
     }

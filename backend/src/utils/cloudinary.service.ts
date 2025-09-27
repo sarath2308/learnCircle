@@ -18,8 +18,9 @@ export class CloudinaryService {
     });
   }
 
-  generateSignedUrl(publicId: string, expiresInSec = 3600): string {
-    return cloudinary.url(publicId, {
+  generateSignedUrl(publicId: string, folder = "profiles", expiresInSec = 3600): string {
+    const fullPublicId = `${folder}/${publicId}`;
+    return cloudinary.url(fullPublicId, {
       sign_url: true,
       secure: true,
       expires_at: Math.floor(Date.now() / 1000) + expiresInSec,

@@ -11,6 +11,7 @@ export const useUpdateAvatar = () => {
   return useMutation({
     mutationFn: profileApi.updateAvatar,
     onSuccess: (res) => {
+      console.log(res);
       toast.success("Profile picture updated");
       if (currentUser) {
         const updatedUser = { ...currentUser, profileImg: res.profileImg };

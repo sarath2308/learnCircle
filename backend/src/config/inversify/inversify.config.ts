@@ -27,6 +27,7 @@ import { LearnerHomeService } from "../../services/learner/learner.home.service.
 import { LearnerProfileService } from "../../services/learner/learner.profile.service";
 import { LearnerProfileController } from "../../controllers/learner/learner.profile.controller";
 import { CloudinaryService } from "../../utils/cloudinary.service";
+import { RoleDtoMapper } from "../../dtos/mapper/dtos.mapper";
 export const container = new Container();
 
 // Bindings
@@ -44,6 +45,7 @@ container.bind(TYPES.EmailService).to(EmailService).inSingletonScope();
 container.bind(TYPES.GenerateOtp).to(GenerateOtp).inSingletonScope();
 container.bind(TYPES.PasswordService).to(PasswordService).inSingletonScope();
 container.bind(TYPES.CloudinaryService).to(CloudinaryService).inSingletonScope();
+container.bind(TYPES.RoleDtoMapper).to(RoleDtoMapper).inSingletonScope();
 container.bind(TYPES.RedisRepository).toConstantValue(new RedisRepository<any>(redisClient));
 
 //learner auth service
@@ -56,6 +58,7 @@ container.bind(TYPES.LearnerAuthService).toDynamicValue(() => {
     container.get(TYPES.RedisRepository),
     container.get(TYPES.PasswordService),
     container.get(TYPES.CloudinaryService),
+    container.get(TYPES.RoleDtoMapper),
   );
 });
 
@@ -84,6 +87,7 @@ container.bind(TYPES.ProfesionalAuthService).toDynamicValue(() => {
     container.get(TYPES.RedisRepository),
     container.get(TYPES.PasswordService),
     container.get(TYPES.CloudinaryService),
+    container.get(TYPES.RoleDtoMapper),
   );
 });
 

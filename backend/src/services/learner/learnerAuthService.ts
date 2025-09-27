@@ -8,6 +8,7 @@ import { IRedisRepository } from "../../Repositories/redisRepo";
 import { IpasswordService } from "../../utils/passwordService";
 import { LearnerRepo } from "../../Repositories/learner/learnerRepo";
 import { CloudinaryService } from "../../utils/cloudinary.service";
+import { RoleDtoMapper } from "../../dtos/mapper/dtos.mapper";
 
 @injectable()
 export class LearnerAuthService extends AuthService {
@@ -19,7 +20,17 @@ export class LearnerAuthService extends AuthService {
     @inject(TYPES.RedisRepository) protected redis: IRedisRepository<any>,
     @inject(TYPES.PasswordService) protected passwordService: IpasswordService,
     @inject(TYPES.CloudinaryService) protected cloudinary: CloudinaryService,
+    @inject(TYPES.RoleDtoMapper) protected roleMapper: RoleDtoMapper,
   ) {
-    super(LearnerRepo, emailService, OtpService, accesToken, redis, passwordService, cloudinary);
+    super(
+      LearnerRepo,
+      emailService,
+      OtpService,
+      accesToken,
+      redis,
+      passwordService,
+      cloudinary,
+      roleMapper,
+    );
   }
 }
