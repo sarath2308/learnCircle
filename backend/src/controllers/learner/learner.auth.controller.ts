@@ -1,13 +1,13 @@
 import { IAuthController } from "../../types/common/learnerAuthController";
 import { Request, Response, NextFunction } from "express";
-import { timeStringToMs } from "../../utils/timeString";
-import { AuthConfig } from "../../config/authConfig";
 import { inject, injectable } from "inversify";
 import { LearnerAuthService } from "../../services/learner/learnerAuthService";
 import { TYPES } from "../../types/types";
+import { setTokens } from "../../middleware/setToken";
 export interface IResponse {
   user: any;
   accessToken: string;
+  refreshToken: string;
 }
 @injectable()
 export class LearnerAuthController implements IAuthController {
@@ -32,7 +32,7 @@ export class LearnerAuthController implements IAuthController {
   }
 
   async verifyOtp(req: Request, res: Response) {
-    const { role, otp, email, type } = req.body;
+    const { otp, email, type } = req.body;
     if (!email || !otp) {
       return res.status(400).json({ message: "Email and OTP are required" });
     }
@@ -42,12 +42,7 @@ export class LearnerAuthController implements IAuthController {
       if (type === "forgot") {
         return res.status(200).json({ message: result.message, token: result.tempToken });
       } else {
-        res.cookie(`accessToken`, result.accessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: timeStringToMs(AuthConfig.accessTokenExpiresIn),
-        });
+        setTokens(res, result.accessToken!, result.refreshToken);
 
         return res.status(200).json({ user: result.user });
       }
@@ -57,15 +52,10 @@ export class LearnerAuthController implements IAuthController {
   }
 
   async login(req: Request, res: Response) {
-    const { role, email, password } = req.body;
+    const { email, password } = req.body;
     try {
       const result: IResponse = await this.learnerAuth.login(email, password);
-      res.cookie(`accessToken`, result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: timeStringToMs(AuthConfig.accessTokenExpiresIn), // 1 day
-      });
+      setTokens(res, result.accessToken, result.refreshToken);
 
       res.status(200).json({ user: result.user });
     } catch (error: any) {
@@ -129,14 +119,8 @@ export class LearnerAuthController implements IAuthController {
       if (!token) {
         throw new Error("token missing");
       }
-      const result = await this.learnerAuth.googleSign(token);
-      res.cookie("accessToken", result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: timeStringToMs(AuthConfig.accessTokenExpiresIn), //1 day
-      });
-
+      const result: IResponse = await this.learnerAuth.googleSign(token);
+      setTokens(res, result.accessToken, result.refreshToken);
       res.status(200).json({ user: result.user });
     } catch (error: any) {
       console.error("ithoke sradikande......", error);

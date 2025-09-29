@@ -3,4 +3,5 @@ export const RedisKeys = {
   FORGOT: "forgot:",
   RESET: "reset:",
   REFRESH: "refresh:",
+  EMAIL: "email",
 };

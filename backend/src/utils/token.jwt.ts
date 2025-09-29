@@ -1,6 +1,10 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthConfig } from "../config/authConfig";
+import { injectable, inject } from "inversify";
+import { TYPES } from "../types/types";
+import { RedisRepository } from "../Repositories/redisRepo";
+import { RedisKeys } from "../constants/redisKeys";
 dotenv.config();
 type Tpayload = { userId: string; role?: string; type?: string };
 
@@ -11,8 +15,9 @@ export interface IToken {
   verifyAccessToken(token: string): JwtPayload | null;
   verifyRefreshToken(token: string): JwtPayload | null;
 }
-
+@injectable()
 export class TokenService {
+  constructor(@inject(TYPES.RedisRepository) private redisService: RedisRepository<string>) {}
   signTempToken(payload: Tpayload): string {
     return jwt.sign(payload, AuthConfig.accessTokenSecret, {
       expiresIn: "5m",
@@ -38,11 +43,21 @@ export class TokenService {
       return null;
     }
   }
-
-  verifyRefreshToken(token: string): JwtPayload | null {
+  async verifyRefreshToken(token: string): Promise<JwtPayload | null> {
     try {
-      return jwt.verify(token, AuthConfig.refreshTokenSecret) as JwtPayload;
-    } catch {
+      const payload = jwt.verify(token, AuthConfig.refreshTokenSecret) as JwtPayload;
+
+      if (!payload || !payload.userId) return null;
+
+      const storedToken = await this.redisService.get(`${RedisKeys.REFRESH}:${payload.userId}`);
+      if (storedToken !== token) {
+        console.log("Refresh token invalidated in Redis");
+        return null;
+      }
+
+      return payload;
+    } catch (err) {
+      console.log("Refresh token verification failed", err);
       return null;
     }
   }

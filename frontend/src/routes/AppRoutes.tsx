@@ -4,7 +4,7 @@ import { lazy, Suspense } from "react";
 // Routes
 import LearnerRoutes from "./LearnerRoutes";
 import AuthRoutes from "./AuthRoutes";
-
+import professionalRoutes from "./ProfesionalRoute";
 const Landing = lazy(() => import("@/pages/common/Landing"));
 const Auth = lazy(() => import("@/pages/Auth"));
 // import LandingPage from "./pages/LandingPage";
@@ -15,6 +15,7 @@ function AppRoutes() {
     { path: "/auth", element: <Auth /> },
     ...LearnerRoutes,
     ...AuthRoutes,
+    ...professionalRoutes,
   ];
   return <Suspense fallback={<div>loading....</div>}>{useRoutes(routes)}</Suspense>;
 }

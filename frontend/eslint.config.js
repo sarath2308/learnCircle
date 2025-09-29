@@ -16,7 +16,7 @@ export default defineConfig([
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaVersion: "latest", // supports ES2021+
+        ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: { jsx: true },
       },
@@ -26,8 +26,11 @@ export default defineConfig([
         console: "readonly",
         process: "readonly",
         URL: "readonly",
-        FormData: "readonly", // Added for browser FormData
-        fetch: "readonly",    // optional if using fetch
+        FormData: "readonly",
+        fetch: "readonly",
+        localStorage: "readonly", // ✅ add this
+        setInterval: "readonly", // ✅ add this
+        clearInterval: "readonly", // ✅ add this
       },
     },
 

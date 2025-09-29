@@ -61,6 +61,13 @@ export class AuthService implements IAuthService {
           throw new Error("incorrect Password");
         }
         const jwt = await this.accesToken.signAccessToken({ userId: match.id, role: match.role });
+        const refresh = await this.accesToken.generateRefreshToken({
+          userId: match.id,
+          role: match.role,
+        });
+        if (!jwt || !refresh) {
+          throw new Error("acceesToken or Refresh token missing");
+        }
         let imageUrl = "";
         //signed url
         if (match?.publicId) {
@@ -74,7 +81,7 @@ export class AuthService implements IAuthService {
         };
         let userDto = await this.roleDto.roleDtoMapper(userWithImg);
 
-        return { user: userDto, accessToken: jwt };
+        return { user: userDto, accessToken: jwt, refreshToken: refresh };
       } else {
         throw new Error("user not found");
       }
@@ -146,6 +153,10 @@ export class AuthService implements IAuthService {
           userId: user.id,
           role: match.role,
         });
+        const refresh = await this.accesToken.generateRefreshToken({
+          userId: user.id,
+          role: match.role,
+        });
         let imageUrl = "";
         //signed url
         if (user?.publicId) {
@@ -159,7 +170,7 @@ export class AuthService implements IAuthService {
         };
         let userDto = await this.roleDto.roleDtoMapper(userWithImg);
 
-        return { user: userDto, accessToken: jwt };
+        return { user: userDto, accessToken: jwt, refreshToken: refresh };
       } else {
         // forgot-password or other OTP flows
         const user = await this.userRepo.findByEmail(email);
@@ -235,6 +246,10 @@ export class AuthService implements IAuthService {
         userId: user.id,
         role: user.role,
       });
+      const refresh = await this.accesToken.generateRefreshToken({
+        userId: user.id,
+        role: user.role,
+      });
       let imageUrl = "";
       //signed url
       if (user?.publicId) {
@@ -248,7 +263,7 @@ export class AuthService implements IAuthService {
       };
       let userDto = await this.roleDto.roleDtoMapper(userWithImg);
 
-      return { user: userDto, accessToken: jwt };
+      return { user: userDto, accessToken: jwt, refreshToken: refresh };
     } catch (err: any) {
       throw new Error(err.message || "Google sign-in failed");
     }

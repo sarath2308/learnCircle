@@ -1,40 +1,62 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Calendar, Trophy, Clock, Camera } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import profilePicture from "@/assets/profile.jpg";
 import EditProfileDialog from "@/components/EditProfile";
-import { useUpdateAvatar } from "@/hooks/learner/useUpdateAvatar";
+import { useUpdateAvatar } from "@/hooks/learner/profile/useUpdateAvatar";
+import { useUpdatProfile } from "@/hooks/learner/profile/useUpdateProfile";
 import { toast } from "react-toastify";
+import { useGetProfile } from "@/hooks/learner/profile/useGetProfile";
 import { React } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "@/redux/store";
 
 export default function LearnerProfile() {
-  const [profilePic, setProfilePic] = useState(profilePicture);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { mutateAsync } = useUpdateAvatar();
+  const { mutateAsync: updateAvatar } = useUpdateAvatar();
+  const { mutateAsync: updateProfile } = useUpdatProfile();
+  const { data: userData, isLoading, isError, error } = useGetProfile();
 
-  const userData = useSelector((state: RootState) => state.currentUser.currentUser);
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    profileImg: profilePicture,
+    hasPassword: false,
+    lastLogin: "",
+  });
 
-  // Fallback values if undefined
-  const name = userData?.name ?? "Guest";
-  const email = userData?.email ?? "-";
-  const profileImg = userData?.profileImg ?? profilePicture;
+  useEffect(() => {
+    if (userData) {
+      setProfile({
+        name: userData.name ?? "Guest",
+        email: userData.email ?? "-",
+        profileImg: userData.profileImg ?? profilePicture,
+        hasPassword: userData.hasPassword ?? false,
+        lastLogin: userData.lastLogin ?? "",
+      });
+    }
+  }, [userData]);
+
+  // Loading / error state
+  if (isLoading) return <p>Loading profile...</p>;
+  if (isError) return <p>Error loading profile: {(error as any)?.message}</p>;
+
+  const { name, email, profileImg, hasPassword, lastLogin } = profile;
   const streak = 0;
-  const joinDate ="-";
-  const lastLogin = userData?.lastLogin ?? "-";
+  const joinDate = "-";
   const stats = { hoursLearned: 0, certificatesEarned: 0, rank: "-" };
-  const skillProgress =  {};
+  const skillProgress = {};
   const completedCourses = 0;
-  const totalCourses = 1; // avoid division by 0
+  const totalCourses = 1;
 
-  const getInitials = (name: string) =>
-    name
+  const getInitials = (name: string | undefined) => {
+    if (!name || typeof name !== "string") return "G";
+    return name
       .split(" ")
       .map((n) => n[0])
-      .join("");
+      .join("")
+      .toUpperCase();
+  };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,14 +73,31 @@ export default function LearnerProfile() {
 
       try {
         const previewUrl = URL.createObjectURL(file);
-        await mutateAsync(file);
-        setProfilePic(previewUrl);
-      } catch (error) {
-        console.error(error);
+        await updateAvatar(file);
+        setProfile((prev) => ({ ...prev, profileImg: previewUrl }));
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to update avatar");
       }
     }
   };
-  // const handleUpdateProfile = () => {};
+  const handleUpdateProfile = async (data: { name: string }) => {
+    try {
+      const res = await updateProfile(data); // res here is NOT the name, it's the whole mutation result
+      if (res?.user?.name) {
+        setProfile((prev) => ({ ...prev, name: res.user.name }));
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update profile");
+    }
+  };
+
+  const handleVerifyOtp = async () => {};
+  const handleUpdateEmail = async () => {};
+  const handleResendOtp = async () => {};
+  const handleUpdatePassword = async () => {};
+
   return (
     <div className="space-y-6 p-4">
       {/* Profile Header */}
@@ -95,10 +134,22 @@ export default function LearnerProfile() {
               onChange={handleImageChange}
             />
           </div>
+
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
-              {/* <EditProfileDialog userData={userData} onUpdateProfile={handleUpdateProfile} /> */}
+              <EditProfileDialog
+                userData={{
+                  name: profile.name,
+                  email: profile.email,
+                  hasPassword: profile.hasPassword,
+                }}
+                onUpdateProfile={handleUpdateProfile}
+                onUpdateEmail={handleUpdateEmail}
+                onVerifyOtp={handleVerifyOtp}
+                onResendOtp={handleResendOtp}
+                onUpdatePassword={handleUpdatePassword}
+              />
             </div>
             <p className="text-gray-500 dark:text-gray-400">{email}</p>
             <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
@@ -117,6 +168,7 @@ export default function LearnerProfile() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Hours Learned */}
         <Card className="shadow-sm rounded-xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -131,6 +183,7 @@ export default function LearnerProfile() {
           </CardContent>
         </Card>
 
+        {/* Certificates */}
         <Card className="shadow-sm rounded-xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -145,6 +198,7 @@ export default function LearnerProfile() {
           </CardContent>
         </Card>
 
+        {/* Global Rank */}
         <Card className="shadow-sm rounded-xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -177,7 +231,7 @@ export default function LearnerProfile() {
                 <div key={skill} className="space-y-1">
                   <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                     <span>{skill}</span>
-                    <span>67%</span>
+                    <span>{value}%</span>
                   </div>
                   <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
                     <div

@@ -10,7 +10,7 @@ export const profileApi = {
 
   updateAvatar: (file: File) => {
     const formData = new FormData();
-    formData.append("avatar", file); 
+    formData.append("avatar", file);
 
     return api
       .patch<UpdateAvatarResponse>("/learner/profile/avatar", formData)

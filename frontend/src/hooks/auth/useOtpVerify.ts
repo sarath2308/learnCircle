@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import api from "@/api/api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slice/tempSlice";
-
+import { setCurrentUser } from "@/redux/slice/currentUserSlice";
 export const useOtpVerify = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -33,7 +32,7 @@ export const useOtpVerify = () => {
       } else {
         // saving to redux
         if (response.data.user) {
-          dispatch(setUser({ ...response.data.user, role }));
+          dispatch(setCurrentUser({ ...response.data.user, role }));
         }
 
         if (role === "learner") {

@@ -37,4 +37,15 @@ export class LearnerProfileController {
       res.status(500).json({ error: "Upload failed" });
     }
   }
+  async updateProfile(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      let { userId } = req.user;
+      let { name } = req.body;
+      let result = await this.service.updateProfile(userId, name);
+      return res.status(HttpStatus.ACCEPTED).json({ user: result, message: "profile updated" });
+    } catch (error) {
+      console.error(error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: Messages.SERVER_ERROR });
+    }
+  }
 }

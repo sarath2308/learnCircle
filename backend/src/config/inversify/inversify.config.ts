@@ -14,7 +14,7 @@ import { LearnerAuthController } from "../../controllers/learner/learner.auth.co
 import { ProfesionalRepo } from "../../Repositories/profesional/profesionalRepo";
 import Professional from "../../models/profesionals";
 import { RefreshController } from "../../controllers/refreshController";
-import { RefreshService } from "../../services/refresh.service";
+import { RefreshTokenService } from "../../services/refreshToken.service";
 import { ProfesionalAuthController } from "../../controllers/profesional/profesional.auth.controller";
 import { LearnerAuthService } from "../../services/learner/learnerAuthService";
 import { ProfesionalAuthService } from "../../services/profesional/profesionalAuthService";
@@ -93,7 +93,10 @@ container.bind(TYPES.ProfesionalAuthService).toDynamicValue(() => {
 
 //refresh service
 container.bind(TYPES.RefreshService).toDynamicValue(() => {
-  return new RefreshService(container.get(TYPES.TokenService));
+  return new RefreshTokenService(
+    container.get(TYPES.TokenService),
+    container.get(TYPES.RedisRepository),
+  );
 });
 // learner-Auth-Controller
 container.bind(TYPES.LearnerAuthController).toDynamicValue(() => {
