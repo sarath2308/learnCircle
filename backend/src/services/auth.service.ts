@@ -265,6 +265,7 @@ export class AuthService implements IAuthService {
 
       return { user: userDto, accessToken: jwt, refreshToken: refresh };
     } catch (err: any) {
+      console.log(err);
       throw new Error(err.message || "Google sign-in failed");
     }
   }

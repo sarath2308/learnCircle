@@ -7,8 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useVerification } from "@/hooks/profesional/useVerification";
+import { toast } from "react-toastify";
+import { Processing } from "./Processing";
 interface ProfileData {
   title: string;
   bio: string;
@@ -27,6 +35,9 @@ interface Errors {
 const Verification = () => {
   const [step, setStep] = useState(1);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const { mutate, isPending } = useVerification();
+
   const [data, setData] = useState<ProfileData>({
     title: "",
     bio: "",
@@ -70,7 +81,8 @@ const Verification = () => {
     if (!data.experience || data.experience < 1)
       newErrors.experience = "Experience should be at least 1 year";
     if (data.skills.length === 0) newErrors.skills = "At least one skill is required";
-    if (data.typesOfSessions.length === 0) newErrors.typesOfSessions = "At least one session type is required";
+    if (data.typesOfSessions.length === 0)
+      newErrors.typesOfSessions = "At least one session type is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -97,6 +109,8 @@ const Verification = () => {
     }
   };
 
+  const { mutateAsync } = useVerification();
+
   const handleFinalStepComplete = async () => {
     if (!validateStep(step)) return;
 
@@ -108,24 +122,16 @@ const Verification = () => {
     formData.append("skills", JSON.stringify(data.skills));
     formData.append("typesOfSessions", JSON.stringify(data.typesOfSessions));
     if (data.resume) formData.append("resume", data.resume);
-    if (data.image) formData.append("image", data.image);
+    if (data.image) formData.append("avatar", data.image);
 
     try {
-      const response = await fetch("/api/submit-profile", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit profile");
-      }
-
-      const result = await response.json();
+      const result = await mutateAsync(formData);
+      setProcessing(true);
       console.log("Profile submitted successfully:", result);
-      alert("Profile submitted successfully!");
+      toast("Profile submitted successfully!");
     } catch (error) {
       console.error("Error submitting profile:", error);
-      alert("Failed to submit profile. Please try again.");
+      toast.error("Failed to submit profile. Please try again.");
     }
   };
 
@@ -139,7 +145,7 @@ const Verification = () => {
     "UX Designer",
     "Other",
   ];
-
+  if (processing) return <Processing />;
   return (
     <div className="w-full min-h-screen flex justify-center items-start bg-gray-50 p-6">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-8">
@@ -194,7 +200,9 @@ const Verification = () => {
 
               <div className="md:col-span-2 flex flex-col space-y-6">
                 <div className="flex flex-col">
-                  <Label htmlFor="title" className="mb-2 text-gray-700">Title</Label>
+                  <Label htmlFor="title" className="mb-2 text-gray-700">
+                    Title
+                  </Label>
                   <Select
                     value={data.title}
                     onValueChange={(value) => {

@@ -10,8 +10,9 @@ export function mapProfessionalToDTO(professional: ProfesionalDto): Professional
     profileImg: professional.profileImg ?? "",
     joinedAt: professional.joinedAt!,
     isBlocked: professional.isBlocked,
-    ProfileInfo: professional.ProfileInfo || {},
+    // ProfileInfo: professional.profileInfo || {},
     RejectReason: professional.RejectReason,
     role: professional.role,
+    status: professional.status ?? "pending",
   };
 }

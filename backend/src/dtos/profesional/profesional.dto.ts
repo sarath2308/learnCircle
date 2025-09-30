@@ -30,13 +30,14 @@ export const ProfessionalResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string().email(),
-  profileImg: z.string().url(),
+  profileImg: z.string().optional(),
   joinedAt: z.date(),
   isBlocked: z.boolean(),
-  ProfileInfo: ProfileInfoSchema,
+  ProfileInfo: ProfileInfoSchema.optional(),
   RejectReason: z.string().optional(),
   role: z.string(),
   googleId: z.string().optional(),
+  status: z.string(),
 });
 
 export type ProfessionalRequestDTO = z.infer<typeof ProfessionalRequestSchema>;

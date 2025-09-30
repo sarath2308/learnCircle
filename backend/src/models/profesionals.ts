@@ -1,14 +1,13 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-interface ProfileInfo {
+export interface ProfileInfo {
   bio?: string;
   companyName?: string;
   experience?: number;
   rating?: string;
-  resume?: string;
+  resumeId?: string;
   sessionPrice?: string;
   skills?: string;
-  status?: string;
   title?: string;
   totalSessions?: string;
   typesOfSessions?: string[];
@@ -22,10 +21,11 @@ export interface IProfessional extends Document {
   publicId?: string;
   joinedAt?: Date;
   isBlocked: boolean;
-  ProfileInfo: ProfileInfo;
+  profileInfo: ProfileInfo;
   RejectReason?: string;
   role: string;
   googleId?: string;
+  status?: string;
 }
 
 // Mongoose Schema
@@ -34,10 +34,9 @@ const ProfileInfoSchema = new Schema<ProfileInfo>({
   companyName: { type: String },
   experience: { type: Number },
   rating: { type: String },
-  resume: { type: String },
+  resumeId: { type: String },
   sessionPrice: { type: String },
   skills: { type: String },
-  status: { type: String },
   title: { type: String },
   totalSessions: { type: String },
   typesOfSessions: [{ type: String }],
@@ -50,9 +49,10 @@ const ProfessionalSchema: Schema = new Schema<IProfessional>({
   publicId: { type: String },
   joinedAt: { type: Date, default: Date.now },
   isBlocked: { type: Boolean, default: false },
-  ProfileInfo: { type: ProfileInfoSchema, default: {} },
+  profileInfo: { type: ProfileInfoSchema, default: {} },
   RejectReason: { type: String },
-  role: { type: String, default: "Professional" },
+  role: { type: String, default: "profesional" },
+  status: { type: String, default: "pending" },
   googleId: { type: String },
 });
 

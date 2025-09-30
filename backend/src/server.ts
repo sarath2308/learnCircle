@@ -25,6 +25,10 @@ import { learnerProfileRoute } from "./routes/learner/learner.profile.route";
 import { ProfesionalAuthController } from "./controllers/profesional/profesional.auth.controller";
 import { profesionalAuthRoutes } from "./routes/profesional/profesionalAuth";
 import { authorizeRoles } from "./middleware/authorizedRoles";
+import { profesionalVerificationRoutes } from "./routes/profesional/profesionalVerificationRoutes";
+import { ProfesionalVerificationController } from "./controllers/profesional/profesional.verification.controller";
+import { AdminAuthController } from "./controllers/admin/adminAuthController";
+import { adminAuthRoutes } from "./routes/admin/adminAuth";
 
 dotenv.config();
 const app = express();
@@ -38,6 +42,7 @@ app.use(
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 async function startServer() {
   // Connect to MongoDB
@@ -54,12 +59,14 @@ async function startServer() {
   const learnerProfileController = container.get<LearnerProfileController>(
     TYPES.LearnerProfileController,
   );
+  const profesionalVerificationController = container.get<ProfesionalVerificationController>(
+    TYPES.ProfesionalVerificationController,
+  );
+  const adminAuthController = container.get<AdminAuthController>(TYPES.AdminAuthController);
   //refresh controller
   const refreshController = container.get<RefreshController>(TYPES.RefreshController);
   // Routes
   app.use("/api/auth/learner", learnerAuthRoutes(learnerAuthController));
-  app.use("/api/auth/profesional", profesionalAuthRoutes(profesionalAuthController));
-
   app.use(
     "/api/learner/home",
     authenticate,
@@ -74,6 +81,16 @@ async function startServer() {
   );
   app.use("/api/auth", refreshRoutes(refreshController));
 
+  //profesional routes
+  app.use("/api/auth/profesional", profesionalAuthRoutes(profesionalAuthController));
+  app.use(
+    "/api/profesional",
+    authenticate,
+    authorizeRoles("profesional"),
+    profesionalVerificationRoutes(profesionalVerificationController),
+  );
+  //admin
+  app.unsubscribe("/api/auth/admin", adminAuthRoutes(adminAuthController));
   // Connect to Redis
   await connectRedis();
   console.log("Server is ready!");

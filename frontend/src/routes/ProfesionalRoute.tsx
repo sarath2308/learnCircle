@@ -9,8 +9,8 @@ import Verification from "@/pages/Profesional/Verification";
 
 const professionalRoutes: RouteObject[] = [
   {
-    path: "/professionals",
-    element: <Verification />, // layout with navbar/sidebar
+    path: "/profesional",
+    element: <ProfesionalLayout />, // layout with navbar/sidebar
     // children: [
     //   { index: true, element: <ProfessionalDashboard /> }, // /professionals
     //   { path: "courses", element: <ProfessionalCourses /> }, // /professionals/courses

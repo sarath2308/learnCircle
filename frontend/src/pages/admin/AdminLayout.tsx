@@ -1,38 +1,36 @@
-import { useState, useEffect } from "react";
-import { useGetDashboard } from "@/hooks/profesional/useGetDashboard";
-import { Processing } from "./Processing";
-import { Rejected } from "./Rejected";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { React } from "react";
 import {
   Bell,
   Menu,
   X,
   LayoutDashboard,
+  Users,
   BookOpen,
-  Calendar,
-  History,
+  List,
+  FileText,
+  BarChart2,
+  Clock,
   DollarSign,
-  Settings,
+  Star,
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { React } from "react";
-import Verification from "./Verification";
+
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard },
-  { name: "Courses", icon: BookOpen },
-  { name: "Session Requests", icon: Calendar },
-  { name: "My Schedule", icon: Calendar },
-  { name: "Session History", icon: History },
-  { name: "Earnings", icon: DollarSign },
-  { name: "Profile Settings", icon: Settings },
+  { name: "Users", icon: Users },
+  { name: "Subjects", icon: BookOpen },
+  { name: "Steps", icon: List },
+  { name: "Resources", icon: FileText },
+  { name: "Reports", icon: BarChart2 },
+  { name: "Sessions", icon: Clock },
+  { name: "Payments", icon: DollarSign },
+  { name: "Reviews", icon: Star },
 ];
 
-export default function ProfesionalLayout() {
+export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { data: userData, isLoading, isError, error } = useGetDashboard();
-  if (userData?.status === "processing") return <Processing />;
-  if (userData?.status === "rejected") return <Rejected reason={userData.RejectReason} />;
-  if (userData?.status === "pending") return <Verification />;
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar (desktop) */}
@@ -103,7 +101,7 @@ export default function ProfesionalLayout() {
 
         {/* Page content */}
         <main className="p-6 flex-1">
-          <h1 className="text-xl font-semibold">Welcome to Dashboard </h1>
+          <Outlet />
         </main>
       </div>
     </div>

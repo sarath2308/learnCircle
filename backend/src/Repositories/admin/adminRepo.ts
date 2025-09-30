@@ -1,16 +1,16 @@
 import { BaseRepo } from "../Base/base";
-import { IProfessional } from "../../models/profesionals";
+import { IAdmin } from "../../models/Admin";
 import { Model } from "mongoose";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/types";
 
 injectable();
-export class ProfesionalRepo extends BaseRepo<IProfessional> {
-  constructor(@inject(TYPES.ProfesionalModel) profesionalModel: Model<IProfessional>) {
-    super(profesionalModel);
+export class AdminRepo extends BaseRepo<IAdmin> {
+  constructor(@inject(TYPES.AdminModel) adminModel: Model<IAdmin>) {
+    super(adminModel);
   }
 
-  async findByEmail(email: string): Promise<IProfessional | null> {
+  async findByEmail(email: string): Promise<IAdmin | null> {
     try {
       const user = await this.model.findOne({ email }).exec();
       return user;

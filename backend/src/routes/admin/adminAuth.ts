@@ -1,16 +1,9 @@
 import { Router } from "express";
-import { IAuthController } from "../../types/common/learnerAuthController";
+import { AdminAuthController } from "../../controllers/admin/adminAuthController";
 
-export function adminAuthRoutes(controller: IAuthController) {
+export function adminAuthRoutes(controller: AdminAuthController) {
   const router = Router();
 
-  router.post("/signup", controller.signup);
-  router.post("/login", controller.login);
-  router.post("/forgotPassword", controller.forgotPassword);
-  router.post("/reset", controller.resetPassword);
-  router.post("/logout", controller.logout);
-
-  router.get("/refresh", controller.refreshToken);
-
+  router.post("/login", controller.login.bind(controller));
   return router;
 }

@@ -38,9 +38,9 @@ export const useOtpVerify = () => {
         if (role === "learner") {
           navigate("/learner/home");
         } else if (role === "profesional") {
-          navigate(`/${role}/home`);
+          navigate(`/${role}`);
         } else if (role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/admin/home");
         }
       }
     } catch (error: any) {

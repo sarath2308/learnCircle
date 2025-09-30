@@ -28,17 +28,27 @@ import { LearnerProfileService } from "../../services/learner/learner.profile.se
 import { LearnerProfileController } from "../../controllers/learner/learner.profile.controller";
 import { CloudinaryService } from "../../utils/cloudinary.service";
 import { RoleDtoMapper } from "../../dtos/mapper/dtos.mapper";
+import { ProfesionalVerificationService } from "../../services/profesional/profesional.verification.service";
+import { ProfesionalVerificationController } from "../../controllers/profesional/profesional.verification.controller";
+import { Admin, IAdmin } from "../../models/Admin";
+import { AdminRepo } from "../../Repositories/admin/adminRepo";
+import { AdminAuthService } from "../../services/admin/admin.auth.service";
+import { AdminAuthController } from "../../controllers/admin/adminAuthController";
 export const container = new Container();
 
 // Bindings
 container.bind<Model<ILearner>>(TYPES.LearnerModel).toConstantValue(Learner);
 container.bind<Model<IProfessional>>(TYPES.ProfesionalModel).toConstantValue(Professional);
+container.bind<Model<IAdmin>>(TYPES.AdminModel).toConstantValue(Admin);
 container
   .bind<LearnerRepo>(TYPES.LearnerRepo)
   .toDynamicValue(() => new LearnerRepo(container.get(TYPES.LearnerModel)));
 container
   .bind<ProfesionalRepo>(TYPES.ProfesionalRepo)
   .toDynamicValue(() => new ProfesionalRepo(container.get(TYPES.ProfesionalModel)));
+container
+  .bind<AdminRepo>(TYPES.AdminRepository)
+  .toDynamicValue(() => new AdminRepo(container.get(TYPES.AdminModel)));
 
 container.bind(TYPES.TokenService).to(TokenService).inSingletonScope();
 container.bind(TYPES.EmailService).to(EmailService).inSingletonScope();
@@ -91,6 +101,20 @@ container.bind(TYPES.ProfesionalAuthService).toDynamicValue(() => {
   );
 });
 
+container.bind(TYPES.ProfesionalVerificationService).toDynamicValue(() => {
+  return new ProfesionalVerificationService(
+    container.get(TYPES.ProfesionalRepo),
+    container.get(TYPES.CloudinaryService),
+  );
+});
+
+container.bind(TYPES.AdminAuthService).toDynamicValue(() => {
+  return new AdminAuthService(
+    container.get(TYPES.AdminRepository),
+    container.get(TYPES.TokenService),
+  );
+});
+
 //refresh service
 container.bind(TYPES.RefreshService).toDynamicValue(() => {
   return new RefreshTokenService(
@@ -115,7 +139,15 @@ container.bind(TYPES.ProfesionalAuthController).toDynamicValue(() => {
   return new ProfesionalAuthController(container.get(TYPES.ProfesionalAuthService));
 });
 
+container.bind(TYPES.ProfesionalVerificationController).toDynamicValue(() => {
+  return new ProfesionalVerificationController(container.get(TYPES.ProfesionalVerificationService));
+});
+
 container.bind(TYPES.RefreshController).toDynamicValue(() => {
   return new RefreshController(container.get(TYPES.RefreshService));
+});
+
+container.bind(TYPES.AdminAuthController).toDynamicValue(() => {
+  return new AdminAuthController(container.get(TYPES.AdminAuthService));
 });
 export default container;
