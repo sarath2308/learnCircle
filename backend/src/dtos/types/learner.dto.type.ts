@@ -1,5 +1,5 @@
-import { ILearner } from "../../models/Learner";
-import { LearnerProfileDTOType } from "../learner/profile.dto";
+import { ILearner } from "../../learner/models/Learner";
+import { LearnerProfileDTOType } from "../../learner/profile/dtos/profile.dto";
 export interface LearnerDto extends ILearner {
   profileImg?: string;
 }

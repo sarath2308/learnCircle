@@ -1,4 +1,4 @@
-import { ProfileInfo } from "../../models/profesionals";
+import { ProfileInfo } from "../../professionals/models/profesionals";
 
 const profileInfoFields: (keyof ProfileInfo)[] = [
   "title",

@@ -4,31 +4,31 @@ import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authenticate } from "./middleware/authorization";
+import { authenticate } from "./common/middleware/authorization";
 
 // Inversify Dependency Injection
 import { container } from "./config/inversify/inversify.config";
-import { TYPES } from "./types/types";
+import { TYPES } from "./common/types/types";
 
 // Common
-import { RefreshController } from "./controllers/refreshController";
-import { refreshRoutes } from "./routes/refresh.route";
+import { RefreshController } from "./common/controller/refreshController";
+import { refreshRoutes } from "./common/routes/refresh.routes";
 
 // Learner Controllers and Routes
 import { LearnerAuthController } from "./controllers/learner/learner.auth.controller";
-import { learnerAuthRoutes } from "./routes/learner/learner.auth.routes.";
-import { learnerHomeRoute } from "./routes/learner/learner.home.route.";
+import { learnerAuthRoutes } from "./learner/auth/routes/learner.auth.routes.";
+import { learnerHomeRoute } from "./learner/home/routes/learner.home.route.";
 import { LearnerHomeController } from "./controllers/learner/learner.home.controller";
 import { LearnerProfileController } from "./controllers/learner/learner.profile.controller";
-import { learnerProfileRoute } from "./routes/learner/learner.profile.route";
+import { learnerProfileRoute } from "./learner/profile/routes/learner.profile.route";
 // Professional Controllers and Routes
 import { ProfesionalAuthController } from "./controllers/profesional/profesional.auth.controller";
 import { profesionalAuthRoutes } from "./routes/profesional/profesionalAuth";
-import { authorizeRoles } from "./middleware/authorizedRoles";
+import { authorizeRoles } from "./common/middleware/authorizedRoles";
 import { profesionalVerificationRoutes } from "./routes/profesional/profesionalVerificationRoutes";
 import { ProfesionalVerificationController } from "./controllers/profesional/profesional.verification.controller";
 import { AdminAuthController } from "./controllers/admin/adminAuthController";
-import { adminAuthRoutes } from "./routes/admin/adminAuth";
+import { adminAuthRoutes } from "./admin/auth/routes/adminAuth";
 
 dotenv.config();
 const app = express();
