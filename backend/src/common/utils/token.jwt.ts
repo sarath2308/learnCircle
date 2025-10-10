@@ -1,10 +1,10 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
-import { AuthConfig } from "../config/authConfig";
+import { AuthConfig } from "@/config/authConfig";
 import { injectable, inject } from "inversify";
-import { TYPES } from "../common/types/types";
-import { RedisRepository } from "../common/Repo/redisRepo";
-import { RedisKeys } from "../common/constants/redisKeys";
+import { TYPES } from "@/common";
+import { RedisRepository } from "@/common";
+import { RedisKeys } from "@/common";
 dotenv.config();
 type Tpayload = { userId: string; role?: string; type?: string };
 

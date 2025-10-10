@@ -1,8 +1,8 @@
-import { BaseRepo } from "../Base/base";
+import { BaseRepo } from "@/common";
 import { IAdmin } from "../models/Admin";
 import { Model } from "mongoose";
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../common/types/types";
+import { TYPES } from "../../common/types/inversify/types";
 
 injectable();
 export class AdminRepo extends BaseRepo<IAdmin> {

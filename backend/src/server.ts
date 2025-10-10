@@ -4,31 +4,31 @@ import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authenticate } from "./common/middleware/authorization";
+import { authenticate } from "@/common";
 
 // Inversify Dependency Injection
 import { container } from "./config/inversify/inversify.config";
-import { TYPES } from "./common/types/types";
+import { TYPES } from "./common/types/inversify/types";
 
 // Common
-import { RefreshController } from "./common/controller/refreshController";
-import { refreshRoutes } from "./common/routes/refresh.routes";
+import { RefreshController } from "@/common";
+import { refreshRoutes } from "@/common";
 
 // Learner Controllers and Routes
-import { LearnerAuthController } from "./controllers/learner/learner.auth.controller";
-import { learnerAuthRoutes } from "./learner/auth/routes/learner.auth.routes.";
-import { learnerHomeRoute } from "./learner/home/routes/learner.home.route.";
-import { LearnerHomeController } from "./controllers/learner/learner.home.controller";
-import { LearnerProfileController } from "./controllers/learner/learner.profile.controller";
-import { learnerProfileRoute } from "./learner/profile/routes/learner.profile.route";
+import { LearnerAuthController } from "@/learner";
+import { learnerAuthRoutes } from "@/learner";
+import { learnerHomeRoute } from "@/learner";
+import { LearnerHomeController } from "@/learner";
+import { LearnerProfileController } from "@/learner";
+import { learnerProfileRoute } from "@/learner";
 // Professional Controllers and Routes
-import { ProfesionalAuthController } from "./controllers/profesional/profesional.auth.controller";
-import { profesionalAuthRoutes } from "./routes/profesional/profesionalAuth";
-import { authorizeRoles } from "./common/middleware/authorizedRoles";
-import { profesionalVerificationRoutes } from "./routes/profesional/profesionalVerificationRoutes";
-import { ProfesionalVerificationController } from "./controllers/profesional/profesional.verification.controller";
-import { AdminAuthController } from "./controllers/admin/adminAuthController";
-import { adminAuthRoutes } from "./admin/auth/routes/adminAuth";
+import { ProfesionalAuthController } from "@/professionals";
+import { profesionalAuthRoutes } from "@/professionals";
+import { authorizeRoles } from "@/common";
+import { profesionalVerificationRoutes } from "@/professionals";
+import { ProfesionalVerificationController } from "@/professionals";
+import { AdminAuthController } from "@/admin";
+import { adminAuthRoutes } from "@/admin";
 
 dotenv.config();
 const app = express();

@@ -4,7 +4,7 @@ import { IToken } from "../../utils/token.jwt";
 import { IRedisRepository } from "../Repo/redisRepo";
 import { IpasswordService } from "../../utils/passwordService";
 import { verifyGoogleToken } from "../../utils/googleAuth";
-import { IAuthService } from "../types/common/IAuthService";
+import { IAuthService } from "../interface/IAuthService";
 import { LearnerRepo } from "../../Repositories/learner/learnerRepo";
 import { ProfesionalRepo } from "../../Repositories/profesional/profesionalRepo";
 import { CloudinaryService } from "../../utils/cloudinary.service";

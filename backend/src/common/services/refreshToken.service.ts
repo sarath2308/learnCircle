@@ -1,14 +1,14 @@
 import { IToken } from "../utils/token.jwt";
-import { IRedisRepository } from "../Repositories/redisRepo";
+import { IRedisRepository } from "@/common";
 import { RedisKeys } from "../constants/redisKeys";
 import { inject, injectable } from "inversify";
-import { TYPES } from "../types/types";
+import { TYPES } from "../types/inversify/types";
 
 type refreshRes = {
   access: string;
   refresh: string;
 };
-export default interface IRefreshTokenService {
+export interface IRefreshTokenService {
   refreshToken: (token: string) => Promise<refreshRes>;
 }
 @injectable()

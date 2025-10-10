@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { HttpStatus } from "../constants/httpStatus";
 import { Messages } from "../constants/messages";
-import { TokenService } from "../../utils/token.jwt";
+import { TokenService } from "@/common";
 
 const tokenService = new TokenService();
 export interface AuthRequest extends Request {

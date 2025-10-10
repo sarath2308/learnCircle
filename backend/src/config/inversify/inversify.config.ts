@@ -2,49 +2,52 @@ import { Container } from "inversify";
 import "reflect-metadata";
 
 // import interfaces and classes
-import { LearnerRepo } from "../../Repositories/learner/learnerRepo";
-import { Learner } from "../../learner/models/Learner";
-import { TokenService } from "../..//utils/token.jwt";
-import { EmailService } from "../../utils/emailService";
-import { GenerateOtp } from "../../utils/otp.utils.";
-import { PasswordService } from "../../utils/passwordService";
+import { ILearnerRepo, LearnerRepo } from "@/learner";
+import { Learner } from "@/learner";
+import { EmailAuthService, IRepoRole, TokenService } from "@/common";
+import { EmailService } from "@/common";
+import { GenerateOtp } from "@/common";
+import { PasswordService } from "@/common";
 import { RedisRepository } from "../../common/Repo/redisRepo";
 import redisClient from "../../config/redis/redis";
-import { LearnerAuthController } from "../../controllers/learner/learner.auth.controller";
-import { ProfesionalRepo } from "../../Repositories/profesional/profesionalRepo";
+import { LearnerAuthController } from "@/learner";
+import { IProfessionalRepo, ProfesionalRepo } from "@/professionals";
 import Professional from "../../professionals/models/profesionals";
-import { RefreshController } from "../../controllers/refreshController";
-import { RefreshTokenService } from "../../services/refreshToken.service";
-import { ProfesionalAuthController } from "../../controllers/profesional/profesional.auth.controller";
-import { LearnerAuthService } from "../../services/learner/learnerAuthService";
-import { ProfesionalAuthService } from "../../services/profesional/profesionalAuthService";
+import { RefreshController } from "@/common";
+import { RefreshTokenService } from "@/common";
+import { ProfesionalAuthController } from "@/professionals";
+import { LearnerAuthService } from "@/learner";
+import { ProfesionalAuthService } from "@/professionals";
 import { Model } from "mongoose";
 import { ILearner } from "../../learner/models/Learner";
 import { IProfessional } from "../../professionals/models/profesionals";
-import { TYPES } from "../../common/types/types";
-import { LearnerHomeController } from "../../controllers/learner/learner.home.controller";
-import { LearnerHomeService } from "../../services/learner/learner.home.service.ts";
-import { LearnerProfileService } from "../../learner/profile/service/learner.profile.service";
-import { LearnerProfileController } from "../../controllers/learner/learner.profile.controller";
-import { CloudinaryService } from "../../utils/cloudinary.service";
+import { TYPES } from "../../common/types/inversify/types";
+import { LearnerHomeController } from "@/learner";
+import { LearnerHomeService } from "@/learner";
+import { LearnerProfileService } from "../../learner/features/profile/service/learner.profile.service";
+import { LearnerProfileController } from "@/learner";
+import { CloudinaryService } from "@/common";
 import { RoleDtoMapper } from "../../dtos/mapper/dtos.mapper";
-import { ProfesionalVerificationService } from "../../services/profesional/profesional.verification.service";
-import { ProfesionalVerificationController } from "../../controllers/profesional/profesional.verification.controller";
+import { ProfesionalVerificationService } from "@/professionals";
+import { ProfesionalVerificationController } from "@/professionals";
 import { Admin, IAdmin } from "../../admin/models/Admin";
-import { AdminRepo } from "../../Repositories/admin/adminRepo";
-import { AdminAuthService } from "../../services/admin/admin.auth.service";
-import { AdminAuthController } from "../../controllers/admin/adminAuthController";
+import { AdminRepo } from "@/admin";
+import { AdminAuthService } from "@/admin";
+import { AdminAuthController } from "@/admin";
+import { RepositoryFactory } from "@/common/services/roleRepoFatcory.service";
 export const container = new Container();
 
 // Bindings
 container.bind<Model<ILearner>>(TYPES.LearnerModel).toConstantValue(Learner);
 container.bind<Model<IProfessional>>(TYPES.ProfesionalModel).toConstantValue(Professional);
 container.bind<Model<IAdmin>>(TYPES.AdminModel).toConstantValue(Admin);
+container.bind<IRepoRole>(TYPES.IUserRepo).to(LearnerRepo);
+container.bind<IRepoRole>(TYPES.IUserRepo).to(ProfesionalRepo);
 container
-  .bind<LearnerRepo>(TYPES.LearnerRepo)
+  .bind<ILearnerRepo>(TYPES.LearnerRepo)
   .toDynamicValue(() => new LearnerRepo(container.get(TYPES.LearnerModel)));
 container
-  .bind<ProfesionalRepo>(TYPES.ProfesionalRepo)
+  .bind<IProfessionalRepo>(TYPES.ProfesionalRepo)
   .toDynamicValue(() => new ProfesionalRepo(container.get(TYPES.ProfesionalModel)));
 container
   .bind<AdminRepo>(TYPES.AdminRepository)
@@ -56,21 +59,16 @@ container.bind(TYPES.GenerateOtp).to(GenerateOtp).inSingletonScope();
 container.bind(TYPES.PasswordService).to(PasswordService).inSingletonScope();
 container.bind(TYPES.CloudinaryService).to(CloudinaryService).inSingletonScope();
 container.bind(TYPES.RoleDtoMapper).to(RoleDtoMapper).inSingletonScope();
+container.bind(TYPES.IEmailAuthService).to(EmailAuthService).inSingletonScope();
+container.bind(TYPES.IRoleRepoFactory).to(RepositoryFactory).inSingletonScope();
 container.bind(TYPES.RedisRepository).toConstantValue(new RedisRepository<any>(redisClient));
 
 //learner auth service
-container.bind(TYPES.LearnerAuthService).toDynamicValue(() => {
-  return new LearnerAuthService(
-    container.get(TYPES.LearnerRepo),
-    container.get(TYPES.EmailService),
-    container.get(TYPES.GenerateOtp),
-    container.get(TYPES.TokenService),
-    container.get(TYPES.RedisRepository),
-    container.get(TYPES.PasswordService),
-    container.get(TYPES.CloudinaryService),
-    container.get(TYPES.RoleDtoMapper),
-  );
-});
+// container.bind(TYPES.LearnerAuthService).toDynamicValue(() => {
+//   return new LearnerAuthService(
+
+//   );
+// });
 
 container.bind(TYPES.LearnerHomeService).toDynamicValue(() => {
   return new LearnerHomeService(container.get(TYPES.LearnerRepo));

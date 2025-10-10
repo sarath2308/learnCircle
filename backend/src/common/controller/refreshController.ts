@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import IRefreshTokenService from "../services/refreshToken.service";
-import { AuthConfig } from "../config/authConfig";
-import { timeStringToMs } from "../utils/timeString";
+import { IRefreshTokenService } from "@/common";
 import { setTokens } from "../middleware/setToken";
 
 export interface IRefreshController {
