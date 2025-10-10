@@ -1,11 +1,12 @@
 export const TYPES = {
-  LearnerModel: Symbol.for("LearnerModel"), //models
-  ProfesionalModel: Symbol.for("ProfesionalModel"),
-  AdminModel: Symbol.for("AdminModel"),
-  LearnerRepo: Symbol.for("LearnerRepo"), //Repos
-  ProfesionalRepo: Symbol.for("ProfesionalRepo"),
+  LearnerProfileModel: Symbol.for("LearnerModel"),
+  UserModel: Symbol.for("UserModel"), //models
+  ProfessionalProfileModel: Symbol.for("ProfesionalModel"),
+  AdminProfileModel: Symbol.for("AdminModel"),
+  LearnerProfileRepo: Symbol.for("LearnerRepo"), //Repos
+  ProfesionalProfileRepo: Symbol.for("ProfesionalRepo"),
   RedisRepository: Symbol.for("RedisRepository"),
-  AdminRepository: Symbol.for("AdminRepository"),
+  AdminProfile: Symbol.for("AdminRepository"),
   IUserRepo: Symbol.for("IUserRepo"),
   LearnerAuthService: Symbol.for("LearnerAuthService"), //role-Services
   ProfesionalAuthService: Symbol.for("ProfesionalAuthService"),
@@ -24,7 +25,7 @@ export const TYPES = {
   TokenService: Symbol.for("TokenService"), //common-services
   IRoleRepoFactory: Symbol.for("IRoleRepoFactory"),
   EmailService: Symbol.for("EmailService"),
-  GenerateOtp: Symbol.for("GenerateOtp"),
+  OtpService: Symbol.for("OtpService"),
   PasswordService: Symbol.for("PasswordService"),
   RefreshService: Symbol.for("RefreshService"),
   CloudinaryService: Symbol.for("CloudinaryService"),

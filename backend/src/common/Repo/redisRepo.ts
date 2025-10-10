@@ -1,14 +1,14 @@
-export interface IRedisRepository<T> {
-  get(key: string): Promise<T | null>;
-  set(key: string, value: T, ttl?: number): Promise<void>;
+export interface IRedisRepository {
+  get<T>(key: string): Promise<T | null>;
+  set<T>(key: string, value: T, ttl?: number): Promise<void>;
   delete(key: string): Promise<void>;
   exists(key: string): Promise<boolean>;
 }
 
-export class RedisRepository<T> implements IRedisRepository<T> {
+export class RedisRepository implements IRedisRepository {
   constructor(private client: any) {}
 
-  async get(key: string): Promise<T | null> {
+  async get<T>(key: string): Promise<T | null> {
     try {
       const data = await this.client.get(key);
       return data ? JSON.parse(data) : null;
@@ -18,7 +18,7 @@ export class RedisRepository<T> implements IRedisRepository<T> {
     }
   }
 
-  async set(key: string, value: T, ttl?: number): Promise<void> {
+  async set<T>(key: string, value: T, ttl?: number): Promise<void> {
     try {
       const stringValue = JSON.stringify(value);
       if (ttl) {

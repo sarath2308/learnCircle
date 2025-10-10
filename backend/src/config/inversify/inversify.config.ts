@@ -4,7 +4,7 @@ import "reflect-metadata";
 // import interfaces and classes
 import { ILearnerRepo, LearnerRepo } from "@/learner";
 import { Learner } from "@/learner";
-import { EmailAuthService, IRepoRole, TokenService } from "@/common";
+import { EmailAuthService, IRepoRole, IUser, OtpService, TokenService, User } from "@/common";
 import { EmailService } from "@/common";
 import { GenerateOtp } from "@/common";
 import { PasswordService } from "@/common";
@@ -35,27 +35,28 @@ import { AdminRepo } from "@/admin";
 import { AdminAuthService } from "@/admin";
 import { AdminAuthController } from "@/admin";
 import { RepositoryFactory } from "@/common/services/roleRepoFatcory.service";
+import { IUserRepo, UserRepo } from "@/common";
 export const container = new Container();
 
 // Bindings
-container.bind<Model<ILearner>>(TYPES.LearnerModel).toConstantValue(Learner);
-container.bind<Model<IProfessional>>(TYPES.ProfesionalModel).toConstantValue(Professional);
-container.bind<Model<IAdmin>>(TYPES.AdminModel).toConstantValue(Admin);
-container.bind<IRepoRole>(TYPES.IUserRepo).to(LearnerRepo);
-container.bind<IRepoRole>(TYPES.IUserRepo).to(ProfesionalRepo);
-container
-  .bind<ILearnerRepo>(TYPES.LearnerRepo)
-  .toDynamicValue(() => new LearnerRepo(container.get(TYPES.LearnerModel)));
-container
-  .bind<IProfessionalRepo>(TYPES.ProfesionalRepo)
-  .toDynamicValue(() => new ProfesionalRepo(container.get(TYPES.ProfesionalModel)));
-container
-  .bind<AdminRepo>(TYPES.AdminRepository)
-  .toDynamicValue(() => new AdminRepo(container.get(TYPES.AdminModel)));
+container.bind<Model<IUser>>(TYPES.UserModel).toConstantValue(User);
+// container.bind<Model<IProfessional>>(TYPES.ProfesionalModel).toConstantValue(Professional);
+// container.bind<Model<IAdmin>>(TYPES.AdminModel).toConstantValue(Admin);
+container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
+
+// container
+//   .bind<ILearnerRepo>(TYPES.User)
+//   .toDynamicValue(() => new LearnerRepo(container.get(TYPES.LearnerModel)));
+// container
+//   .bind<IProfessionalRepo>(TYPES.ProfesionalRepo)
+//   .toDynamicValue(() => new ProfesionalRepo(container.get(TYPES.ProfesionalModel)));
+// container
+//   .bind<AdminRepo>(TYPES.AdminRepository)
+//   .toDynamicValue(() => new AdminRepo(container.get(TYPES.AdminModel)));
 
 container.bind(TYPES.TokenService).to(TokenService).inSingletonScope();
 container.bind(TYPES.EmailService).to(EmailService).inSingletonScope();
-container.bind(TYPES.GenerateOtp).to(GenerateOtp).inSingletonScope();
+container.bind(TYPES.OtpService).to(OtpService).inSingletonScope();
 container.bind(TYPES.PasswordService).to(PasswordService).inSingletonScope();
 container.bind(TYPES.CloudinaryService).to(CloudinaryService).inSingletonScope();
 container.bind(TYPES.RoleDtoMapper).to(RoleDtoMapper).inSingletonScope();

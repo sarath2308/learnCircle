@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IAuthController } from "../../../../common/interface/learnerAuthController";
+import { IAuthController } from "../../../../common/interface/IAuthController";
 
 export function learnerAuthRoutes(controller: IAuthController) {
   const router = Router();

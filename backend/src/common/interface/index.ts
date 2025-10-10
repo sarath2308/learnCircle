@@ -1,4 +1,4 @@
 export * from "./IAuthProviderService";
 export * from "./IAuthService";
-export * from "./learnerAuthController";
+export * from "./IAuthController";
 export * from "./IRepoRole";

@@ -8,7 +8,7 @@ import { RedisKeys } from "@/common";
 dotenv.config();
 type Tpayload = { userId: string; role?: string; type?: string };
 
-export interface IToken {
+export interface ITokenService {
   signAccessToken(payload: Tpayload, expiresIn?: string): string;
   signTempToken(payload: Tpayload, expiresIn?: string): string;
   generateRefreshToken(payload: Tpayload): string;

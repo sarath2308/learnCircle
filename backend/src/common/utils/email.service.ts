@@ -10,8 +10,14 @@ interface EmailOptions {
   html: string;
 }
 
+export interface IEmailService {
+  sendSignupOtp: (to: string, otp: string) => Promise<void>;
+  sendForgotPasswordOtp: (to: string, otp: string) => Promise<void>;
+  sendChangeEmailOtp: (to: string, otp: string) => Promise<void>;
+}
+
 @injectable()
-export class EmailService {
+export class EmailService implements IEmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
