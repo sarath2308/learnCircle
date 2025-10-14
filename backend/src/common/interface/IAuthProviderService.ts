@@ -1,3 +1,7 @@
+import { UserResponseDto } from "../dtos";
+import { ITokens } from "../utils";
+
 export interface IAuthProviderService {
-  signIn(token: string): Promise<{ user: IUserDto; tokens: Tokens }>;
+  readonly providerName: string;
+  signIn(token: string, role: string): Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
 }

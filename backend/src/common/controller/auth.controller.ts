@@ -1,11 +1,25 @@
 // import { IAuthController } from "@/learner";
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
-import { LearnerAuthService } from "@/learner";
-import { TYPES } from "@/common";
-import { setTokens } from "@/common";
+import { AppError, Messages, setTokens } from "@/common";
 import { HttpStatus } from "@/common";
-import { IAuthController } from "@/common";
+import { IAuthOrchestrator } from "../services/auth.orchestrator";
+import { Providers } from "../constants/providers";
+import { TYPES } from "@/common";
+
+export interface IAuthController {
+  reqSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  verifyAndSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  resendSignupOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  login(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  forgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  resendForgotOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  verifyForgotOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  logout(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  googleSign(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+}
+
 export interface IResponse {
   user: any;
   accessToken: string;
@@ -13,88 +27,100 @@ export interface IResponse {
 }
 @injectable()
 export class AuthController implements IAuthController {
-  constructor(@inject(TYPES.LearnerAuthService) private learnerAuth: LearnerAuthService) {}
-  async signup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  constructor(@inject(TYPES.IAuthOrchestrator) private _auth: IAuthOrchestrator) {}
+  async reqSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, role } = req.body;
       if (!name || !email || !password) {
         throw new Error("credential missing");
       }
-      const response = await this.learnerAuth.signup(name, email, password);
+      const response = await this._auth.reqSignup(name, email, password, role);
       return res.status(HttpStatus.OK).json(response);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
+      next(error);
+    }
+  }
 
-      if (error.message === "already exist" || error.message === "duplicate_error") {
-        return res.status(409).json({ message: "Email already exists. Please login." });
+  async verifyAndSignup(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { otp, email, token } = req.body;
+      if (!email || !otp) {
+        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
       }
+      const result = await this._auth.signup(email, token, otp);
+      setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);
 
-      return res.status(500).json({ message: error.message || "Internal Server Error" });
+      return res.status(HttpStatus.OK).json({ user: result?.user });
+    } catch (error) {
+      next(error);
     }
   }
 
-  async verifyOtp(req: Request, res: Response) {
-    const { otp, email, type } = req.body;
-    if (!email || !otp) {
-      return res.status(400).json({ message: "Email and OTP are required" });
-    }
+  async resendSignupOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.learnerAuth.verifyOtp(email, otp, type);
-
-      if (type === "forgot") {
-        return res.status(HttpStatus.OK).json({ message: result.message, token: result.tempToken });
-      } else {
-        setTokens(res, result.accessToken!, result.refreshToken);
-
-        return res.status(HttpStatus.OK).json({ user: result.user });
+      const { token } = req.body;
+      if (!token) {
+        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
       }
-    } catch (error: any) {
-      return res.status(400).json({ message: error.message || "OTP verification failed" });
+      let result = await this._auth.resendSignupOtp(token);
+      res.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      next(error);
     }
   }
 
-  async login(req: Request, res: Response) {
-    const { email, password } = req.body;
+  async login(req: Request, res: Response, next: NextFunction) {
+    const { email, password, role } = req.body;
     try {
-      const result: IResponse = await this.learnerAuth.login(email, password);
-      setTokens(res, result.accessToken, result.refreshToken);
+      const result = await this._auth.login(email, password, role);
+      setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);
 
-      res.status(HttpStatus.OK).json({ user: result.user });
-    } catch (error: any) {
-      console.log(error);
-      res.status(401).json({ message: error.message || "Login failed" });
+      res.status(HttpStatus.OK).json({ user: result?.user });
+    } catch (error) {
+      next(error);
     }
   }
 
-  async getOtp(req: Request, res: Response): Promise<Response> {
-    const { email, type } = req.body;
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    const { email, role } = req.body;
     try {
-      if (type === "forgot") {
-        const res = await this.learnerAuth.forgotPassword(email);
-      }
-      return res.status(HttpStatus.OK).json({ message: "OTP sent successfully." });
-    } catch (error: any) {
-      console.error(error);
-      return res
-        .status(401)
-        .json({ message: error.message || "Failed to send OTP. Please try again" });
+      let result = await this._auth.forgotPassword(email, role);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
     }
   }
-
-  async resetPassword(req: Request, res: Response): Promise<Response> {
+  async resendForgotOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token, newPassword } = req.body;
+      const { email, role } = req.body;
+      let result = await this._auth.resendForgotOtp(email, role);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async verifyForgotOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, otp, role } = req.body;
+      let result = await this._auth.verifyForgotOtp(email, otp, role);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, token, newPassword, role } = req.body;
       if (!token || !newPassword) {
         return res.status(400).json({ message: "Token and new password are required" });
       }
 
-      await this.learnerAuth.resetPassword(token, newPassword);
+      let result = await this._auth.resetPassword(token, email, newPassword, role);
 
-      return res.status(HttpStatus.OK).json({ message: "Password changed successfully" });
-    } catch (error: any) {
-      return res.status(400).json({
-        message: "Server error occurred",
-      });
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -102,31 +128,17 @@ export class AuthController implements IAuthController {
     return res.json();
   }
 
-  async resendOtp(req: Request, res: Response): Promise<Response> {
+  async googleSign(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, type } = req.body;
-      await this.learnerAuth.resendOtp(email, type);
-      return res.status(HttpStatus.OK).json({ message: "OTP sent successfully." });
-    } catch (error: any) {
-      console.error(error);
-      return res
-        .status(400)
-        .json({ message: error.message || "Failed to send OTP. Please try again" });
-    }
-  }
-
-  async googleSign(req: Request, res: Response) {
-    try {
-      const { token } = req.body;
+      const { token, role } = req.body;
       if (!token) {
         throw new Error("token missing");
       }
-      const result: IResponse = await this.learnerAuth.googleSign(token);
-      setTokens(res, result.accessToken, result.refreshToken);
-      res.status(HttpStatus.OK).json({ user: result.user });
-    } catch (error: any) {
-      console.error("ithoke sradikande......", error);
-      return res.status(400).json({ message: "something went wrong try after sometime" });
+      const result = await this._auth.providersSignin(Providers.Google, token, role);
+      setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);
+      res.status(HttpStatus.OK).json({ user: result?.user });
+    } catch (error) {
+      next(error);
     }
   }
 }

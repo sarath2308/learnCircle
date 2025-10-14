@@ -19,7 +19,9 @@ export async function verifyGoogleToken(token: string) {
       emailVerified: payload.email_verified,
       sub: payload.sub,
     };
-  } catch (err) {
-    throw new Error("Failed to verify Google token");
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      throw new Error("Failed to verify Google token");
+    }
   }
 }

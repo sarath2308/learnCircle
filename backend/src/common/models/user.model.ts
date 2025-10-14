@@ -4,7 +4,6 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 interface AuthProvider {
   provider: "google" | "github" | "facebook" | "linkedin";
   providerId: string;
-  accessToken?: string;
 }
 
 export interface IUser extends Document {

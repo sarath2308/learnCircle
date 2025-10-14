@@ -3,7 +3,6 @@ import { z } from "zod";
 export const AuthProviderSchema = z.object({
   provider: z.enum(["google", "github", "facebook", "linkedin"]),
   providerId: z.string(),
-  accessToken: z.string().optional(),
 });
 
 export const UserBaseSchema = z.object({

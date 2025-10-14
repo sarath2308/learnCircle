@@ -1,4 +1,4 @@
-import { IToken } from "../utils/token.jwt";
+import { IToken } from "../utils/token.service";
 import { IRedisRepository } from "@/common";
 import { RedisKeys } from "../constants/redisKeys";
 import { inject, injectable } from "inversify";

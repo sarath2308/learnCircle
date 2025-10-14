@@ -1,7 +1,7 @@
 export const RedisKeys = {
   SIGNUP: "signup:",
   FORGOT: "forgot:",
-  RESET: "reset:",
+  RESET_TOKEN: "reset-token:",
   REFRESH: "refresh:",
   EMAIL: "email",
 };

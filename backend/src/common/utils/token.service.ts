@@ -1,9 +1,8 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthConfig } from "@/config/authConfig";
 import { injectable, inject } from "inversify";
-import { TYPES } from "@/common";
-import { RedisRepository } from "@/common";
+import { IRedisRepository, TYPES } from "@/common";
 import { RedisKeys } from "@/common";
 dotenv.config();
 type Tpayload = { userId: string; role?: string; type?: string };
@@ -14,10 +13,22 @@ export interface ITokenService {
   generateRefreshToken(payload: Tpayload): string;
   verifyAccessToken(token: string): JwtPayload | null;
   verifyRefreshToken(token: string): JwtPayload | null;
+  generateTokens(payload: Tpayload): Promise<ITokens>;
+  verifyTempToken(token: string): Promise<ITempTokenRes | null>;
+}
+export interface ITokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface ITempTokenRes {
+  success: boolean;
+  message: string;
+  data: Tpayload;
 }
 @injectable()
-export class TokenService {
-  constructor(@inject(TYPES.RedisRepository) private redisService: RedisRepository<string>) {}
+export class TokenService implements ITokenService {
+  constructor(@inject(TYPES.IRedisRepository) private redisService: IRedisRepository) {}
   signTempToken(payload: Tpayload): string {
     return jwt.sign(payload, AuthConfig.accessTokenSecret, {
       expiresIn: "5m",
@@ -59,6 +70,41 @@ export class TokenService {
     } catch (err) {
       console.log("Refresh token verification failed", err);
       return null;
+    }
+  }
+
+  async generateTokens(payload: Tpayload): Promise<ITokens> {
+    let accessToken = await this.signAccessToken(payload);
+    let refreshToken = await this.generateRefreshToken(payload);
+    return { accessToken, refreshToken };
+  }
+
+  async verifyTempToken(token: string): Promise<ITempTokenRes> {
+    try {
+      const decoded = jwt.verify(token, AuthConfig.accessTokenSecret) as Tpayload;
+      return {
+        success: true,
+        message: "Token is valid",
+        data: decoded,
+      };
+    } catch (error: any) {
+      const decoded = jwt.decode(token) as Tpayload | null;
+
+      if (error instanceof TokenExpiredError) {
+        return {
+          success: false,
+          message: "Token expired",
+          data: decoded ?? { userId: "", type: "unknown" },
+        };
+      } else if (error.name === "JsonWebTokenError") {
+        return {
+          success: false,
+          message: "Invalid token",
+          data: decoded ?? { userId: "", type: "unknown" },
+        };
+      } else {
+        throw error;
+      }
     }
   }
 }

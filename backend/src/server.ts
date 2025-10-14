@@ -4,7 +4,7 @@ import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authenticate } from "@/common";
+import { authenticate, errorHandler, IAuthController } from "@/common";
 
 // Inversify Dependency Injection
 import { container } from "./config/inversify/inversify.config";
@@ -15,20 +15,15 @@ import { RefreshController } from "@/common";
 import { refreshRoutes } from "@/common";
 
 // Learner Controllers and Routes
-import { LearnerAuthController } from "@/learner";
-import { learnerAuthRoutes } from "@/learner";
 import { learnerHomeRoute } from "@/learner";
 import { LearnerHomeController } from "@/learner";
 import { LearnerProfileController } from "@/learner";
 import { learnerProfileRoute } from "@/learner";
 // Professional Controllers and Routes
-import { ProfesionalAuthController } from "@/professionals";
-import { profesionalAuthRoutes } from "@/professionals";
 import { authorizeRoles } from "@/common";
 import { profesionalVerificationRoutes } from "@/professionals";
 import { ProfesionalVerificationController } from "@/professionals";
-import { AdminAuthController } from "@/admin";
-import { adminAuthRoutes } from "@/admin";
+import { authRoutes } from "./common/routes/auth.routes";
 
 dotenv.config();
 const app = express();
@@ -51,28 +46,25 @@ async function startServer() {
   console.log("MongoDB connected");
 
   // Resolved controllers
-  const learnerAuthController = container.get<LearnerAuthController>(TYPES.LearnerAuthController);
-  const learnerHomeController = container.get<LearnerHomeController>(TYPES.LearnerHomeController);
-  const profesionalAuthController = container.get<ProfesionalAuthController>(
-    TYPES.ProfesionalAuthController,
-  );
+  const learnerHomeController = container.get<LearnerHomeController>(TYPES.ILearnerHomeController);
+
   const learnerProfileController = container.get<LearnerProfileController>(
-    TYPES.LearnerProfileController,
+    TYPES.ILearnerProfileController,
   );
   const profesionalVerificationController = container.get<ProfesionalVerificationController>(
-    TYPES.ProfesionalVerificationController,
+    TYPES.IProfesionalVerificationController,
   );
-  const adminAuthController = container.get<AdminAuthController>(TYPES.AdminAuthController);
   //refresh controller
-  const refreshController = container.get<RefreshController>(TYPES.RefreshController);
+  const refreshController = container.get<RefreshController>(TYPES.IRefreshController);
+  const authController = container.get<IAuthController>(TYPES.IAuthController);
   // Routes
-  app.use("/api/auth/learner", learnerAuthRoutes(learnerAuthController));
   app.use(
     "/api/learner/home",
     authenticate,
     authorizeRoles("learner"),
     learnerHomeRoute(learnerHomeController),
   );
+  app.use("/api/auth", authRoutes(authController));
   app.use(
     "/api/learner/profile",
     authenticate,
@@ -82,15 +74,13 @@ async function startServer() {
   app.use("/api/auth", refreshRoutes(refreshController));
 
   //profesional routes
-  app.use("/api/auth/profesional", profesionalAuthRoutes(profesionalAuthController));
   app.use(
     "/api/profesional",
     authenticate,
     authorizeRoles("profesional"),
     profesionalVerificationRoutes(profesionalVerificationController),
   );
-  //admin
-  app.unsubscribe("/api/auth/admin", adminAuthRoutes(adminAuthController));
+  app.use(errorHandler);
   // Connect to Redis
   await connectRedis();
   console.log("Server is ready!");
