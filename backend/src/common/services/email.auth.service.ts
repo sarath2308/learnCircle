@@ -1,43 +1,35 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "../types";
-import { IEmailService, IOtpService, IpasswordService, ITokenService } from "../utils";
-import { RedisKeys } from "../constants";
+import { IEmailService, IOtpService, IpasswordService, ITokenService, OtpData } from "../utils";
+import { HttpStatus, Messages, RedisKeys } from "../constants";
 import { ITokens } from "../utils";
 import { IUserDtoMapper } from "../dtos/mapper/user.map";
 import { UserResponseDto } from "../dtos";
-import { IUserRepo, OtpRes } from "@/common";
-import { IPendingSignupRepo } from "../Repo/pendingSignup.repo";
-export interface IEmailAuthService {
-  reqSignup(data: {
-    name: string;
-    email: string;
-    password: string;
-    role: "learner" | "professional" | "admin";
-  }): Promise<OtpRes | null>;
-  resendSignup(token: string): Promise<OtpRes | null>;
-  signup(
-    email: string,
-    token: string,
-    otp: string,
-  ): Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
-  login(
-    email: string,
-    password: string,
-    role: string,
-  ): Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
-}
+import { AppError, IRedisRepository, IUserRepo, OtpRes } from "@/common";
+import { IEmailAuthService } from "@/common";
 
 @injectable()
 export class EmailAuthService implements IEmailAuthService {
   constructor(
-    @inject(TYPES.IPendingSignup) private _pendingUserRepo: IPendingSignupRepo,
     @inject(TYPES.IUserRepo) private _userRepo: IUserRepo,
+
     @inject(TYPES.IPasswordService) private _passwordService: IpasswordService,
+
     @inject(TYPES.IOtpService) private _otpService: IOtpService,
+
     @inject(TYPES.IEmailService) private _emailService: IEmailService,
+
     @inject(TYPES.ITokenService) private _tokenService: ITokenService,
+
     @inject(TYPES.IUserDtoMapper) private _userDtoMapper: IUserDtoMapper,
+
+    @inject(TYPES.IRedisRepository) private _redisRepo: IRedisRepository,
   ) {}
+  /**
+   *
+   * @param data
+   * @returns
+   */
   async reqSignup(data: {
     name: string;
     email: string;
@@ -47,84 +39,77 @@ export class EmailAuthService implements IEmailAuthService {
     const match = await this._userRepo.findByEmail(data.email);
 
     if (match) {
-      throw new Error("already exist");
+      throw new AppError(Messages.EMAIL_EXISTS, HttpStatus.CONFLICT);
     }
     const otp = await this._otpService.generateOtp();
+
     const passwordHash = await this._passwordService.hashPassword(data.password);
+
     data.password = passwordHash;
-    await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 60);
-    let pendingUser = await this._pendingUserRepo.create({ ...data });
-    let tempToken = await this._tokenService.signTempToken({
-      userId: pendingUser.id,
-      role: pendingUser.role,
-    });
+
+    await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 300);
+
     //email
     await this._emailService.sendSignupOtp(data.email, otp);
 
-    return { message: "otp sent for verification", tempToken };
+    return { message: "otp sent for verification" };
   }
-  async resendSignup(token: string) {
-    const verify = await this._tokenService.verifyTempToken(token);
+  /**
+   *
+   * @param token
+   * @returns
+   */
+  async resendSignupOtp(email: string) {
+    let data = await this._redisRepo.get<OtpData>(`${RedisKeys.SIGNUP}:${email}`);
 
-    if (!verify?.data?.userId) {
-      throw new Error("Invalid or malformed token");
-    }
-
-    const data = await this._pendingUserRepo.findById(verify.data.userId);
     if (!data) {
-      throw new Error("User not found or signup expired");
+      throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
     }
 
     const otp = await this._otpService.generateOtp();
 
     await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 60);
 
-    const tempToken = await this._tokenService.signTempToken({
-      userId: data.id,
+    await this._emailService.sendSignupOtp(data.email, otp);
+
+    return { message: "OTP resent successfully" };
+  }
+  /**
+   *
+   * @param email
+   * @param token
+   * @param otp
+   * @returns
+   */
+  async signup(email: string, otp: string): Promise<{ user: UserResponseDto; tokens: ITokens }> {
+    let data = await this._userRepo.findByEmail(email);
+
+    if (!data) {
+      throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
+
+    const user = await this._userRepo.create({
+      name: data.name,
+      email: data.email,
+      passwordHash: data.passwordHash,
       role: data.role,
     });
 
-    await this._emailService.sendSignupOtp(data.email, otp);
+    // Generate tokens
+    const tokens = await this._tokenService.generateTokens({ userId: user.id, role: user.role });
 
-    return { message: "OTP resent successfully", tempToken };
-  }
+    let userDto = await this._userDtoMapper.toResponse(user);
 
-  async signup(
-    email: string,
-    token: string,
-    otp: string,
-  ): Promise<{ user: UserResponseDto; tokens: ITokens }> {
-    try {
-      let verify = await this._tokenService.verifyTempToken(token);
-      if (!verify?.success) {
-        throw new Error("invalid otp");
-      }
-      if (!verify.data.userId) {
-        throw new Error("userid missing");
-      }
-      let data = await this._pendingUserRepo.findById(verify.data.userId);
-      if (!data) {
-        throw new Error("user not found");
-      }
-      await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
-      const user = await this._userRepo.create({
-        name: data.name,
-        email: data.email,
-        passwordHash: data.passwordHash,
-        role: data.role,
-      });
-      await this._pendingUserRepo.delete(data.id);
-      // Generate tokens
-      const tokens = await this._tokenService.generateTokens({ userId: user.id, role: user.role });
-      let userDto = await this._userDtoMapper.toResponse(user);
-      return { user: userDto, tokens };
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`Signup failed: ${error.message}`);
-      }
-      throw new Error(`Signup failed: ${String(error)}`);
-    }
+    return { user: userDto, tokens };
   }
+  /**
+   *
+   * @param email
+   * @param password
+   * @param role
+   * @returns
+   */
 
   async login(
     email: string,
@@ -132,21 +117,25 @@ export class EmailAuthService implements IEmailAuthService {
     role: string,
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null> {
     let User = await this._userRepo.findWithEmailAndRole(email, role);
+
     if (!User) {
-      throw new Error("user not found");
+      throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     if (User.isBlocked) {
-      throw new Error("blocked user");
+      throw new AppError(Messages.BLOCKED_USER, HttpStatus.UNAUTHORIZED);
     }
     if (!User.passwordHash) {
-      throw new Error("user has used google Account");
+      throw new AppError(Messages.USED_GOOGLE_AUTH, HttpStatus.BAD_REQUEST);
     }
     let passwordCheck = await this._passwordService.comparePassword(User.passwordHash, password);
+
     if (!passwordCheck) {
-      throw new Error("Incorrect password");
+      throw new AppError(Messages.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
     }
     let tokens = await this._tokenService.generateTokens({ userId: User.id, role: User.role });
+
     let userDto = await this._userDtoMapper.toResponse(User);
+
     return { user: userDto, tokens };
   }
 }

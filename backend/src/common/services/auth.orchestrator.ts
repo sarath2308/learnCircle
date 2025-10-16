@@ -1,39 +1,11 @@
 import { inject, injectable, multiInject } from "inversify";
-import { IPasswordResetService } from "./password.reset.service";
+import { IPasswordResetService } from "@/common";
 import { OtpRes, Role, TYPES } from "../types";
-import { IEmailAuthService } from "./email.auth.service";
+import { IEmailAuthService } from "@/common";
 import { IAuthProviderService } from "../interface";
 import { UserResponseDto } from "../dtos";
 import { ITokens } from "../utils";
-
-export interface IAuthOrchestrator {
-  reqSignup: (name: string, email: string, password: string, role: Role) => Promise<OtpRes | null>;
-  signup: (
-    email: string,
-    token: string,
-    otp: string,
-  ) => Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
-  resendSignupOtp: (token: string) => Promise<OtpRes | null>;
-  login: (
-    email: string,
-    password: string,
-    role: string,
-  ) => Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
-  forgotPassword: (email: string, role: string) => Promise<OtpRes | null>;
-  verifyForgotOtp: (email: string, otp: string, role: string) => Promise<OtpRes | null>;
-  resendForgotOtp: (email: string, role: string) => Promise<OtpRes | null>;
-  resetPassword: (
-    token: string,
-    email: string,
-    newPassword: string,
-    role: string,
-  ) => Promise<OtpRes | null>;
-  providersSignin: (
-    providerName: string,
-    token: string,
-    role: string,
-  ) => Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
-}
+import { IAuthOrchestrator } from "../interface";
 @injectable()
 export class AuthOrchestrator implements IAuthOrchestrator {
   private providerMap: Map<string, IAuthProviderService> = new Map();
@@ -63,7 +35,7 @@ export class AuthOrchestrator implements IAuthOrchestrator {
     return await this._emailAuthService.signup(email, token, otp);
   }
   async resendSignupOtp(token: string): Promise<OtpRes | null> {
-    return await this._emailAuthService.resendSignup(token);
+    return await this._emailAuthService.resendSignupOtp(token);
   }
 
   async login(

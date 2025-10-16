@@ -10,13 +10,16 @@ export const Messages = {
   OTP_REQUIRED: "OTP verification is required",
   OTP_INVALID: "Invalid OTP",
   OTP_EXPIRED: "OTP has expired, request a new one",
-
+  EMAIL_EXISTS: "Email is already registered",
+  GOOGLE_AUTH_FAILED: "Google authentication failed. Please try again",
+  USED_GOOGLE_AUTH:
+    "This email is linked to a Google account. Please use Google Sign-In to access your account",
   // General errors
   SERVER_ERROR: "Something went wrong, please try again later",
   BAD_REQUEST: "Bad request - invalid input",
   VALIDATION_ERROR: "Validation failed - check your input",
   NOT_FOUND: "Resource not found",
-
+  BLOCKED_USER: "Your account has been blocked. Please contact support.",
   // Success messages
   LOGIN_SUCCESS: "Logged in successfully",
   LOGOUT_SUCCESS: "Logged out successfully",

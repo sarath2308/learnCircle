@@ -1,37 +1,33 @@
-import { IToken } from "../utils/token.service";
-import { IRedisRepository } from "@/common";
+import { AppError, HttpStatus, IRedisRepository, ITokens, ITokenService, Messages } from "@/common";
 import { RedisKeys } from "../constants/redisKeys";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types/inversify/types";
 
-type refreshRes = {
-  access: string;
-  refresh: string;
-};
 export interface IRefreshTokenService {
-  refreshToken: (token: string) => Promise<refreshRes>;
+  refreshToken: (token: string) => Promise<ITokens>;
 }
 @injectable()
 export class RefreshTokenService implements IRefreshTokenService {
   constructor(
-    @inject(TYPES.TokenService) private jwtService: IToken,
-    @inject(TYPES.RedisRepository) private redisService: IRedisRepository<string>,
+    @inject(TYPES.ITokenService) private _tokenService: ITokenService,
+
+    @inject(TYPES.IRedisRepository) private _redisService: IRedisRepository,
   ) {}
-  async refreshToken(token: string): Promise<refreshRes> {
-    const payload = await this.jwtService.verifyRefreshToken(token);
+  async refreshToken(token: string): Promise<ITokens> {
+    const payload = await this._tokenService.verifyRefreshToken(token);
 
     if (!payload || !payload.userId) {
-      throw new Error("Invalid Refresh token");
+      throw new AppError(Messages.TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED);
     }
+
     const userId = payload.userId;
-    const accessToken = await this.jwtService.signAccessToken({ userId, role: payload.role });
-    if (!accessToken) throw new Error("Failed to generate access token");
 
-    const refreshToken = await this.jwtService.generateRefreshToken({ userId, role: payload.role });
-    if (!refreshToken) throw new Error("Failed to generate refresh token");
+    let tokens = await this._tokenService.generateTokens({
+      userId: payload.userId,
+      role: payload.role,
+    });
 
-    console.log(accessToken, refreshToken);
-    await this.redisService.set(`${RedisKeys.REFRESH}:${userId}`, refreshToken, 604800);
-    return { access: accessToken, refresh: refreshToken };
+    await this._redisService.set(`${RedisKeys.REFRESH}:${userId}`, tokens.refreshToken, 604800);
+    return tokens;
   }
 }

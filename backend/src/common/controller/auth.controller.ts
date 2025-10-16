@@ -3,36 +3,26 @@ import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import { AppError, Messages, setTokens } from "@/common";
 import { HttpStatus } from "@/common";
-import { IAuthOrchestrator } from "../services/auth.orchestrator";
+import { IAuthOrchestrator } from "@/common";
 import { Providers } from "../constants/providers";
 import { TYPES } from "@/common";
+import { IAuthController } from "../interface/IAuthController";
 
-export interface IAuthController {
-  reqSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  verifyAndSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  resendSignupOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  login(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  forgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  resendForgotOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  verifyForgotOtp(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  logout(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  googleSign(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-}
-
-export interface IResponse {
-  user: any;
-  accessToken: string;
-  refreshToken: string;
-}
 @injectable()
 export class AuthController implements IAuthController {
   constructor(@inject(TYPES.IAuthOrchestrator) private _auth: IAuthOrchestrator) {}
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns
+   */
   async reqSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const { name, email, password, role } = req.body;
       if (!name || !email || !password) {
-        throw new Error("credential missing");
+        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
       }
       const response = await this._auth.reqSignup(name, email, password, role);
       return res.status(HttpStatus.OK).json(response);
@@ -41,7 +31,13 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
-
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns
+   */
   async verifyAndSignup(req: Request, res: Response, next: NextFunction) {
     try {
       const { otp, email, token } = req.body;
@@ -56,7 +52,12 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
-
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   async resendSignupOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
@@ -70,6 +71,12 @@ export class AuthController implements IAuthController {
     }
   }
 
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   async login(req: Request, res: Response, next: NextFunction) {
     const { email, password, role } = req.body;
     try {
@@ -81,7 +88,12 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
-
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   async forgotPassword(req: Request, res: Response, next: NextFunction) {
     const { email, role } = req.body;
     try {
@@ -91,6 +103,12 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   async resendForgotOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, role } = req.body;
@@ -100,6 +118,12 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   async verifyForgotOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, otp, role } = req.body;
@@ -109,6 +133,13 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns
+   */
   async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, token, newPassword, role } = req.body;
@@ -123,16 +154,26 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
-
+  /**
+   *
+   * @param req
+   * @param res
+   * @returns
+   */
   async logout(req: Request, res: Response): Promise<Response> {
     return res.json();
   }
-
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   async googleSign(req: Request, res: Response, next: NextFunction) {
     try {
       const { token, role } = req.body;
       if (!token) {
-        throw new Error("token missing");
+        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
       }
       const result = await this._auth.providersSignin(Providers.Google, token, role);
       setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);

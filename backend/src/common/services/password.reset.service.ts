@@ -2,14 +2,10 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
 import { IEmailService, IOtpService, IpasswordService, ITokenService } from "../utils";
 import { IUserRepo } from "../Repo";
-import { RedisKeys } from "../constants";
+import { HttpStatus, Messages, RedisKeys } from "../constants";
 import { OtpRes } from "../types";
-export interface IPasswordResetService {
-  reqResetOtp(email: string, role: string): Promise<OtpRes | null>;
-  resendOtp(email: string, role: string): Promise<OtpRes | null>;
-  verify(email: string, otp: string): Promise<OtpRes | null>;
-  reset(token: string, email: string, newPassword: string): Promise<OtpRes | null>;
-}
+import { IPasswordResetService } from "../interface/IPasswordResetService";
+import { AppError } from "../errors/app.error";
 @injectable()
 export class PasswordResetService implements IPasswordResetService {
   constructor(
@@ -24,7 +20,7 @@ export class PasswordResetService implements IPasswordResetService {
       const match = await this._userRepo.findWithEmailAndRole(email, role);
 
       if (!match) {
-        throw new Error("User not found");
+        throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
       const otp = this._otpService.generateOtp();
 
@@ -50,7 +46,7 @@ export class PasswordResetService implements IPasswordResetService {
     try {
       let match = await this._userRepo.findByEmail(email);
       if (!match) {
-        throw new Error("user not found");
+        throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
       const otp = this._otpService.generateOtp();
 
@@ -75,13 +71,13 @@ export class PasswordResetService implements IPasswordResetService {
   async verify(email: string, otp: string): Promise<OtpRes | null> {
     const stored = await this._otpService.verifyOtp(`${RedisKeys.FORGOT}:${email}`, otp);
     if (!stored) {
-      throw new Error("OTP expired or not found");
+      throw new AppError(Messages.OTP_EXPIRED, HttpStatus.NOT_FOUND);
     }
 
     try {
       const user = await this._userRepo.findByEmail(email);
       if (!user) {
-        throw new Error("User not found for OTP verification");
+        throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
       const tempToken = await this._tokenService.signTempToken({ userId: user.id, type: "reset" });
       await this._otpService.storeOtp(
@@ -106,7 +102,7 @@ export class PasswordResetService implements IPasswordResetService {
       }
       let match = await this._userRepo.findByEmail(email);
       if (!match) {
-        throw new Error("user not found");
+        throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
       let passwordHash = await this._passwordService.hashPassword(newPassword);
       await this._userRepo.updatePassword(match.id, passwordHash);
