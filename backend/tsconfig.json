@@ -13,8 +13,12 @@
     "sourceMap": true,
     "types": ["node"],
     "isolatedModules": true,
-    "experimentalDecorators": true,     // ✅ enable decorators
-    "emitDecoratorMetadata": true       // ✅ emit type metadata for Inversify
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": "./src",              // ✅ set baseUrl to src
+    "paths": {
+      "@/*": ["*"]                   // ✅ map @/ to src/
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

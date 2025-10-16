@@ -1,0 +1,33 @@
+export const TYPES = {
+  ILearnerProfileModel: Symbol.for("ILearnerModel"),
+  IUserModel: Symbol.for("IUserModel"), //models
+  IPendingSignup: Symbol.for("IPendingSignup"),
+  IProfessionalProfileModel: Symbol.for("ProfesionalModel"),
+  IAdminProfileModel: Symbol.for("AdminModel"),
+  ILearnerProfileRepo: Symbol.for("LearnerRepo"), //Repos
+  IPendingSignupRepo: Symbol.for("IPendingSignupRepo"),
+  IProfesionalProfileRepo: Symbol.for("ProfesionalRepo"),
+  IRedisRepository: Symbol.for("RedisRepository"),
+  IAdminProfile: Symbol.for("AdminRepository"),
+  IUserRepo: Symbol.for("IUserRepo"),
+  ILearnerHomeService: Symbol.for("LearnerHomeServices"),
+  ILearnerProfileService: Symbol.for("LearnerProfileService"),
+  IProfesionalVerificationService: Symbol.for("ProfesionalVerificationService"),
+  ILearnerHomeController: Symbol.for("LearnerHomeController"),
+  ILearnerProfileController: Symbol.for("LearnerProfileController"),
+  IProfesionalVerificationController: Symbol.for("ProfesionalVerificationController"),
+  IRefreshController: Symbol.for("RefreshController"),
+  IEmailAuthService: Symbol.for("IEmailAuthService"),
+  IAuthOrchestrator: Symbol.for(" IAuthOrchestrator"),
+  ITokenService: Symbol.for("ITokenService"), //common-services
+  IPasswordResetService: Symbol.for("IPasswordResetService"),
+  IRoleRepoFactory: Symbol.for("IRoleRepoFactory"),
+  IEmailService: Symbol.for("EmailService"),
+  IOtpService: Symbol.for("OtpService"),
+  IPasswordService: Symbol.for("PasswordService"),
+  IRefreshService: Symbol.for("RefreshService"),
+  ICloudinaryService: Symbol.for("CloudinaryService"),
+  IUserDtoMapper: Symbol.for("IUserDtoMapper"),
+  IProviderAuth: Symbol.for("IProviderAuth"),
+  IAuthController: Symbol.for("IAuthController"),
+};

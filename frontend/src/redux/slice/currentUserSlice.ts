@@ -9,6 +9,7 @@ export interface ICurrentUser {
   profileImg?: string;
   joinedAt?: Date;
   lastLogin?: Date;
+  hasPassword: boolean;
 }
 export interface ICurrentUserState {
   currentUser?: ICurrentUser;
@@ -19,8 +20,12 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setCurrentUser: (state, action: PayloadAction<ICurrentUser>) => {
-      state.currentUser = action.payload;
+    setCurrentUser: (state, action: PayloadAction<Partial<ICurrentUser>>) => {
+      if (!state.currentUser) {
+        state.currentUser = { ...action.payload } as ICurrentUser;
+      } else {
+        Object.assign(state.currentUser, action.payload);
+      }
     },
     clearCurrentUser: (state) => {
       state.currentUser = undefined;

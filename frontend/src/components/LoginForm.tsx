@@ -4,11 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import { React } from "react";
 interface LoginFormProps {
   role: "learner" | "profesional" | "admin";
   onSubmit: (role: string, data: { email: string; password: string }) => Promise<void>;
-  onBack: () => void;
-  onSwitchToSignup: () => void;
+  onBack?: () => void;
+  onSwitchToSignup?: () => void;
   onForgotPassword: () => void;
   handleGoogleSign: (role: string, credentials: object) => void;
 }
@@ -70,17 +71,19 @@ const LoginForm = ({
     }
   };
 
-  const roleTitle = role === "learner" ? "Learner" : "Professional";
+  const roleTitle = role;
 
   return (
     <div className="w-full max-w-md mx-auto my-8 animate-fade-in">
-      <button
-        onClick={onBack}
-        className="mb-6 flex border-1 rounded-2xl  p-2 items-center text-gray-500 hover:text-black"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Role Selection
-      </button>
+      {role !== "admin" && (
+        <button
+          onClick={onBack}
+          className="mb-6 flex border-1 rounded-2xl  p-2 items-center text-gray-500 hover:text-black"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Role Selection
+        </button>
+      )}
 
       <Card className="shadow-md border border-gray-300">
         <CardHeader className="text-center">
@@ -88,10 +91,12 @@ const LoginForm = ({
           <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <GoogleLogin
-            onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
-            onError={() => console.error("Login Failed")}
-          />
+          {role !== "admin" && (
+            <GoogleLogin
+              onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
+              onError={() => console.error("Login Failed")}
+            />
+          )}
 
           {/* Divider */}
           <div className="relative">
@@ -176,15 +181,17 @@ const LoginForm = ({
           </form>
 
           {/* Switch to Signup */}
-          <div className="text-center mt-2">
-            <button
-              type="button"
-              onClick={onSwitchToSignup}
-              className="text-sm text-gray-500 hover:text-black"
-            >
-              Don`t have an account? Sign up
-            </button>
-          </div>
+          {role !== "admin" && (
+            <div className="text-center mt-2">
+              <button
+                type="button"
+                onClick={onSwitchToSignup}
+                className="text-sm text-gray-500 hover:text-black"
+              >
+                Don`t have an account? Sign up
+              </button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -13,6 +13,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         await api.post("/auth/refresh-token");
+        console.log("refresh called from frontend");
         return api(originalRequest);
       } catch {
         window.location.href = "/";
