@@ -9,24 +9,41 @@ import { IAuthOrchestrator } from "../interface";
 @injectable()
 export class AuthOrchestrator implements IAuthOrchestrator {
   private providerMap: Map<string, IAuthProviderService> = new Map();
+
   constructor(
     @inject(TYPES.IEmailAuthService) private _emailAuthService: IEmailAuthService,
+
     @inject(TYPES.IPasswordResetService) private _passwordResetService: IPasswordResetService,
+
     @multiInject(TYPES.IProviderAuth) private _providers: IAuthProviderService[],
   ) {
     for (const provider of _providers) {
       this.providerMap.set(provider.providerName, provider);
     }
   }
+  /**
+   *
+   * @param name
+   * @param email
+   * @param password
+   * @param role
+   * @returns
+   */
   async reqSignup(
     name: string,
     email: string,
     password: string,
     role: Role,
   ): Promise<OtpRes | null> {
-    let result = await this._emailAuthService.reqSignup({ name, email, password, role });
-    return result;
+    return await this._emailAuthService.reqSignup({ name, email, password, role });
   }
+  /**
+   *
+   * @param email
+   * @param token
+   * @param otp
+   * @returns
+   */
   async signup(
     email: string,
     token: string,
@@ -34,41 +51,79 @@ export class AuthOrchestrator implements IAuthOrchestrator {
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null> {
     return await this._emailAuthService.signup(email, token, otp);
   }
+  /**
+   *
+   * @param token
+   * @returns
+   */
   async resendSignupOtp(token: string): Promise<OtpRes | null> {
     return await this._emailAuthService.resendSignupOtp(token);
   }
-
+  /**
+   *
+   * @param email
+   * @param password
+   * @param role
+   * @returns
+   */
   async login(
     email: string,
     password: string,
     role: string,
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null> {
-    let result = await this._emailAuthService.login(email, password, role);
-    return result;
+    return await this._emailAuthService.login(email, password, role);
   }
+  /**
+   *
+   * @param email
+   * @param role
+   * @returns
+   */
   async forgotPassword(email: string, role: string): Promise<OtpRes | null> {
-    let result = await this._passwordResetService.reqResetOtp(email, role);
-    return result;
+    return await this._passwordResetService.reqResetOtp(email, role);
   }
+  /**
+   *
+   * @param email
+   * @param otp
+   * @returns
+   */
   async verifyForgotOtp(email: string, otp: string): Promise<OtpRes | null> {
-    let res = await this._passwordResetService.verify(email, otp);
-    return res;
+    return await this._passwordResetService.verify(email, otp);
   }
+  /**
+   *
+   * @param email
+   * @param role
+   * @returns
+   */
   async resendForgotOtp(email: string, role: string): Promise<OtpRes | null> {
-    let res = await this._passwordResetService.resendOtp(email, role);
-    return res;
+    return await this._passwordResetService.resendOtp(email, role);
   }
+  /**
+   *
+   * @param token
+   * @param email
+   * @param newPassword
+   * @returns
+   */
   async resetPassword(token: string, email: string, newPassword: string): Promise<OtpRes | null> {
-    let res = await this._passwordResetService.reset(token, email, newPassword);
-    return res;
+    return await this._passwordResetService.reset(token, email, newPassword);
   }
-
+  /**
+   *
+   * @param providerName
+   * @param token
+   * @param role
+   * @returns
+   */
   async providersSignin(
     providerName: string,
     token: string,
     role: string,
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null> {
     const provider = this.providerMap.get(providerName);
+
     if (!provider) throw new Error(`Unsupported provider: ${providerName}`);
     return await provider.signIn(token, role);
   }

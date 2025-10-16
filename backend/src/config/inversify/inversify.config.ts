@@ -25,12 +25,12 @@ import { LearnerHomeController } from "@/learner";
 import { LearnerProfileController } from "@/learner";
 import { CloudinaryService } from "@/common";
 import { ProfesionalVerificationController } from "@/professionals";
-import { RepositoryFactory } from "@/common/services/roleRepoFatcory.service";
 import { IUserRepo, UserRepo } from "@/common";
 import { UserDtoMapper } from "@/common/dtos/mapper/user.map";
 import { PendingSignup } from "@/common/models/pendingUser.model";
 import { IPendingSignupRepo, PendingSignupRepo } from "@/common/Repo/pendingSignup.repo";
-import { AuthOrchestrator, IAuthOrchestrator } from "@/common/services/auth.orchestrator";
+import { AuthOrchestrator } from "@/common/services/auth.orchestrator";
+import { IAuthOrchestrator } from "@/common";
 export const container = new Container();
 
 // Bindings
@@ -55,7 +55,6 @@ container.bind(TYPES.IOtpService).to(OtpService).inSingletonScope();
 container.bind(TYPES.IPasswordService).to(PasswordService).inSingletonScope();
 container.bind(TYPES.ICloudinaryService).to(CloudinaryService).inSingletonScope();
 container.bind(TYPES.IEmailAuthService).to(EmailAuthService).inSingletonScope();
-container.bind(TYPES.IRoleRepoFactory).to(RepositoryFactory).inSingletonScope();
 container.bind(TYPES.IRedisRepository).toConstantValue(new RedisRepository(redisClient));
 container.bind(TYPES.IUserDtoMapper).to(UserDtoMapper).inSingletonScope();
 container.bind(TYPES.IPendingSignup).to(PendingSignup);
