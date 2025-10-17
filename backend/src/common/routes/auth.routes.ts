@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IAuthController } from "../controller";
+import { IAuthController } from "@/common";
 
 export function authRoutes(controller: IAuthController) {
   const router = Router();

@@ -21,6 +21,7 @@ export class AuthController implements IAuthController {
   async reqSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const { name, email, password, role } = req.body;
+
       if (!name || !email || !password) {
         throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
       }
