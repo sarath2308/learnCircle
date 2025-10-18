@@ -33,14 +33,13 @@ export const VerifySignupOtpSchema = z.object({
   body: z.object({
     email: z.string().email(),
     otp: z.string().min(4),
-    token: z.string(),
   }),
 });
 
 // Resend signup OTP
 export const ResendSignupOtpSchema = z.object({
   body: z.object({
-    token: z.string(),
+    email: z.string(),
   }),
 });
 
@@ -50,16 +49,9 @@ export const LoginRequestSchema = z
     body: z.object({
       email: z.string().email().optional(),
       password: z.string().min(6).optional(),
-      provider: z.enum(["google", "github", "facebook", "linkedin"]).optional(),
-      providerId: z.string().optional(),
       role: z.enum(["learner", "professional", "admin"]).optional(),
     }),
   })
-  .refine(
-    (data) =>
-      (data.body.email && data.body.password) || (data.body.provider && data.body.providerId),
-    { message: "Either email/password or provider/providerId is required" },
-  );
 
 // Forgot password
 export const ForgotPasswordSchema = z.object({
@@ -90,7 +82,6 @@ export const VerifyForgotOtpSchema = z.object({
 export const ResetPasswordSchema = z.object({
   body: z.object({
     email: z.string().email(),
-    token: z.string(),
     newPassword: z.string().min(6),
     role: z.enum(["learner", "professional", "admin"]).optional(),
   }),
@@ -107,7 +98,7 @@ export const GoogleLoginSchema = z.object({
 // ----------------- Response Schemas -----------------
 
 export const UserResponseSchema = z.object({
-  _id: z.string(),
+  id: z.string(),
   name: z.string(),
   email: z.string(),
   role: z.enum(["learner", "professional", "admin"]),

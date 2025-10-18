@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { RefreshCw } from "lucide-react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 interface OTPVerificationFormProps {
   role: string | null;

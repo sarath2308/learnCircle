@@ -11,7 +11,6 @@ export interface IEmailAuthService {
   resendSignupOtp(email: string): Promise<OtpRes | null>;
   signup(
     email: string,
-    token: string,
     otp: string,
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
   login(

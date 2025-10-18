@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { GoogleLogin } from "@react-oauth/google";
 
 interface SignupFormProps {

@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setCurrentUser } from "../../redux/slice/currentUserSlice";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 import api from "../../api/api";
 export const useLogin = () => {
@@ -10,7 +10,7 @@ export const useLogin = () => {
 
   const login = async (role: string, data: { email: string; password: string }) => {
     try {
-      const res = await api.post(`/auth/${role}/login`, { ...data, role });
+      const res = await api.post("/auth/login", { ...data, role });
       toast.success("login success");
       dispatch(setCurrentUser(res.data.user));
       navigate(`/${role}/home`);

@@ -3,10 +3,10 @@ import { useState } from "react";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "@/hooks/auth/useSignup";
+import { useSignup } from "@/hooks/auth/useReqSignup";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useGoogle } from "@/hooks/auth/useGoogleAuth";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 const ProfesionalSign = () => {
   const [view, setView] = useState("login");

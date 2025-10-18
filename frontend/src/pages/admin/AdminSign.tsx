@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LoginForm from "@/components/LoginForm";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useGoogle } from "@/hooks/auth/useGoogleAuth";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 const AdminSign = () => {
   const navigate = useNavigate();

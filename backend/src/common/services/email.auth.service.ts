@@ -5,7 +5,9 @@ import { HttpStatus, Messages, RedisKeys } from "../constants";
 import { ITokens } from "../utils";
 import { IUserDtoMapper } from "../dtos/mapper/user.map";
 import { UserResponseDto } from "../dtos";
-import { AppError, IRedisRepository, IUserRepo, OtpRes } from "@/common";
+import { AppError, OtpRes } from "@/common";
+import { IRedisRepository } from "../Repo";
+import { IUserRepo } from "../Repo";
 import { IEmailAuthService } from "@/common";
 
 @injectable()
@@ -82,17 +84,12 @@ export class EmailAuthService implements IEmailAuthService {
    * @returns
    */
   async signup(email: string, otp: string): Promise<{ user: UserResponseDto; tokens: ITokens }> {
-    let data = await this._userRepo.findByEmail(email);
-
-    if (!data) {
-      throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-    await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
-
+    let data = await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
+    console.log(`email${email},otp${otp}`)
     const user = await this._userRepo.create({
       name: data.name,
       email: data.email,
-      passwordHash: data.passwordHash,
+      passwordHash: data.password,
       role: data.role,
     });
 

@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Edit, Lock, Send, Check, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { React } from "react";
 interface EditProfileDialogProps {
   userData: {

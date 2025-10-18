@@ -1,15 +1,16 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/api/authApi";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 export const useResetPassword = () => {
-  return useMutation({
+  const resetPassword = useMutation({
     mutationFn: authApi.resetPassword,
-    onSuccess: () => {
-      toast.success("Password Changed successfully");
+    onSuccess: (res) => {
+      toast.success(res.message || "Password Changed");
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Failed to reset password");
+    onError: (err) => {
+      toast.error(err.message || "Failed to reset password");
     },
   });
+  return resetPassword;
 };

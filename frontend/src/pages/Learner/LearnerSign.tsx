@@ -3,28 +3,37 @@ import { useState } from "react";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "@/hooks/auth/useSignup";
+import { useReqSignup } from "@/hooks/auth/useReqSignup";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useGoogle } from "@/hooks/auth/useGoogleAuth";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setSignupData } from "@/redux/slice/signupSlice";
 
 const LearnerSign = () => {
   const [view, setView] = useState("login");
+
   const navigate = useNavigate();
+
   const { login } = useLogin();
-  const { signup } = useSignup();
+
+  const { mutate: reqSignup } = useReqSignup();
+
   const { mutateAsync, isPending } = useGoogle();
 
+  const dispatch = useDispatch();
   const onSignUp = useCallback(
     async (role: string, data: { name: string; email: string; password: string }) => {
       try {
-        const result = await signup(role, data);
+        const result = await reqSignup({ ...data, role });
+        dispatch(setSignupData({ email: data.email, role: role }));
+        navigate("/auth/signup/verify-otp");
         console.log(result);
       } catch (err) {
         console.error(err);
       }
     },
-    [signup],
+    [reqSignup],
   );
 
   const onLogin = useCallback(

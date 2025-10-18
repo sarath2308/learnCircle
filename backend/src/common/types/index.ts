@@ -1,4 +1,3 @@
-export * from "./multer/express";
 export * from "../interface/IAuthService";
 export * from "./inversify/types";
 export * from "./common/role.type";

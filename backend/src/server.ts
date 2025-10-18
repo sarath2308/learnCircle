@@ -4,14 +4,16 @@ import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authenticate, errorHandler, IAuthController } from "@/common";
+import { authenticate } from "./common/middleware";
+import { errorHandler } from "./common/middleware";
+import { IAuthController } from "@/common";
 
 // Inversify Dependency Injection
 import { container } from "./config/inversify/inversify.config";
 import { TYPES } from "./common/types/inversify/types";
 
 // Common
-import { RefreshController } from "@/common";
+import { RefreshController } from "./common/controller";
 import { refreshRoutes } from "@/common";
 
 // Learner Controllers and Routes
@@ -20,7 +22,7 @@ import { LearnerHomeController } from "@/learner";
 import { LearnerProfileController } from "@/learner";
 import { learnerProfileRoute } from "@/learner";
 // Professional Controllers and Routes
-import { authorizeRoles } from "@/common";
+import { authorizeRoles } from "./common/middleware";
 import { profesionalVerificationRoutes } from "@/professionals";
 import { ProfesionalVerificationController } from "@/professionals";
 import { authRoutes } from "./common/routes/auth.routes";
@@ -46,40 +48,40 @@ async function startServer() {
   console.log("MongoDB connected");
 
   // Resolved controllers
-  const learnerHomeController = container.get<LearnerHomeController>(TYPES.ILearnerHomeController);
+  // const learnerHomeController = container.get<LearnerHomeController>(TYPES.ILearnerHomeController);
 
-  const learnerProfileController = container.get<LearnerProfileController>(
-    TYPES.ILearnerProfileController,
-  );
-  const profesionalVerificationController = container.get<ProfesionalVerificationController>(
-    TYPES.IProfesionalVerificationController,
-  );
+  // const learnerProfileController = container.get<LearnerProfileController>(
+  //   TYPES.ILearnerProfileController,
+  // );
+  // const profesionalVerificationController = container.get<ProfesionalVerificationController>(
+  //   TYPES.IProfesionalVerificationController,
+  // );
   //refresh controller
   const refreshController = container.get<RefreshController>(TYPES.IRefreshController);
   const authController = container.get<IAuthController>(TYPES.IAuthController);
   // Routes
-  app.use(
-    "/api/learner/home",
-    authenticate,
-    authorizeRoles("learner"),
-    learnerHomeRoute(learnerHomeController),
-  );
+  // app.use(
+  //   "/api/learner/home",
+  //   authenticate,
+  //   authorizeRoles("learner"),
+  //   learnerHomeRoute(learnerHomeController),
+  // );
   app.use("/api/auth", authRoutes(authController));
-  app.use(
-    "/api/learner/profile",
-    authenticate,
-    authorizeRoles("learner"),
-    learnerProfileRoute(learnerProfileController),
-  );
+  // app.use(
+  //   "/api/learner/profile",
+  //   authenticate,
+  //   authorizeRoles("learner"),
+  //   learnerProfileRoute(learnerProfileController),
+  // );
   app.use("/api/auth", refreshRoutes(refreshController));
 
   //profesional routes
-  app.use(
-    "/api/profesional",
-    authenticate,
-    authorizeRoles("profesional"),
-    profesionalVerificationRoutes(profesionalVerificationController),
-  );
+  // app.use(
+  //   "/api/profesional",
+  //   authenticate,
+  //   authorizeRoles("profesional"),
+  //   profesionalVerificationRoutes(profesionalVerificationController),
+  // );
   app.use(errorHandler);
   // Connect to Redis
   await connectRedis();

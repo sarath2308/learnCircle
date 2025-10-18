@@ -7,7 +7,7 @@ import profilePicture from "@/assets/profile.jpg";
 import EditProfileDialog from "@/components/EditProfile";
 import { useUpdateAvatar } from "@/hooks/learner/profile/useUpdateAvatar";
 import { useUpdatProfile } from "@/hooks/learner/profile/useUpdateProfile";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { useGetProfile } from "@/hooks/learner/profile/useGetProfile";
 import { React } from "react";
 

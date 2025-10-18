@@ -6,7 +6,6 @@ export interface IAuthOrchestrator {
   reqSignup: (name: string, email: string, password: string, role: Role) => Promise<OtpRes | null>;
   signup: (
     email: string,
-    token: string,
     otp: string,
   ) => Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
   resendSignupOtp: (token: string) => Promise<OtpRes | null>;

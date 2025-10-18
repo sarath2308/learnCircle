@@ -46,18 +46,17 @@ export class AuthOrchestrator implements IAuthOrchestrator {
    */
   async signup(
     email: string,
-    token: string,
     otp: string,
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null> {
-    return await this._emailAuthService.signup(email, token, otp);
+    return await this._emailAuthService.signup(email, otp);
   }
   /**
    *
    * @param token
    * @returns
    */
-  async resendSignupOtp(token: string): Promise<OtpRes | null> {
-    return await this._emailAuthService.resendSignupOtp(token);
+  async resendSignupOtp(email: string): Promise<OtpRes | null> {
+    return await this._emailAuthService.resendSignupOtp(email);
   }
   /**
    *

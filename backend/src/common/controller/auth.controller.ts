@@ -1,7 +1,8 @@
 // import { IAuthController } from "@/learner";
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
-import { AppError, Messages, setTokens } from "@/common";
+import { AppError, Messages } from "@/common";
+import { setTokens } from "../middleware";
 import { HttpStatus } from "@/common";
 import { IAuthOrchestrator } from "@/common";
 import { Providers } from "../constants/providers";
@@ -21,10 +22,6 @@ export class AuthController implements IAuthController {
   async reqSignup(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const { name, email, password, role } = req.body;
-
-      if (!name || !email || !password) {
-        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
-      }
       const response = await this._auth.reqSignup(name, email, password, role);
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
@@ -41,11 +38,8 @@ export class AuthController implements IAuthController {
    */
   async verifyAndSignup(req: Request, res: Response, next: NextFunction) {
     try {
-      const { otp, email, token } = req.body;
-      if (!email || !otp) {
-        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
-      }
-      const result = await this._auth.signup(email, token, otp);
+      const { otp, email } = req.body;
+      const result = await this._auth.signup(email, otp);
       setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);
 
       return res.status(HttpStatus.OK).json({ user: result?.user });
@@ -61,11 +55,9 @@ export class AuthController implements IAuthController {
    */
   async resendSignupOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token } = req.body;
-      if (!token) {
-        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
-      }
-      let result = await this._auth.resendSignupOtp(token);
+      const { email } = req.body;
+    
+      let result = await this._auth.resendSignupOtp(email);
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
       next(error);
@@ -144,10 +136,7 @@ export class AuthController implements IAuthController {
   async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, token, newPassword, role } = req.body;
-      if (!token || !newPassword) {
-        return res.status(400).json({ message: "Token and new password are required" });
-      }
-
+  
       let result = await this._auth.resetPassword(token, email, newPassword, role);
 
       return res.status(HttpStatus.OK).json(result);
@@ -173,9 +162,6 @@ export class AuthController implements IAuthController {
   async googleSign(req: Request, res: Response, next: NextFunction) {
     try {
       const { token, role } = req.body;
-      if (!token) {
-        throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
-      }
       const result = await this._auth.providersSignin(Providers.Google, token, role);
       setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);
       res.status(HttpStatus.OK).json({ user: result?.user });

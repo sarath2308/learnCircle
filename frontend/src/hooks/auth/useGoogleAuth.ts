@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/api/authApi";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { setCurrentUser } from "@/redux/slice/currentUserSlice";
 import { useDispatch } from "react-redux";
 export const useGoogle = () => {
