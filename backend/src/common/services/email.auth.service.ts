@@ -50,6 +50,7 @@ export class EmailAuthService implements IEmailAuthService {
     data.password = passwordHash;
 
     await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 300);
+    console.log("Saving key:", `${RedisKeys.SIGNUP}:${data.email}`);
 
     //email
     await this._emailService.sendSignupOtp(data.email, otp);
@@ -70,7 +71,7 @@ export class EmailAuthService implements IEmailAuthService {
 
     const otp = await this._otpService.generateOtp();
 
-    await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 60);
+    await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 300);
 
     await this._emailService.sendSignupOtp(data.email, otp);
 
@@ -84,8 +85,9 @@ export class EmailAuthService implements IEmailAuthService {
    * @returns
    */
   async signup(email: string, otp: string): Promise<{ user: UserResponseDto; tokens: ITokens }> {
+    console.log("Verifying key:", `${RedisKeys.SIGNUP}:${email}`);
     let data = await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
-    console.log(`email${email},otp${otp}`)
+    console.log(`email${email},otp${otp}`);
     const user = await this._userRepo.create({
       name: data.name,
       email: data.email,

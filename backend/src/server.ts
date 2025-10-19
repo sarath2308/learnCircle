@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
+import expressWinston from "express-winston";
+import logger from "./logs/logger";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { authenticate } from "./common/middleware";
@@ -40,6 +42,23 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  expressWinston.logger({
+    winstonInstance: logger,
+    meta: true,
+    msg: "HTTP {{req.method}} {{req.url}} | status: {{res.statusCode}} | responseTime: {{res.responseTime}}ms",
+    requestWhitelist: ["body", "params", "query"], // remove headers
+    responseWhitelist: ["body"],
+    dynamicMeta: (req, res) => {
+      // remove sensitive data
+      const safeBody = { ...req.body };
+      if (safeBody.password) delete safeBody.password;
+      return { req: { body: safeBody } };
+    },
+    colorize: false,
+  }),
+);
 
 async function startServer() {
   // Connect to MongoDB
@@ -82,6 +101,12 @@ async function startServer() {
   //   authorizeRoles("profesional"),
   //   profesionalVerificationRoutes(profesionalVerificationController),
   // );
+  app.use(
+    expressWinston.errorLogger({
+      winstonInstance: logger,
+      msg: "ERROR {{req.method}} {{req.url}} => {{err.message}}",
+    }),
+  );
   app.use(errorHandler);
   // Connect to Redis
   await connectRedis();

@@ -5,15 +5,18 @@ const signupSlice = createSlice({
   initialState: {
     email: "",
     role: "",
+    tempToken: "",
   },
   reducers: {
     setSignupData: (state, action) => {
       state.email = action.payload.email;
       state.role = action.payload.role;
+      state.tempToken = action.payload.token || "";
     },
     clearSignupData: (state) => {
       state.email = "";
       state.role = "";
+      state.tempToken = "";
     },
   },
 });

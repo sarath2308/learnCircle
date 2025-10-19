@@ -44,14 +44,13 @@ export const ResendSignupOtpSchema = z.object({
 });
 
 // Login (email/password or provider)
-export const LoginRequestSchema = z
-  .object({
-    body: z.object({
-      email: z.string().email().optional(),
-      password: z.string().min(6).optional(),
-      role: z.enum(["learner", "professional", "admin"]).optional(),
-    }),
-  })
+export const LoginRequestSchema = z.object({
+  body: z.object({
+    email: z.string().email().optional(),
+    password: z.string().min(6).optional(),
+    role: z.enum(["learner", "professional", "admin"]).optional(),
+  }),
+});
 
 // Forgot password
 export const ForgotPasswordSchema = z.object({
@@ -81,6 +80,7 @@ export const VerifyForgotOtpSchema = z.object({
 // Reset password
 export const ResetPasswordSchema = z.object({
   body: z.object({
+    token: z.string(),
     email: z.string().email(),
     newPassword: z.string().min(6),
     role: z.enum(["learner", "professional", "admin"]).optional(),

@@ -9,7 +9,7 @@ export interface IUserDtoMapper {
 export class UserDtoMapper implements IUserDtoMapper {
   async toResponse(user: IUser): Promise<UserResponseDto> {
     const plainUser = user.toObject ? user.toObject() : user;
-    
+
     const transformedUser = {
       ...plainUser,
       id: plainUser._id?.toString?.() || plainUser._id,

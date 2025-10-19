@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { React } from "react";
+import type { Roles } from "@/types/role.type";
 interface LoginFormProps {
-  role: "learner" | "profesional" | "admin";
+  role: Roles;
   onSubmit: (role: string, data: { email: string; password: string }) => Promise<void>;
   onBack?: () => void;
   onSwitchToSignup?: () => void;

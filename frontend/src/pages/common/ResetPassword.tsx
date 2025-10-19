@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useResetPassword } from "@/hooks/auth/useResetPassword";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
+import toast from "react-hot-toast";
 const ResetPassword = () => {
-  const { mutate: resetPassword, isPending } = useResetPassword();
+  const { mutateAsync: resetPassword, isPending } = useResetPassword();
   const navigate = useNavigate();
-  const { email, role } = useSelector((state: RootState) => state.signup);
+  const { email, role, tempToken } = useSelector((state: RootState) => state.signup);
 
   const onBack = () => {
     navigate(`/auth/${role}`);
@@ -14,8 +15,14 @@ const ResetPassword = () => {
 
   const handleResetPassword = async (newPassword: string) => {
     try {
+      if (!tempToken) {
+        toast.error("token missing");
+        return;
+      }
       await resetPassword({
+        token: tempToken,
         role,
+        email,
         newPassword,
       });
       navigate(`/auth/${role}`);

@@ -8,8 +8,10 @@ export const useResetPassword = () => {
     onSuccess: (res) => {
       toast.success(res.message || "Password Changed");
     },
-    onError: (err) => {
-      toast.error(err.message || "Failed to reset password");
+    onError: (err: any) => {
+      // Axios stores the server response in err.response
+      const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
     },
   });
   return resetPassword;

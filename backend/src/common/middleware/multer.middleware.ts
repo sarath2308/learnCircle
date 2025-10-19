@@ -13,6 +13,7 @@ declare global {
     }
   }
 }
+
 // Extend Express Request type
 declare module "express-serve-static-core" {
   interface Request {
@@ -23,20 +24,16 @@ declare module "express-serve-static-core" {
 
 const storage = multer.memoryStorage();
 
-// Allowed MIME types for different fields
+// Allowed MIME types
 const allowedMimeTypes: { [key: string]: string[] } = {
   avatar: ["image/jpeg", "image/png", "image/gif", "image/webp"],
-  resume: [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ],
+  resume: ["application/pdf"],
 };
 
-// Max file size per field (in bytes)
-const maxFileSize: { [key: string]: number } = {
-  avatar: 5 * 1024 * 1024, // 5 MB
-  resume: 10 * 1024 * 1024, // 10 MB
+// File size limits in bytes
+const fileSizeLimits: { [key: string]: number } = {
+  avatar: 2 * 1024 * 1024, // 2 MB
+  resume: 5 * 1024 * 1024, // 5 MB
 };
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
@@ -45,22 +42,30 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
     return cb(new Error(`No configuration for field "${file.fieldname}"`));
   }
 
-  if (allowed.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Invalid file type for ${file.fieldname}. Allowed: ${allowed.join(", ")}`));
+  if (!allowed.includes(file.mimetype)) {
+    return cb(new Error(`Invalid file type for ${file.fieldname}. Allowed: ${allowed.join(", ")}`));
   }
+
+  // Check file size
+  const maxSize = fileSizeLimits[file.fieldname];
+  if (maxSize && file.size > maxSize) {
+    return cb(new MulterError("LIMIT_FILE_SIZE", file.fieldname));
+  }
+
+  cb(null, true);
 };
 
 // Middleware
 export const multerMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const upload = multer({ storage, fileFilter }).any(); // Accept any field
+  const upload = multer({ storage, fileFilter }).any();
 
   upload(req, res, (err: any) => {
     if (err) {
       if (err instanceof MulterError) {
         if (err.code === "LIMIT_FILE_SIZE") {
-          return res.status(400).json({ error: "File too large!" });
+          return res.status(400).json({
+            message: `${err.field} exceeds the maximum allowed file size.`,
+          });
         }
         return res.status(400).json({ message: err.message });
       }
@@ -72,7 +77,7 @@ export const multerMiddleware = (req: Request, res: Response, next: NextFunction
       return res.status(500).json({ message: "Something went wrong during file upload." });
     }
 
-    // Map files to req.avatar, req.resume
+    // Map files to req.avatar and req.resume
     if (req.files) {
       (req.files as Express.Multer.File[]).forEach((file) => {
         if (file.fieldname === "avatar") req.avatar = file;

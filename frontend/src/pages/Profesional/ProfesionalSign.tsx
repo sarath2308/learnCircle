@@ -3,22 +3,28 @@ import { useState } from "react";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "@/hooks/auth/useReqSignup";
+import { useReqSignup } from "@/hooks/auth/useReqSignup";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useGoogle } from "@/hooks/auth/useGoogleAuth";
 import toast from "react-hot-toast";
+import { ROLE } from "@/contstant/role";
+import { useDispatch } from "react-redux";
+import { setSignupData } from "@/redux/slice/signupSlice";
 
 const ProfesionalSign = () => {
   const [view, setView] = useState("login");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { login } = useLogin();
-  const { signup } = useSignup();
+  const { mutateAsync: login } = useLogin();
+  const { mutateAsync: signup } = useReqSignup();
   const { mutateAsync, isPending } = useGoogle();
 
   const onSignUp = useCallback(
     async (role: string, data: { name: string; email: string; password: string }) => {
       try {
-        const result = await signup(role, data);
+        const result = await signup({ ...data, role });
+        navigate("/auth/signup/verify-otp");
+        dispatch(setSignupData({ email: data.email, role }));
         console.log(result);
       } catch (err) {
         console.error(err);
@@ -30,7 +36,8 @@ const ProfesionalSign = () => {
   const onLogin = useCallback(
     async (role: string, data: { email: string; password: string }) => {
       try {
-        const result = await login(role, data);
+        const result = await login({ ...data, role });
+        navigate(`/${role}/home`);
         console.log(result);
       } catch (err) {
         console.error(err);
@@ -48,7 +55,7 @@ const ProfesionalSign = () => {
   }, []);
 
   const onForgotPassword = useCallback(() => {
-    navigate("/auth/profesional/forgot");
+    navigate("/auth/forgot");
   }, []);
 
   const handleGoogleSign = async (role: string, response: any) => {
@@ -57,7 +64,7 @@ const ProfesionalSign = () => {
         role,
         token: response.credential,
       });
-      navigate(`/${role}`);
+      navigate(`/${role}/home`);
     } catch (error) {
       console.error("Google login error:", error);
       toast.error("Login failed. Please try again.");
@@ -68,7 +75,7 @@ const ProfesionalSign = () => {
     <div>
       {view === "login" && (
         <LoginForm
-          role="profesional"
+          role={ROLE.PROFESSIONAL}
           onSubmit={onLogin}
           onBack={onBack}
           onSwitchToSignup={handleView}
@@ -79,7 +86,7 @@ const ProfesionalSign = () => {
 
       {view === "signup" && (
         <SignupForm
-          role="profesional"
+          role={ROLE.PROFESSIONAL}
           onSubmit={onSignUp}
           onBack={onBack}
           onSwitchToLogin={handleView}

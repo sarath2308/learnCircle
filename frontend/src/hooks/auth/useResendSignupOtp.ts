@@ -8,8 +8,10 @@ export const useResendSignupOtp = () => {
     onSuccess: (res) => {
       toast.success(res.message || "OTP sent successfully");
     },
-    onError: (err) => {
-      toast.error(err.message);
+    onError: (err: any) => {
+      // Axios stores the server response in err.response
+      const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
     },
   });
 

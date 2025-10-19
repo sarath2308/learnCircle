@@ -16,7 +16,7 @@ const ForgotPassword = () => {
   const onOTPSent = async (email: string) => {
     const res = await getOtp({ email, role });
     dispatch(setSignupData({ role, email }));
-    navigate("/forgot/verify-otp");
+    navigate("/auth/forgot/verify-otp");
     console.log(res);
   };
   return (

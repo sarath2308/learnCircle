@@ -9,10 +9,7 @@ export interface IEmailAuthService {
     role: "learner" | "professional" | "admin";
   }): Promise<OtpRes | null>;
   resendSignupOtp(email: string): Promise<OtpRes | null>;
-  signup(
-    email: string,
-    otp: string,
-  ): Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
+  signup(email: string, otp: string): Promise<{ user: UserResponseDto; tokens: ITokens } | null>;
   login(
     email: string,
     password: string,

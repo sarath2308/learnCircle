@@ -14,7 +14,7 @@ const Auth = () => {
     if (role === "learner") {
       navigate("/auth/learner");
     } else if (role === "professional") {
-      navigate("/auth/profesional");
+      navigate("/auth/professional");
     }
   };
 

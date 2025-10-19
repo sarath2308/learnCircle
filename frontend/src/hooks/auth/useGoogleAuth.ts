@@ -12,7 +12,9 @@ export const useGoogle = () => {
       toast.success("Sign successfull");
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Failed to login");
+      // Axios stores the server response in err.response
+      const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
     },
   });
 };

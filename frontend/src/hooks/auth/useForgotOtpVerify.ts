@@ -7,8 +7,10 @@ export const useForgotOtpVerify = () => {
     onSuccess: (res) => {
       toast.success(res.message || "Otp Verified");
     },
-    onError: (err) => {
-      toast.error(err.message || "Something went wrong");
+    onError: (err: any) => {
+      // Axios stores the server response in err.response
+      const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
     },
   });
 

@@ -15,7 +15,7 @@ const LearnerSign = () => {
 
   const navigate = useNavigate();
 
-  const { login } = useLogin();
+  const { mutateAsync: login } = useLogin();
 
   const { mutate: reqSignup } = useReqSignup();
 
@@ -39,7 +39,8 @@ const LearnerSign = () => {
   const onLogin = useCallback(
     async (role: string, data: { email: string; password: string }) => {
       try {
-        const result = await login(role, data);
+        const result = await login({ ...data, role });
+        navigate("/learner/home");
         console.log(result);
       } catch (err) {
         console.error(err);
@@ -57,7 +58,7 @@ const LearnerSign = () => {
   }, []);
 
   const onForgotPassword = useCallback(() => {
-    navigate("/auth/learner/forgot");
+    navigate("/auth/forgot");
   }, []);
 
   const handleGoogleSign = async (role: string, response: any) => {

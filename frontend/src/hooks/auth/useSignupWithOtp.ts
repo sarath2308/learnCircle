@@ -7,8 +7,10 @@ export const useSignupWithOtp = () => {
     onSuccess: (res) => {
       toast.success(res.message || "Signup Successful");
     },
-    onError: (err) => {
-      toast.error(err.message || "something went wrong");
+    onError: (err: any) => {
+      // Axios stores the server response in err.response
+      const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
     },
   });
   return signupWithOtp;

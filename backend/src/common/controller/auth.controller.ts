@@ -1,7 +1,6 @@
 // import { IAuthController } from "@/learner";
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
-import { AppError, Messages } from "@/common";
 import { setTokens } from "../middleware";
 import { HttpStatus } from "@/common";
 import { IAuthOrchestrator } from "@/common";
@@ -56,7 +55,7 @@ export class AuthController implements IAuthController {
   async resendSignupOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = req.body;
-    
+
       let result = await this._auth.resendSignupOtp(email);
       res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
@@ -135,9 +134,9 @@ export class AuthController implements IAuthController {
    */
   async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, token, newPassword, role } = req.body;
-  
-      let result = await this._auth.resetPassword(token, email, newPassword, role);
+      const { email, token, newPassword } = req.body;
+
+      let result = await this._auth.resetPassword(token, email, newPassword);
 
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {

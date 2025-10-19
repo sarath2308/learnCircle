@@ -1,6 +1,8 @@
 import api from "./api";
 
 export const authApi = {
+  login: (payload: { email: string; password: string; role: string }) =>
+    api.post("/auth/login", payload).then((res) => res.data),
   reqSignup: (payload: { name: string; email: string; password: string; role: string }) =>
     api.post("/auth/request-signup", payload).then((res) => res.data),
 
@@ -19,8 +21,12 @@ export const authApi = {
   resendForgotOtp: (payload: { email: string }) =>
     api.post("/auth/forgot/resend-otp", payload).then((res) => res.data),
 
-  resetPassword: (payload: { role: string | null; newPassword: string }) =>
-    api.put("/auth/reset-password", payload).then((res) => res.data),
+  resetPassword: (payload: {
+    token: string;
+    role: string | null;
+    email: string;
+    newPassword: string;
+  }) => api.put("/auth/reset-password", payload).then((res) => res.data),
 
   googleAuth: (payload: { role: string | null; token: string | null }) =>
     api.post("/auth/google", payload).then((res) => res.data),

@@ -1,21 +1,25 @@
 import OTPVerificationForm from "@/components/OtpVerificationForm";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import React from "react";
 import { useForgotOtpVerify } from "@/hooks/auth/useForgotOtpVerify";
 import { useResendForgotOtp } from "@/hooks/auth/useResendForgotOtp";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { setSignupData } from "@/redux/slice/signupSlice";
 
 const ForgotOtpVerify: React.FC = () => {
-  const { mutate: verifyOtp } = useForgotOtpVerify();
-  const { mutate: resendOtp } = useResendForgotOtp();
+  const { mutateAsync: verifyOtp, isPending } = useForgotOtpVerify();
+  const { mutateAsync: resendOtp } = useResendForgotOtp();
   const navigate = useNavigate();
   const { email, role } = useSelector((state: RootState) => state.signup);
+  const dispatch = useDispatch();
 
   const onVerified = async (otp: string) => {
     try {
-      await verifyOtp({ email, otp });
+      let res: { message: string; tempToken: string } = await verifyOtp({ email, otp });
+      dispatch(setSignupData({ email, role, token: res.tempToken }));
       navigate("/auth/reset-password");
     } catch (err) {
       console.error(err);
@@ -24,7 +28,7 @@ const ForgotOtpVerify: React.FC = () => {
   };
 
   const onResend = async () => {
-    if (!role || !type || !email) return;
+    if (!role || !email) return;
     try {
       await resendOtp({ email });
       toast.success("OTP successfully sent");
@@ -34,7 +38,7 @@ const ForgotOtpVerify: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (isPending) return <div>Loading...</div>;
 
   return (
     <div>

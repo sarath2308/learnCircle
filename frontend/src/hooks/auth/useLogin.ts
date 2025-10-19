@@ -1,23 +1,21 @@
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { setCurrentUser } from "../../redux/slice/currentUserSlice";
 import toast from "react-hot-toast";
-
-import api from "../../api/api";
+import { useMutation } from "@tanstack/react-query";
+import { authApi } from "@/api/authApi";
+import { AxiosError } from "axios";
 export const useLogin = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const login = useMutation({
+    mutationFn: authApi.login,
+    onSuccess: (res) => {
+      toast.success(res.message || "Login Success");
+    },
+    onError: (err: unknown) => {
+      if (err instanceof AxiosError) {
+        toast.error(err?.response?.data?.message || "Something went Wrong");
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
 
-  const login = async (role: string, data: { email: string; password: string }) => {
-    try {
-      const res = await api.post("/auth/login", { ...data, role });
-      toast.success("login success");
-      dispatch(setCurrentUser(res.data.user));
-      navigate(`/${role}/home`);
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  return { login };
+  return login;
 };

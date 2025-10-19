@@ -1,3 +1,4 @@
+import { ROLE } from "@/contstant/role";
 import AdminSign from "@/pages/admin/AdminSign";
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
@@ -17,13 +18,13 @@ const AuthRoutes: RouteObject[] = [
       { path: "forgot/verify-otp", element: <ForgotOtpVerify /> },
       { path: "forgot", element: <ForgotPassword /> },
       { path: "reset-password", element: <ResetPassword /> },
-      { path: "learner", element: <LearnerSign /> },
+      { path: ROLE.LEARNER, element: <LearnerSign /> },
 
       //profesional auth
-      { path: "profesional", element: <ProfesionalSign /> },
+      { path: ROLE.PROFESSIONAL, element: <ProfesionalSign /> },
 
       //admin
-      { path: "admin", element: <AdminSign /> },
+      { path: ROLE.ADMIN, element: <AdminSign /> },
       // { path: "profesional/forgot", element: <ForgotPassword role="profesional" /> },
       // { path: "profesional/verify-otp", element: <OtpVerification /> },
       // { path: "profesional/reset-password", element: <ResetPassword /> },

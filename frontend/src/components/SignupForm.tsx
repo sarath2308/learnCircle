@@ -2,13 +2,11 @@ import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { GoogleLogin } from "@react-oauth/google";
+import type { Roles } from "@/types/role.type";
 
 interface SignupFormProps {
-  role: "learner" | "profesional" | "admin";
-  onSubmit: (
-    role: "learner" | "profesional" | "admin",
-    data: { name: string; email: string; password: string },
-  ) => Promise<void>;
+  role: Roles;
+  onSubmit: (role: Roles, data: { name: string; email: string; password: string }) => Promise<void>;
   onBack: () => void;
   onSwitchToLogin: () => void;
   handleGoogleSign: (role: string, credential: object) => void;
