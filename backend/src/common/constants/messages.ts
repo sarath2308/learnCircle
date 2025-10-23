@@ -38,4 +38,7 @@ export const Messages = {
   OTP_SENT_SUCCESS: "Otp sent for verification",
   EMAIL_CHANGED: "Email updated",
   PROFILE_URL_GENERATED: "new Profile Url Generated",
+
+  //home realted
+  HOME_RENDERED: "Home Page rendered",
 };

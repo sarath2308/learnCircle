@@ -71,7 +71,7 @@ export const UpdateNameSchema = z.object({
 export const UpdatePasswordSchema = z.object({
   user: AuthUserSchema,
   body: z.object({
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(6, "Password must be at least 6 characters").optional(),
     newPassword: z
       .string()
       .min(6, "New password must be at least 6 characters")

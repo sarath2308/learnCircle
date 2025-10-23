@@ -1,29 +1,38 @@
+import { injectable, inject } from "inversify";
 import { Request, Response, NextFunction } from "express";
-import { JwtPayload } from "jsonwebtoken";
-import { HttpStatus } from "../constants/httpStatus";
-import { Messages } from "../constants/messages";
-import { TokenService } from "@/common";
+import { ITokenService, TYPES } from "@/common";
+import { HttpStatus, Messages } from "../constants";
+import { IAuthenticateMiddleware } from "../interface/IAuthenticateMiddleware";
 
-const tokenService = new TokenService();
-export interface AuthRequest extends Request {
-  user?: JwtPayload & { role?: string };
+export interface IAuthRequest extends Request {
+  user?: { userId: string; role: string };
 }
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.cookies["accessToken"];
+@injectable()
+export class AuthenticateMiddleware implements IAuthenticateMiddleware {
+  constructor(@inject(TYPES.ITokenService) private _tokenService: ITokenService) {}
 
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
-  }
-
-  try {
-    const decoded = tokenService.verifyAccessToken(token);
-    if (!decoded) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+  handle(req: IAuthRequest, res: Response, next: NextFunction): void {
+    const token = req.cookies["accessToken"];
+    if (!token) {
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+      return;
     }
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+
+    try {
+      const decoded = this._tokenService.verifyAccessToken(token) as {
+        userId: string;
+        role: string;
+      };
+      if (!decoded) {
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+        return;
+      }
+
+      req.user = decoded;
+      next();
+    } catch {
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+    }
   }
-};
+}

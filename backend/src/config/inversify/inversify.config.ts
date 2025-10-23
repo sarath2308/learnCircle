@@ -23,8 +23,7 @@ import { RefreshController } from "@/common/controller";
 import { RefreshTokenService } from "@/common/services";
 import { Model } from "mongoose";
 import { TYPES } from "@/common";
-import { LearnerHomeController } from "@/learner";
-import { LearnerProfileController } from "@/learner";
+import { LearnerHomeController, LearnerHomeService, LearnerProfileController, LearnerProfileService } from "@/learner";
 import { CloudinaryService } from "@/common";
 import { ProfesionalVerificationController } from "@/professionals";
 import { IUserRepo, UserRepo } from "@/common/Repo";
@@ -35,6 +34,11 @@ import { S3Service } from "@/common/utils/s3.service";
 import { ILearnerProfileRepo } from "@/learner/features/profile/interface/ILearnerProfileRepo";
 import { LearnerProfileRepo } from "@/learner/features/profile/Repo/learner.profile.repo";
 import { ILearnerProfileController } from "@/learner/features/profile/interface/ILearnerProfileController";
+import { IAuthenticateMiddleware } from "@/common/interface/IAuthenticateMiddleware";
+import { AuthenticateMiddleware } from "@/common/middleware";
+import { ILearnerHomeService } from "@/learner/features/home/interface/ILearnerHomeService";
+import { ILearnerHomeController } from "@/learner/features/home/interface/ILearnerHomeController";
+import { ILearnerProfileService } from "@/learner/features/profile/interface/ILearnerProfileService";
 export const container = new Container();
 
 // Bindings
@@ -55,9 +59,13 @@ container.bind<IAuthOrchestrator>(TYPES.IAuthOrchestrator).to(AuthOrchestrator);
 container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
 container.bind<IPasswordResetService>(TYPES.IPasswordResetService).to(PasswordResetService);
 container.bind<ILearnerProfileRepo>(TYPES.ILearnerProfileRepo).to(LearnerProfileRepo);
+container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
+container.bind<ILearnerProfileService>(TYPES.ILearnerProfileService).to(LearnerProfileService);
 container
   .bind<ILearnerProfileController>(TYPES.ILearnerProfileController)
   .to(LearnerProfileController);
+container.bind<ILearnerHomeService>(TYPES.ILearnerHomeService).to(LearnerHomeService);
+container.bind<ILearnerHomeController>(TYPES.ILearnerHomeController).to(LearnerHomeController);
 //refresh service
 container.bind(TYPES.IRefreshService).toDynamicValue(() => {
   return new RefreshTokenService(
@@ -66,9 +74,6 @@ container.bind(TYPES.IRefreshService).toDynamicValue(() => {
   );
 });
 
-container.bind(TYPES.ILearnerProfileController).toDynamicValue(() => {
-  return new LearnerProfileController(container.get(TYPES.ILearnerProfileService));
-});
 
 container.bind(TYPES.IProfesionalVerificationController).toDynamicValue(() => {
   return new ProfesionalVerificationController(

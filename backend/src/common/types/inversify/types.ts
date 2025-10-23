@@ -1,11 +1,9 @@
 export const TYPES = {
   ILearnerProfileModel: Symbol.for("ILearnerModel"),
   IUserModel: Symbol.for("IUserModel"), //models
-  IPendingSignup: Symbol.for("IPendingSignup"),
   IProfessionalProfileModel: Symbol.for("ProfesionalModel"),
   IAdminProfileModel: Symbol.for("AdminModel"),
   ILearnerProfileRepo: Symbol.for("LearnerRepo"), //Repos
-  IPendingSignupRepo: Symbol.for("IPendingSignupRepo"),
   IProfesionalProfileRepo: Symbol.for("ProfesionalRepo"),
   IRedisRepository: Symbol.for("RedisRepository"),
   IAdminProfile: Symbol.for("AdminRepository"),
@@ -32,4 +30,5 @@ export const TYPES = {
   IAuthController: Symbol.for("IAuthController"),
   IS3Service: Symbol.for("IS3Service"),
   ILearnerProfileDto: Symbol.for("ILearnerProfileDto"),
+  IAuthenticateMiddleware: Symbol.for("IAuthenticateMiddleware"),
 };

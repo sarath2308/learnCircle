@@ -6,7 +6,6 @@ import expressWinston from "express-winston";
 import logger from "./logs/logger";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authenticate } from "./common/middleware";
 import { errorHandler } from "./common/middleware";
 import { IAuthController } from "@/common";
 
@@ -19,15 +18,14 @@ import { RefreshController } from "./common/controller";
 import { refreshRoutes } from "@/common";
 
 // Learner Controllers and Routes
-import { learnerHomeRoute } from "@/learner";
-import { LearnerHomeController } from "@/learner";
-import { LearnerProfileController } from "@/learner";
-import { learnerProfileRoute } from "@/learner";
+import { learnerHomeRoute, learnerProfileRoute } from "@/learner";
 // Professional Controllers and Routes
 import { authorizeRoles } from "./common/middleware";
-import { profesionalVerificationRoutes } from "@/professionals";
-import { ProfesionalVerificationController } from "@/professionals";
 import { authRoutes } from "./common/routes/auth.routes";
+import { ROLE } from "./common/constants/Role";
+import { ILearnerProfileController } from "./learner/features/profile/interface/ILearnerProfileController";
+import { IAuthenticateMiddleware } from "./common/interface/IAuthenticateMiddleware";
+import { ILearnerHomeController } from "./learner/features/home/interface/ILearnerHomeController";
 
 dotenv.config();
 const app = express();
@@ -66,47 +64,41 @@ async function startServer() {
   await db.connect();
   console.log("MongoDB connected");
 
-  // Resolved controllers
-  // const learnerHomeController = container.get<LearnerHomeController>(TYPES.ILearnerHomeController);
-
-  // const learnerProfileController = container.get<LearnerProfileController>(
-  //   TYPES.ILearnerProfileController,
-  // );
-  // const profesionalVerificationController = container.get<ProfesionalVerificationController>(
-  //   TYPES.IProfesionalVerificationController,
-  // );
   //refresh controller
   const refreshController = container.get<RefreshController>(TYPES.IRefreshController);
   const authController = container.get<IAuthController>(TYPES.IAuthController);
+  const learnerProfileController = container.get<ILearnerProfileController>(
+    TYPES.ILearnerProfileController,
+  );
+  const learnerHomeController = container.get<ILearnerHomeController>(TYPES.ILearnerHomeController);
+  const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
   // Routes
-  // app.use(
-  //   "/api/learner/home",
-  //   authenticate,
-  //   authorizeRoles("learner"),
-  //   learnerHomeRoute(learnerHomeController),
-  // );
+
   app.use("/api/auth", authRoutes(authController));
-  // app.use(
-  //   "/api/learner/profile",
-  //   authenticate,
-  //   authorizeRoles("learner"),
-  //   learnerProfileRoute(learnerProfileController),
-  // );
+
+  app.use(
+    "/api/learner/profile",
+    authenticate.handle,
+    authorizeRoles(ROLE.LEARNER),
+    learnerProfileRoute(learnerProfileController),
+  );
+
   app.use("/api/auth", refreshRoutes(refreshController));
 
-  //profesional routes
-  // app.use(
-  //   "/api/profesional",
-  //   authenticate,
-  //   authorizeRoles("profesional"),
-  //   profesionalVerificationRoutes(profesionalVerificationController),
-  // );
+  app.use(
+    "/api/learner/home",
+    authenticate.handle,
+    authorizeRoles(ROLE.LEARNER),
+    learnerHomeRoute(learnerHomeController),
+  );
+
   app.use(
     expressWinston.errorLogger({
       winstonInstance: logger,
       msg: "ERROR {{req.method}} {{req.url}} => {{err.message}}",
     }),
   );
+
   app.use(errorHandler);
   // Connect to Redis
   await connectRedis();

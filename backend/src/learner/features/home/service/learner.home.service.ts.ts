@@ -1,7 +1,9 @@
-import { LearnerRepo } from "@/learner";
 import { TYPES } from "@/common";
 import { injectable, inject } from "inversify";
+import { ILearnerHomeService } from "../interface/ILearnerHomeService";
+import { IUserRepo } from "@/common/Repo";
 @injectable()
-export class LearnerHomeService {
-  constructor(@inject(TYPES.LearnerRepo) private learnerRepo: LearnerRepo) {}
+export class LearnerHomeService implements ILearnerHomeService {
+  constructor(@inject(TYPES.IUserRepo) private _userepo: IUserRepo) {}
+  async getHome(userId: string): Promise<void> {}
 }

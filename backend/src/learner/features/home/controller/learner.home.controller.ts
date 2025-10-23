@@ -1,20 +1,21 @@
-import { Request, Response, NextFunction } from "express";
-import { LearnerHomeService } from "@/learner";
 import { TYPES } from "@/common";
 import { inject, injectable } from "inversify";
 import { HttpStatus } from "@/common";
 import { Messages } from "@/common";
+import { ILearnerHomeController } from "../interface/ILearnerHomeController";
+import { IAuthRequest } from "@/common/interface/IAuthRequest";
+import { ILearnerHomeService } from "../interface/ILearnerHomeService";
+import { NextFunction, Response } from "express";
 
 @injectable()
-export class LearnerHomeController {
-  constructor(@inject(TYPES.LearnerHomeService) private service: LearnerHomeService) {}
+export class LearnerHomeController implements ILearnerHomeController {
+  constructor(@inject(TYPES.ILearnerHomeService) private service: ILearnerHomeService) {}
 
-  async getHome(req: Request, res: Response, next: NextFunction) {
+  async getHome(req: IAuthRequest, res: Response, next: NextFunction) {
     try {
-      return res.status(HttpStatus.OK).json({ message: "Home rendered" });
+      res.status(HttpStatus.OK).json({ success: true, message: Messages.HOME_RENDERED });
     } catch (error) {
-      console.error(error);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: Messages.SERVER_ERROR });
+      next(error);
     }
   }
 }
