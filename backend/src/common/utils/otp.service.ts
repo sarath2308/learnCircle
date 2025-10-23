@@ -16,6 +16,7 @@ export interface OtpData {
   password?: string;
   role: "learner" | "professional" | "admin";
   otp: string;
+  newEmail?: string;
 }
 
 @injectable()
@@ -34,7 +35,7 @@ export class OtpService implements IOtpService {
     if (!match) {
       throw new AppError(Messages.OTP_EXPIRED, HttpStatus.BAD_REQUEST);
     }
-    if (match.otp !== otp) {
+    if (match?.otp !== otp) {
       throw new AppError(Messages.OTP_INVALID, HttpStatus.BAD_REQUEST);
     }
     await this._redisRepo.delete(key);

@@ -20,14 +20,22 @@ export const Messages = {
   VALIDATION_ERROR: "Validation failed - check your input",
   NOT_FOUND: "Resource not found",
   BLOCKED_USER: "Your account has been blocked. Please contact support.",
+  OTP_SESSION_OUT: "Resend OTP request invalid. OTP session timed out.",
   // Success messages
   LOGIN_SUCCESS: "Logged in successfully",
   LOGOUT_SUCCESS: "Logged out successfully",
   REGISTER_SUCCESS: "Account created successfully",
   REFRESH_SUCCESS: "Token refreshed successfully",
+  PROFILE_FETCHED: "Profile fetched Successfully",
 
   // User actions
   PROFILE_UPDATED: "Profile updated successfully",
   USER_DELETED: "User deleted successfully",
   PASSWORD_RESET_SUCCESS: "Password reset successfully",
+  PROFILE_NOT_UPDATED: "Profile Not Updated,Try After Sometimes",
+  PROFILE_NOT_FOUND: "Profile Not Found",
+  INCORRECT_PASSWORD: "Incorrect Password",
+  OTP_SENT_SUCCESS: "Otp sent for verification",
+  EMAIL_CHANGED: "Email updated",
+  PROFILE_URL_GENERATED: "new Profile Url Generated",
 };

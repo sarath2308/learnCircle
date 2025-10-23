@@ -17,7 +17,7 @@ const LearnerSign = () => {
 
   const { mutateAsync: login } = useLogin();
 
-  const { mutate: reqSignup } = useReqSignup();
+  const { mutateAsync: reqSignup } = useReqSignup();
 
   const { mutateAsync, isPending } = useGoogle();
 

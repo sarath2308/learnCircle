@@ -2,6 +2,14 @@ import { Buffer } from "buffer";
 
 export interface IS3Service {
   /**
+   *
+   * @param field
+   * @param userId
+   * @param originalName
+   * @returns
+   */
+  generateS3Key: (userId: string, originalName: string) => Promise<string>;
+  /**
    * Upload a file from a buffer to S3 and return a signed URL
    * @param fileBuffer - File content as Buffer
    * @param key - S3 key/path (e.g., 'avatars/file.png')

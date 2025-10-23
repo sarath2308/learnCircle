@@ -30,4 +30,6 @@ export const TYPES = {
   IUserDtoMapper: Symbol.for("IUserDtoMapper"),
   IProviderAuth: Symbol.for("IProviderAuth"),
   IAuthController: Symbol.for("IAuthController"),
+  IS3Service: Symbol.for("IS3Service"),
+  ILearnerProfileDto: Symbol.for("ILearnerProfileDto"),
 };

@@ -26,7 +26,7 @@ const storage = multer.memoryStorage();
 
 // Allowed MIME types
 const allowedMimeTypes: { [key: string]: string[] } = {
-  avatar: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+  avatar: ["image/jpeg", "image/png"],
   resume: ["application/pdf"],
 };
 
