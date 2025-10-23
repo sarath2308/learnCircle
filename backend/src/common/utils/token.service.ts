@@ -43,9 +43,12 @@ export class TokenService implements ITokenService {
   }
 
   generateRefreshToken(payload: Tpayload): string {
-    return jwt.sign(payload, AuthConfig.refreshTokenSecret, {
+    let token = jwt.sign(payload, AuthConfig.refreshTokenSecret, {
       expiresIn: AuthConfig.refreshTokenExpiresIn,
     });
+    const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
+    this.redisService.set(`${RedisKeys.REFRESH}:${payload.userId}`, token, REFRESH_TOKEN_TTL);
+    return token;
   }
 
   verifyAccessToken(token: string): JwtPayload | null {

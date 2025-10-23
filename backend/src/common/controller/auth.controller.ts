@@ -5,7 +5,7 @@ import { setTokens } from "../middleware";
 import { HttpStatus } from "@/common";
 import { IAuthOrchestrator } from "@/common";
 import { Providers } from "../constants/providers";
-import { TYPES } from "@/common";
+import { TYPES } from "../types/inversify/types";
 import { IAuthController } from "../interface/IAuthController";
 
 @injectable()

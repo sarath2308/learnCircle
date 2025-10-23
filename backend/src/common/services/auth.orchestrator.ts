@@ -1,6 +1,7 @@
 import { inject, injectable, multiInject } from "inversify";
 import { IPasswordResetService } from "@/common";
-import { OtpRes, Role, TYPES } from "../types";
+import { OtpRes, Role } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IEmailAuthService } from "@/common";
 import { IAuthProviderService } from "../interface";
 import { UserResponseDto } from "../dtos";

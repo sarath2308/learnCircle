@@ -1,4 +1,4 @@
-import { TYPES } from "@/common";
+import { TYPES } from "../../../../common/types/inversify/types";
 import { inject, injectable } from "inversify";
 import { HttpStatus } from "@/common";
 import { Messages } from "@/common";

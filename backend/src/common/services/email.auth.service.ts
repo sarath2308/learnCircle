@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IEmailService, IOtpService, IpasswordService, ITokenService, OtpData } from "../utils";
 import { HttpStatus, Messages, RedisKeys } from "../constants";
 import { ITokens } from "../utils";
@@ -121,7 +121,7 @@ export class EmailAuthService implements IEmailAuthService {
       throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     if (User.isBlocked) {
-      throw new AppError(Messages.BLOCKED_USER, HttpStatus.UNAUTHORIZED);
+      throw new AppError(Messages.BLOCKED_USER, HttpStatus.FORBIDDEN);
     }
     if (!User.passwordHash) {
       throw new AppError(Messages.USED_GOOGLE_AUTH, HttpStatus.BAD_REQUEST);
@@ -129,7 +129,7 @@ export class EmailAuthService implements IEmailAuthService {
     let passwordCheck = await this._passwordService.comparePassword(User.passwordHash, password);
 
     if (!passwordCheck) {
-      throw new AppError(Messages.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
+      throw new AppError(Messages.INVALID_CREDENTIALS, HttpStatus.NOT_FOUND);
     }
     let tokens = await this._tokenService.generateTokens({ userId: User.id, role: User.role });
 

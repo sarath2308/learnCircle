@@ -1,6 +1,6 @@
 import { NextFunction } from "express";
 import { injectable, inject } from "inversify";
-import { TYPES } from "@/common";
+import { TYPES } from "@/common/types/inversify/types";
 import { ProfesionalVerificationService } from "@/professionals";
 import { Response } from "express";
 import { HttpStatus } from "@/common";

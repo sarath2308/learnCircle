@@ -78,7 +78,7 @@ async function startServer() {
 
   app.use(
     "/api/learner/profile",
-    authenticate.handle,
+    authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.LEARNER),
     learnerProfileRoute(learnerProfileController),
   );
@@ -87,7 +87,7 @@ async function startServer() {
 
   app.use(
     "/api/learner/home",
-    authenticate.handle,
+    authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.LEARNER),
     learnerHomeRoute(learnerHomeController),
   );

@@ -3,7 +3,6 @@ import { BaseRepo, IBaseRepo } from "../baseRepo";
 import { IUser } from "@/common";
 import { TYPES } from "../../common/types/inversify/types";
 import { Model } from "mongoose";
-console.log(">>> TYPES from user.repo:", TYPES);
 
 export interface IUserRepo extends IBaseRepo<IUser> {
   findWithEmailAndRole: (email: string, role: string) => Promise<IUser | null>;

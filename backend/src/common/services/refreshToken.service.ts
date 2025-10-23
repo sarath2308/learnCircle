@@ -1,7 +1,8 @@
-import { AppError, HttpStatus, IRedisRepository, ITokens, ITokenService, Messages } from "@/common";
+import { AppError, HttpStatus, ITokens, ITokenService, Messages } from "@/common";
 import { RedisKeys } from "../constants/redisKeys";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types/inversify/types";
+import { IRedisRepository } from "../Repo";
 
 export interface IRefreshTokenService {
   refreshToken: (token: string) => Promise<ITokens>;

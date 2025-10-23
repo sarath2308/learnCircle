@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IEmailService, IOtpService, IpasswordService, ITokenService } from "../utils";
 import { IRedisRepository, IUserRepo } from "../Repo";
 import { HttpStatus, Messages, RedisKeys } from "../constants";

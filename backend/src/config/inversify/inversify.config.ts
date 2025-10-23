@@ -22,8 +22,15 @@ import redisClient from "../../config/redis/redis";
 import { RefreshController } from "@/common/controller";
 import { RefreshTokenService } from "@/common/services";
 import { Model } from "mongoose";
-import { TYPES } from "@/common";
-import { LearnerHomeController, LearnerHomeService, LearnerProfileController, LearnerProfileService } from "@/learner";
+import { TYPES } from "@/common/types/inversify/types";
+import {
+  ILearnerProfile,
+  LearnerHomeController,
+  LearnerHomeService,
+  LearnerProfile,
+  LearnerProfileController,
+  LearnerProfileService,
+} from "@/learner";
 import { CloudinaryService } from "@/common";
 import { ProfesionalVerificationController } from "@/professionals";
 import { IUserRepo, UserRepo } from "@/common/Repo";
@@ -39,12 +46,15 @@ import { AuthenticateMiddleware } from "@/common/middleware";
 import { ILearnerHomeService } from "@/learner/features/home/interface/ILearnerHomeService";
 import { ILearnerHomeController } from "@/learner/features/home/interface/ILearnerHomeController";
 import { ILearnerProfileService } from "@/learner/features/profile/interface/ILearnerProfileService";
+import { ILearnerProfileMapperService } from "@/learner/features/profile/interface/ILearnerProfileMapper";
+import { LearnerProfileMapperService } from "@/learner/features/profile/dtos/mapper/learnerProfile.dto.mapper";
 export const container = new Container();
 
 // Bindings
 container.bind<Model<IUser>>(TYPES.IUserModel).toConstantValue(User);
 container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
-
+container.bind<Model<ILearnerProfile>>(TYPES.ILearnerProfileModel).toConstantValue(LearnerProfile);
+container.bind<ILearnerProfileRepo>(TYPES.ILearnerProfileRepo).to(LearnerProfileRepo);
 container.bind(TYPES.ITokenService).to(TokenService).inSingletonScope();
 container.bind(TYPES.IEmailService).to(EmailService).inSingletonScope();
 container.bind(TYPES.IOtpService).to(OtpService).inSingletonScope();
@@ -58,9 +68,11 @@ container.bind<IAuthProviderService>(TYPES.IProviderAuth).to(GoogleAuthProvider)
 container.bind<IAuthOrchestrator>(TYPES.IAuthOrchestrator).to(AuthOrchestrator);
 container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
 container.bind<IPasswordResetService>(TYPES.IPasswordResetService).to(PasswordResetService);
-container.bind<ILearnerProfileRepo>(TYPES.ILearnerProfileRepo).to(LearnerProfileRepo);
 container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
 container.bind<ILearnerProfileService>(TYPES.ILearnerProfileService).to(LearnerProfileService);
+container
+  .bind<ILearnerProfileMapperService>(TYPES.ILearnerProfileDto)
+  .to(LearnerProfileMapperService);
 container
   .bind<ILearnerProfileController>(TYPES.ILearnerProfileController)
   .to(LearnerProfileController);
@@ -73,7 +85,6 @@ container.bind(TYPES.IRefreshService).toDynamicValue(() => {
     container.get(TYPES.IRedisRepository),
   );
 });
-
 
 container.bind(TYPES.IProfesionalVerificationController).toDynamicValue(() => {
   return new ProfesionalVerificationController(

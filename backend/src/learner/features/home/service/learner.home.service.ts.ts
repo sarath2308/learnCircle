@@ -1,4 +1,4 @@
-import { TYPES } from "@/common";
+import { TYPES } from "../../../../common/types/inversify/types";
 import { injectable, inject } from "inversify";
 import { ILearnerHomeService } from "../interface/ILearnerHomeService";
 import { IUserRepo } from "@/common/Repo";

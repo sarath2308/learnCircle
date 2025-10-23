@@ -7,8 +7,8 @@ import {
   Messages,
   OtpData,
   RedisKeys,
-  TYPES,
 } from "@/common";
+import { TYPES } from "@/common/types/inversify/types";
 import { inject, injectable } from "inversify";
 import { IpasswordService } from "@/common";
 import { LearnerProfileDTOType } from "../dtos/schemas/profile.response.dto";

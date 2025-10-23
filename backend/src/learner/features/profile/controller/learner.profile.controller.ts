@@ -1,4 +1,5 @@
-import { AppError, TYPES } from "@/common";
+import { AppError } from "@/common";
+import { TYPES } from "@/common/types/inversify/types";
 import { inject, injectable } from "inversify";
 import { Response, NextFunction } from "express";
 import { HttpStatus } from "@/common";

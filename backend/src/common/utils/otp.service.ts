@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { inject, injectable } from "inversify";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IRedisRepository } from "../Repo";
 import { AppError } from "../errors/app.error";
 import { HttpStatus, Messages } from "../constants";

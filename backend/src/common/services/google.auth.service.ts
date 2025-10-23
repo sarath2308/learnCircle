@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import { UserResponseDto } from "../dtos";
 import { IAuthProviderService } from "../interface/IAuthProviderService";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { ITokens, ITokenService } from "../utils";
 import { verifyGoogleToken } from "../utils";
 import { IUserRepo } from "../Repo";

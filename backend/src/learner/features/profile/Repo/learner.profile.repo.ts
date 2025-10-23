@@ -2,8 +2,8 @@ import { BaseRepo } from "@/common/baseRepo";
 import { ILearnerProfileRepo } from "../interface/ILearnerProfileRepo";
 import { ILearnerProfile } from "../model/learner.profile.model";
 import { inject, injectable } from "inversify";
-import { TYPES } from "@/common";
 import { Model } from "mongoose";
+import { TYPES } from "@/common/types/inversify/types";
 @injectable()
 export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILearnerProfileRepo {
   constructor(@inject(TYPES.ILearnerProfileModel) private _model: Model<ILearnerProfile>) {
