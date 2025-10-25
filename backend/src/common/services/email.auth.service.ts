@@ -1,11 +1,13 @@
 import { injectable, inject } from "inversify";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IEmailService, IOtpService, IpasswordService, ITokenService, OtpData } from "../utils";
 import { HttpStatus, Messages, RedisKeys } from "../constants";
 import { ITokens } from "../utils";
 import { IUserDtoMapper } from "../dtos/mapper/user.map";
 import { UserResponseDto } from "../dtos";
-import { AppError, IRedisRepository, IUserRepo, OtpRes } from "@/common";
+import { AppError, OtpRes } from "@/common";
+import { IRedisRepository } from "../Repo";
+import { IUserRepo } from "../Repo";
 import { IEmailAuthService } from "@/common";
 
 @injectable()
@@ -48,6 +50,7 @@ export class EmailAuthService implements IEmailAuthService {
     data.password = passwordHash;
 
     await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 300);
+    console.log("Saving key:", `${RedisKeys.SIGNUP}:${data.email}`);
 
     //email
     await this._emailService.sendSignupOtp(data.email, otp);
@@ -68,7 +71,7 @@ export class EmailAuthService implements IEmailAuthService {
 
     const otp = await this._otpService.generateOtp();
 
-    await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 60);
+    await this._otpService.storeOtp(`${RedisKeys.SIGNUP}:${data.email}`, { ...data, otp }, 300);
 
     await this._emailService.sendSignupOtp(data.email, otp);
 
@@ -82,17 +85,13 @@ export class EmailAuthService implements IEmailAuthService {
    * @returns
    */
   async signup(email: string, otp: string): Promise<{ user: UserResponseDto; tokens: ITokens }> {
-    let data = await this._userRepo.findByEmail(email);
-
-    if (!data) {
-      throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-    await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
-
+    console.log("Verifying key:", `${RedisKeys.SIGNUP}:${email}`);
+    let data = await this._otpService.verifyOtp(`${RedisKeys.SIGNUP}:${email}`, otp);
+    console.log(`email${email},otp${otp}`);
     const user = await this._userRepo.create({
       name: data.name,
       email: data.email,
-      passwordHash: data.passwordHash,
+      passwordHash: data.password,
       role: data.role,
     });
 
@@ -122,7 +121,7 @@ export class EmailAuthService implements IEmailAuthService {
       throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     if (User.isBlocked) {
-      throw new AppError(Messages.BLOCKED_USER, HttpStatus.UNAUTHORIZED);
+      throw new AppError(Messages.BLOCKED_USER, HttpStatus.FORBIDDEN);
     }
     if (!User.passwordHash) {
       throw new AppError(Messages.USED_GOOGLE_AUTH, HttpStatus.BAD_REQUEST);
@@ -130,7 +129,7 @@ export class EmailAuthService implements IEmailAuthService {
     let passwordCheck = await this._passwordService.comparePassword(User.passwordHash, password);
 
     if (!passwordCheck) {
-      throw new AppError(Messages.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
+      throw new AppError(Messages.INVALID_CREDENTIALS, HttpStatus.NOT_FOUND);
     }
     let tokens = await this._tokenService.generateTokens({ userId: User.id, role: User.role });
 

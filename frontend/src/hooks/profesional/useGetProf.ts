@@ -7,13 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 //         email:string,
 //     }
 // }
-export const useGetProf = ()=>
-{
-     return useQuery<any>({
+export const useGetProf = () => {
+  return useQuery<any>({
     queryKey: ["profInfo"],
     queryFn: async () => {
       try {
-        const response :any = await dashboardApi.getProfileInfo;
+        const response: any = await dashboardApi.getProfileInfo;
         const data = response.user;
         console.log(data);
         return data;
@@ -24,4 +23,4 @@ export const useGetProf = ()=>
     },
     staleTime: 5 * 60 * 1000,
   });
-}
+};

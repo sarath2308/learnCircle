@@ -5,3 +5,4 @@ export * from "./IEmailAuthService";
 export * from "./IPasswordResetService";
 export * from "./IAuthController";
 export * from "./IAuthOrchestrator";
+export * from "./IS3Service";

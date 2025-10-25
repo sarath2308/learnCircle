@@ -60,7 +60,7 @@ export default function LearnerHomeLayout() {
         <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-black bg-clip-text text-transparent">
               LearnCircle
             </span>
           </div>

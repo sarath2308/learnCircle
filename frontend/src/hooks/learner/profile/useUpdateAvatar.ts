@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { profileApi } from "@/api/learner/profileApi";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { setCurrentUser } from "@/redux/slice/currentUserSlice";

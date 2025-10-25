@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Calendar, Trophy, Clock, Camera } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,97 +6,124 @@ import { Badge } from "@/components/ui/badge";
 import profilePicture from "@/assets/profile.jpg";
 import EditProfileDialog from "@/components/EditProfile";
 import { useUpdateAvatar } from "@/hooks/learner/profile/useUpdateAvatar";
-import { useUpdatProfile } from "@/hooks/learner/profile/useUpdateProfile";
-import { toast } from "react-toastify";
+import { useUpdatePassword } from "@/hooks/learner/profile/useUpdatePassword";
 import { useGetProfile } from "@/hooks/learner/profile/useGetProfile";
+import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import { React } from "react";
+import { useUpdatName } from "@/hooks/learner/profile/useUpdateName";
+import { useRequestEmailChangeOtp } from "@/hooks/learner/profile/useRequestEmailChangeOtp";
+import { useResendEmailChangeOtp } from "@/hooks/learner/profile/useResendEmailChangeOtp";
+import { useVerifyAndUpdateEmail } from "@/hooks/learner/profile/useVerifyAndUpdateEmail";
+
+interface Stats {
+  hoursLearned: number;
+  certificatesEarned: number;
+  rank: string;
+}
+
+interface SkillProgress {
+  [skill: string]: number;
+}
 
 export default function LearnerProfile() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { mutateAsync: updateAvatar } = useUpdateAvatar();
-  const { mutateAsync: updateProfile } = useUpdatProfile();
+  const queryClient = useQueryClient();
+
   const { data: userData, isLoading, isError, error } = useGetProfile();
+  console.log(userData);
+  const { mutateAsync: updateAvatar } = useUpdateAvatar();
+  const { mutateAsync: updatePassword } = useUpdatePassword();
+  const { mutateAsync: requestEmailChangeOtp } = useRequestEmailChangeOtp();
+  const { getResendEmailChangeOtp } = useResendEmailChangeOtp();
+  const { mutateAsync: verifyAndChangeEmail } = useVerifyAndUpdateEmail();
+  const { mutateAsync: updateName } = useUpdatName();
 
-  const [profile, setProfile] = useState({
-    name: "",
-    email: "",
-    profileImg: profilePicture,
-    hasPassword: false,
-    lastLogin: "",
-  });
-
-  useEffect(() => {
-    if (userData) {
-      setProfile({
-        name: userData.name ?? "Guest",
-        email: userData.email ?? "-",
-        profileImg: userData.profileImg ?? profilePicture,
-        hasPassword: userData.hasPassword ?? false,
-        lastLogin: userData.lastLogin ?? "",
-      });
-    }
-  }, [userData]);
-
-  // Loading / error state
   if (isLoading) return <p>Loading profile...</p>;
   if (isError) return <p>Error loading profile: {(error as any)?.message}</p>;
 
-  const { name, email, profileImg, hasPassword, lastLogin } = profile;
-  const streak = 0;
-  const joinDate = "-";
-  const stats = { hoursLearned: 0, certificatesEarned: 0, rank: "-" };
+  const {
+    name = "Guest",
+    email = "-",
+    profileImg = profilePicture,
+    hasPassword = false,
+    lastLogin = "-",
+    streak = 1
+  } = userData || {};
+
+  const stats: Stats = {
+    hoursLearned: 0,
+    certificatesEarned: 0,
+    rank: "-",
+  };
+
   const skillProgress = {};
   const completedCourses = 0;
   const totalCourses = 1;
+  const joinDate = "-";
 
-  const getInitials = (name: string | undefined) => {
-    if (!name || typeof name !== "string") return "G";
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase();
-  };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast.warning("Only image files are allowed.");
-        return;
-      }
+    if (!file) return;
 
-      if (file.size > 5 * 1024 * 1024) {
-        toast.warning("File size should not exceed 5MB.");
-        return;
-      }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed.");
+      return;
+    }
 
-      try {
-        const previewUrl = URL.createObjectURL(file);
-        await updateAvatar(file);
-        setProfile((prev) => ({ ...prev, profileImg: previewUrl }));
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to update avatar");
-      }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size should not exceed 5MB.");
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+
+    try {
+      await updateAvatar(file, {
+        onSuccess: () => {
+          // Update React Query cache instead of local state
+          queryClient.setQueryData(["profile"], (oldData: any) => ({
+            ...oldData,
+            profileImg: previewUrl,
+          }));
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update avatar");
+    } finally {
+      URL.revokeObjectURL(previewUrl);
     }
   };
-  const handleUpdateProfile = async (data: { name: string }) => {
+
+  const handleUpdateName = async (data: { name: string }) => {
     try {
-      const res = await updateProfile(data); // res here is NOT the name, it's the whole mutation result
-      if (res?.user?.name) {
-        setProfile((prev) => ({ ...prev, name: res.user.name }));
-      }
+      let res = await updateName(data);
+      console.log(res);
     } catch (err) {
       console.error(err);
       toast.error("Failed to update profile");
     }
   };
 
-  const handleVerifyOtp = async () => {};
-  const handleUpdateEmail = async () => {};
-  const handleResendOtp = async () => {};
-  const handleUpdatePassword = async () => {};
+  const requestEmailChange = async (data: { newEmail: string }) => {
+    let res = await requestEmailChangeOtp(data);
+  };
+
+  const requestResendEmailOtp = async () => {
+    let res = await getResendEmailChangeOtp();
+  };
+
+  const verifyOtp = async (data: { otp: string }) => {
+    let res = await verifyAndChangeEmail(data);
+  };
 
   return (
     <div className="space-y-6 p-4">
@@ -117,6 +144,7 @@ export default function LearnerProfile() {
             {/* Change Picture Button */}
             <button
               type="button"
+              aria-label="Change Profile Picture"
               onClick={() => fileInputRef.current?.click()}
               className="absolute bottom-0 right-0 h-8 w-8 flex items-center justify-center 
                          bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 
@@ -139,16 +167,12 @@ export default function LearnerProfile() {
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
               <EditProfileDialog
-                userData={{
-                  name: profile.name,
-                  email: profile.email,
-                  hasPassword: profile.hasPassword,
-                }}
-                onUpdateProfile={handleUpdateProfile}
-                onUpdateEmail={handleUpdateEmail}
-                onVerifyOtp={handleVerifyOtp}
-                onResendOtp={handleResendOtp}
-                onUpdatePassword={handleUpdatePassword}
+                userData={{ name, email, hasPassword }}
+                onUpdateProfile={handleUpdateName}
+                onUpdateEmail={requestEmailChange}
+                onResendOtp={requestResendEmailOtp}
+                onVerifyOtp={verifyOtp}
+                onUpdatePassword={updatePassword}
               />
             </div>
             <p className="text-gray-500 dark:text-gray-400">{email}</p>
@@ -168,50 +192,35 @@ export default function LearnerProfile() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Hours Learned */}
-        <Card className="shadow-sm rounded-xl">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Hours Learned
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {stats.hoursLearned}h
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">+12h this week</p>
-          </CardContent>
-        </Card>
-
-        {/* Certificates */}
-        <Card className="shadow-sm rounded-xl">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Certificates
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-500 dark:text-yellow-400">
-              {stats.certificatesEarned}
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">2 in progress</p>
-          </CardContent>
-        </Card>
-
-        {/* Global Rank */}
-        <Card className="shadow-sm rounded-xl">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Global Rank
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-500 dark:text-green-400">
-              {stats.rank}
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Top 5% learners</p>
-          </CardContent>
-        </Card>
+        {[
+          {
+            title: "Hours Learned",
+            value: `${stats.hoursLearned}h`,
+            note: "+12h this week",
+            color: "blue-600",
+          },
+          {
+            title: "Certificates",
+            value: stats.certificatesEarned,
+            note: "2 in progress",
+            color: "yellow-500",
+          },
+          { title: "Global Rank", value: stats.rank, note: "Top 5% learners", color: "green-500" },
+        ].map((stat) => (
+          <Card key={stat.title} className="shadow-sm rounded-xl">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {stat.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className={`text-2xl font-bold text-${stat.color} dark:text-${stat.color}-400`}>
+                {stat.value}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{stat.note}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Learning Progress */}
@@ -231,13 +240,10 @@ export default function LearnerProfile() {
                 <div key={skill} className="space-y-1">
                   <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                     <span>{skill}</span>
-                    <span>{value}%</span>
+                    <span>4%</span>
                   </div>
                   <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
-                    <div
-                      className="bg-blue-500 h-2 rounded-full"
-                      style={{ width: `${value}%` }}
-                    ></div>
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${value}%` }} />
                   </div>
                 </div>
               ))}
@@ -254,10 +260,8 @@ export default function LearnerProfile() {
                 <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
                   <div
                     className="bg-green-500 h-2 rounded-full"
-                    style={{
-                      width: `${(completedCourses / totalCourses) * 100}%`,
-                    }}
-                  ></div>
+                    style={{ width: `${(completedCourses / totalCourses) * 100}%` }}
+                  />
                 </div>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -265,15 +269,18 @@ export default function LearnerProfile() {
               </p>
 
               <div className="pt-4 flex flex-wrap gap-2">
-                <Badge className="bg-blue-500 text-white px-2 py-1 rounded-full">
-                  Web Developer
-                </Badge>
-                <Badge className="border border-gray-400 text-gray-500 px-2 py-1 rounded-full">
-                  Data Analyst
-                </Badge>
-                <Badge className="border border-gray-400 text-gray-500 px-2 py-1 rounded-full">
-                  Designer
-                </Badge>
+                {["Web Developer", "Data Analyst", "Designer"].map((skill) => (
+                  <Badge
+                    key={skill}
+                    className={
+                      skill === "Web Developer"
+                        ? "bg-blue-500 text-white"
+                        : "border border-gray-400 text-gray-500"
+                    }
+                  >
+                    {skill}
+                  </Badge>
+                ))}
               </div>
             </div>
           </div>

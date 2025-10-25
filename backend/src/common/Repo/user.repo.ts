@@ -1,11 +1,13 @@
 import { injectable, inject } from "inversify";
 import { BaseRepo, IBaseRepo } from "../baseRepo";
-import { IUser, TYPES } from "@/common";
+import { IUser } from "@/common";
+import { TYPES } from "../../common/types/inversify/types";
 import { Model } from "mongoose";
+
 export interface IUserRepo extends IBaseRepo<IUser> {
   findWithEmailAndRole: (email: string, role: string) => Promise<IUser | null>;
-  updatePassword: (id: string, password: string) => Promise<IUser | null>;
 }
+
 @injectable()
 export class UserRepo extends BaseRepo<IUser> implements IUserRepo {
   constructor(@inject(TYPES.IUserModel) private _model: Model<IUser>) {

@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useVerification } from "@/hooks/profesional/useVerification";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { Processing } from "./Processing";
 interface ProfileData {
   title: string;

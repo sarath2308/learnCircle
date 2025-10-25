@@ -1,25 +1,23 @@
 // mappers/user.mapper.ts
 import { IUser } from "@/common";
-import { UserResponseSchema, UserResponseDto, CreateUserRequestDto } from "@/common";
+import { UserResponseSchema, UserResponseDto } from "@/common";
+
 export interface IUserDtoMapper {
-  toResponse: (user: IUser) => UserResponseDto;
-  toEntity: (data: CreateUserRequestDto) => Partial<IUser>;
+  toResponse: (user: IUser) => Promise<UserResponseDto>;
 }
-export class UserDtoMapper {
-  static toResponse(user: IUser): UserResponseDto {
+
+export class UserDtoMapper implements IUserDtoMapper {
+  async toResponse(user: IUser): Promise<UserResponseDto> {
     const plainUser = user.toObject ? user.toObject() : user;
-    const safeUser = UserResponseSchema.parse(plainUser);
+
+    const transformedUser = {
+      ...plainUser,
+      id: plainUser._id?.toString?.() || plainUser._id,
+    };
+    delete transformedUser._id;
+
+    const safeUser = UserResponseSchema.parse(transformedUser);
 
     return safeUser;
-  }
-  static toEntity(data: CreateUserRequestDto): Partial<IUser> {
-    return {
-      name: data.name,
-      email: data.email,
-      passwordHash: data.passwordHash,
-      role: data.role,
-      isBlocked: data.isBlocked ?? false,
-      providers: data.providers ?? [],
-    };
   }
 }

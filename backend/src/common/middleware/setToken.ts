@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthConfig } from "../../config/authConfig";
-import { timeStringToMs } from "../../utils/timeString";
+import { timeStringToMs } from "@/common";
 
 export const setTokens = (res: Response, accessToken: string, refreshToken?: string) => {
   res.cookie("accessToken", accessToken, {

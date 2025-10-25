@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IEmailService, IOtpService, IpasswordService, ITokenService } from "../utils";
-import { IUserRepo } from "../Repo";
+import { IRedisRepository, IUserRepo } from "../Repo";
 import { HttpStatus, Messages, RedisKeys } from "../constants";
 import { OtpRes } from "../types";
 import { IPasswordResetService } from "../interface/IPasswordResetService";
@@ -18,6 +18,8 @@ export class PasswordResetService implements IPasswordResetService {
     @inject(TYPES.ITokenService) private _tokenService: ITokenService,
 
     @inject(TYPES.IPasswordService) private _passwordService: IpasswordService,
+
+    @inject(TYPES.IRedisRepository) private _redisRepo: IRedisRepository,
   ) {}
   /**
    *
@@ -36,18 +38,13 @@ export class PasswordResetService implements IPasswordResetService {
 
     await this._otpService.storeOtp(
       `${RedisKeys.FORGOT}:${email}`,
-      { name: match.name, email: match.email, role: match.role },
+      { name: match.name, email: match.email, role: match.role, otp: otp },
       60,
     );
-
-    let tempToken = await this._tokenService.signTempToken({
-      userId: match.id,
-      role: match.role,
-    });
     //email
     await this._emailService.sendForgotPasswordOtp(email, otp);
 
-    return { message: "otp sent for verification", tempToken };
+    return { message: "otp sent for verification" };
   }
   /**
    *
@@ -65,18 +62,13 @@ export class PasswordResetService implements IPasswordResetService {
 
     await this._otpService.storeOtp(
       `${RedisKeys.FORGOT}:${email}`,
-      { name: match.name, email: match.email, role: match.role },
+      { name: match.name, email: match.email, role: match.role, otp: otp },
       60,
     );
-
-    let tempToken = await this._tokenService.signTempToken({
-      userId: match.id,
-      role: match.role,
-    });
     //email
     await this._emailService.sendForgotPasswordOtp(email, otp);
 
-    return { message: "otp sent for verification", tempToken };
+    return { message: "otp sent for verification" };
   }
   /**
    *
@@ -85,11 +77,8 @@ export class PasswordResetService implements IPasswordResetService {
    * @returns
    */
   async verify(email: string, otp: string): Promise<OtpRes | null> {
-    const stored = await this._otpService.verifyOtp(`${RedisKeys.FORGOT}:${email}`, otp);
-
-    if (!stored) {
-      throw new AppError(Messages.OTP_EXPIRED, HttpStatus.NOT_FOUND);
-    }
+    console.log(`email:${email},otp:${otp}`);
+    await this._otpService.verifyOtp(`${RedisKeys.FORGOT}:${email}`, otp);
 
     const user = await this._userRepo.findByEmail(email);
     if (!user) {
@@ -116,10 +105,10 @@ export class PasswordResetService implements IPasswordResetService {
    * @returns
    */
   async reset(token: string, email: string, newPassword: string): Promise<OtpRes | null> {
-    let verify = await this._tokenService.verifyTempToken(token);
-
-    if (!verify?.success) {
-      throw new Error("time limit expired");
+    console.log(`--------token---${token}`);
+    let verify = await this._redisRepo.get(`${RedisKeys.RESET_TOKEN}:${token}`);
+    if (!verify) {
+      throw new AppError("time limit expired", HttpStatus.BAD_REQUEST);
     }
     let match = await this._userRepo.findByEmail(email);
 

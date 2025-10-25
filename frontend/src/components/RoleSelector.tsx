@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
+import type { Roles } from "@/types/role.type";
 import { GraduationCap, Briefcase } from "lucide-react";
-
+import { React } from "react";
 interface RoleSelectorProps {
-  selectedRole: "learner" | "professional" | "admin" | null;
+  selectedRole: Roles | null;
   onRoleSelect: (role: "learner" | "professional") => void;
 }
 
