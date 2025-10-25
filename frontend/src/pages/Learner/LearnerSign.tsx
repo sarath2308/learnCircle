@@ -9,6 +9,8 @@ import { useGoogle } from "@/hooks/auth/useGoogleAuth";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { setSignupData } from "@/redux/slice/signupSlice";
+import { useRequestEmailChangeOtp } from "@/hooks/learner/profile/useRequestEmailChangeOtp";
+import { useResendEmailChangeOtp } from "@/hooks/learner/profile/useResendEmailChangeOtp";
 
 const LearnerSign = () => {
   const [view, setView] = useState("login");

@@ -38,14 +38,14 @@ api.interceptors.response.use(
     try {
       await api.post("/auth/refresh-token");
       console.log("Refresh token called from frontend");
-      await new Promise(res => setTimeout(res, 50)); 
+      await new Promise((res) => setTimeout(res, 50));
       return api(originalRequest); // Retry original request
     } catch (refreshError) {
       // Refresh failed (maybe expired), redirect to login
       window.location.href = "/";
       return Promise.reject(refreshError);
     }
-  }
+  },
 );
 
 export default api;

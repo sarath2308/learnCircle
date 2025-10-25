@@ -31,4 +31,5 @@ export const TYPES = {
   IS3Service: Symbol.for("IS3Service"),
   ILearnerProfileDto: Symbol.for("ILearnerProfileDto"),
   IAuthenticateMiddleware: Symbol.for("IAuthenticateMiddleware"),
+  IProfessionalProfileRepo: Symbol.for("IProfessionalProfileRepo"),
 };

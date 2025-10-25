@@ -20,7 +20,7 @@ export class LearnerProfileMapperService implements ILearnerProfileMapperService
       currentSubject: learnerProfile?.currentSubject ?? null,
       joinedAt: learnerProfile?.joinedAt?.toISOString() ?? null,
       lastLogin: learnerProfile?.lastLogin?.toISOString() ?? null,
-      streak: learnerProfile?.streak,
+      streak: learnerProfile?.streak || 0,
       hasPassword: !!user.passwordHash,
       isBlocked: user.isBlocked ?? false,
     });

@@ -8,7 +8,7 @@ export interface ILearnerProfileRepo extends IBaseRepo<ILearnerProfile> {
    * @param key
    * @returns
    */
-  storeProfileKey: (id: string, key: string) => Promise<ILearnerProfile | null>;
+  storeProfileKey: (id: string, key: string) => Promise<void>;
   /**
    *
    * @param id

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import expressWinston from "express-winston";
-import logger from "./logs/logger";
+import logger from "./logs.config/logger";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./common/middleware";

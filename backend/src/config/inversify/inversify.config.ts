@@ -32,7 +32,7 @@ import {
   LearnerProfileService,
 } from "@/learner";
 import { CloudinaryService } from "@/common";
-import { ProfesionalVerificationController } from "@/professionals";
+import { IProfessionalProfile, ProfesionalVerificationController } from "@/professionals";
 import { IUserRepo, UserRepo } from "@/common/Repo";
 import { UserDtoMapper } from "@/common/dtos/mapper/user.map";
 import { AuthOrchestrator } from "@/common/services/auth.orchestrator";
@@ -48,12 +48,19 @@ import { ILearnerHomeController } from "@/learner/features/home/interface/ILearn
 import { ILearnerProfileService } from "@/learner/features/profile/interface/ILearnerProfileService";
 import { ILearnerProfileMapperService } from "@/learner/features/profile/interface/ILearnerProfileMapper";
 import { LearnerProfileMapperService } from "@/learner/features/profile/dtos/mapper/learnerProfile.dto.mapper";
+import ProfessionalProfile from "@/professionals/models/profesional.profile";
+import { ProfessionalProfileRepo } from "@/professionals/Repo/professional.profile.repo";
+import { IProfessionalProfileRepo } from "@/professionals/interface/IProfessionalProfileRepo";
 export const container = new Container();
 
 // Bindings
 container.bind<Model<IUser>>(TYPES.IUserModel).toConstantValue(User);
 container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
 container.bind<Model<ILearnerProfile>>(TYPES.ILearnerProfileModel).toConstantValue(LearnerProfile);
+container
+  .bind<Model<IProfessionalProfile>>(TYPES.IProfessionalProfileModel)
+  .toConstantValue(ProfessionalProfile);
+container.bind<IProfessionalProfileRepo>(TYPES.IProfesionalProfileRepo).to(ProfessionalProfileRepo);
 container.bind<ILearnerProfileRepo>(TYPES.ILearnerProfileRepo).to(LearnerProfileRepo);
 container.bind(TYPES.ITokenService).to(TokenService).inSingletonScope();
 container.bind(TYPES.IEmailService).to(EmailService).inSingletonScope();

@@ -3,41 +3,42 @@ import { multerMiddleware } from "../../../../common/middleware/multer.middlewar
 import { ILearnerProfileController } from "../interface/ILearnerProfileController";
 import { LearnerProfileSchemas } from "../dtos/schemas/profile.request.dto";
 import { zodValidation } from "@/common/middleware";
+import { PROFILE_ROUTES } from "../routeConstant/route.constant";
 export function learnerProfileRoute(controller: ILearnerProfileController) {
   const router = Router();
-  router.get(
-    "/",
-    zodValidation(LearnerProfileSchemas.getProfile),
-    controller.getProfile.bind(controller),
-  );
+  router.get(PROFILE_ROUTES.DEFAULT, controller.getProfile.bind(controller));
+
+  router.get(PROFILE_ROUTES.GET_PROFILE_URL, controller.getNewProfileUrl.bind(controller));
+
   router.patch(
-    "/avatar",
+    PROFILE_ROUTES.UPDATE_AVATAR,
     zodValidation(LearnerProfileSchemas.updateProfilePhoto),
     multerMiddleware,
     controller.updateProfilePhoto.bind(controller),
   );
+
   router.post(
-    "/update-email/request-otp",
+    PROFILE_ROUTES.EMAIL_REQUEST_OTP,
     zodValidation(LearnerProfileSchemas.requestEmailChangeOtp),
     controller.requestEmailChangeOtp.bind(controller),
   );
+
+  router.post(PROFILE_ROUTES.EMAIL_RESEND_OTP, controller.resendEmailChangeOtp.bind(controller));
+
   router.post(
-    "/update-email/resend-otp",
-    zodValidation(LearnerProfileSchemas.resendEmailChangeOtp),
-    controller.resendEmailChangeOtp.bind(controller),
-  );
-  router.post(
-    "/update-email/verify-otp",
+    PROFILE_ROUTES.EMAIL_VERIFY_OTP,
     zodValidation(LearnerProfileSchemas.verifyEmailChangeOtp),
     controller.verifyEmailChangeOtp.bind(controller),
   );
-  router.post(
-    "/update-password",
+
+  router.patch(
+    PROFILE_ROUTES.UPDATE_PASSWORD,
     zodValidation(LearnerProfileSchemas.updatePassword),
     controller.updatePassword.bind(controller),
   );
-  router.post(
-    "/update-username",
+
+  router.patch(
+    PROFILE_ROUTES.UPDATE_USERNAME,
     zodValidation(LearnerProfileSchemas.updateName),
     controller.updateName.bind(controller),
   );

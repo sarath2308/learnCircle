@@ -1,2 +1,2 @@
-export * from "@/professionals/features/verification";
-export * from "@/professionals/models/profesionals";
+export * from "@/professionals/features/profile";
+export * from "@/professionals/models/profesional.profile";

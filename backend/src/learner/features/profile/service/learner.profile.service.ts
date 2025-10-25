@@ -78,7 +78,10 @@ export class LearnerProfileService implements ILearnerProfileService {
       profile.lastLogin = new Date();
       await profile.save();
     }
-
+    if (profile.profile_key) {
+      let profile_url = await this._s3Service.getFileUrl(profile.profile_key);
+      return this._profileMapper.toDTO(user, profile, profile_url);
+    }
     return this._profileMapper.toDTO(user, profile);
   }
 

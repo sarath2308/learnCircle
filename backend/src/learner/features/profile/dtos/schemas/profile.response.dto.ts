@@ -8,6 +8,7 @@ export const LearnerProfileDTO = z.object({
   profileImg: z.string().nullable().optional(),
   currentSubject: z.array(z.string()).optional(),
   joinedAt: z.string(),
+  streak: z.number().default(0),
   lastLogin: z.string().nullable().optional(),
   hasPassword: z.boolean().optional(),
   isBlocked: z.boolean().optional(),

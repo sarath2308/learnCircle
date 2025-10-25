@@ -15,8 +15,8 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
    * @param key
    * @returns
    */
-  async storeProfileKey(id: string, key: string): Promise<ILearnerProfile | null> {
-    return await this._model.findByIdAndUpdate(id, { profile_key: key }, { new: true });
+  async storeProfileKey(id: string, key: string): Promise<void> {
+    await this._model.updateOne({ userId: id }, { $set: { profile_key: key } });
   }
   /**
    *
