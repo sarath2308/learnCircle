@@ -1,29 +1,47 @@
+import { injectable, inject } from "inversify";
 import { Request, Response, NextFunction } from "express";
-import { JwtPayload } from "jsonwebtoken";
-import { HttpStatus } from "../constants/httpStatus";
-import { Messages } from "../constants/messages";
-import { TokenService } from "@/common";
+import { ITokenService } from "@/common";
+import { HttpStatus, Messages } from "../constants";
+import { IAuthenticateMiddleware } from "../interface/IAuthenticateMiddleware";
+import { TYPES } from "../types/inversify/types";
 
-const tokenService = new TokenService();
-export interface AuthRequest extends Request {
-  user?: JwtPayload & { role?: string };
+export interface IAuthRequest extends Request {
+  user?: { userId: string; role: string };
 }
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.cookies["accessToken"];
+@injectable()
+export class AuthenticateMiddleware implements IAuthenticateMiddleware {
+  constructor(@inject(TYPES.ITokenService) private _tokenService: ITokenService) {}
 
-  if (!token) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
-  }
+  async handle(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
+    const token = req.cookies["accessToken"];
 
-  try {
-    const decoded = tokenService.verifyAccessToken(token);
-    if (!decoded) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+    if (!token) {
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}:111111111` });
+      return;
     }
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(HttpStatus.UNAUTHORIZED).json({ message: Messages.UNAUTHORIZED });
+
+    try {
+      const decoded = (await this._tokenService.verifyAccessToken(token)) as {
+        userId: string;
+        role: string;
+      };
+
+      req.user = decoded;
+      next();
+    } catch (err: unknown) {
+      console.error(err);
+      // Narrow the error type
+      const error = err as { name?: string };
+
+      if (error.name === "TokenExpiredError") {
+        // Token expired → frontend can call refresh
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ message: `${Messages.UNAUTHORIZED}:2222222222` });
+      } else {
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}:33333333` });
+      }
+    }
   }
-};
+}

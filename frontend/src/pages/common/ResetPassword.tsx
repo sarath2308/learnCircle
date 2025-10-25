@@ -1,22 +1,28 @@
 import ResetPasswordForm from "@/components/ResetPasswordForm";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useResetPassword } from "@/hooks/auth/useResetPassword";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
+import toast from "react-hot-toast";
 const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
-  const { mutateAsync, isPending } = useResetPassword();
+  const { mutateAsync: resetPassword, isPending } = useResetPassword();
   const navigate = useNavigate();
+  const { email, role, tempToken } = useSelector((state: RootState) => state.signup);
 
-  const role = searchParams.get("role");
-  const token = searchParams.get("token");
   const onBack = () => {
     navigate(`/auth/${role}`);
   };
 
   const handleResetPassword = async (newPassword: string) => {
     try {
-      await mutateAsync({
+      if (!tempToken) {
+        toast.error("token missing");
+        return;
+      }
+      await resetPassword({
+        token: tempToken,
         role,
-        token,
+        email,
         newPassword,
       });
       navigate(`/auth/${role}`);

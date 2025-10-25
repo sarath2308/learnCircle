@@ -1,1 +1,1 @@
-export * from "./schemas/user.dto";
+export * from "./schemas/auth.dto";

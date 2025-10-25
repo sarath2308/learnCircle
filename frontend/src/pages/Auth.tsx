@@ -10,11 +10,11 @@ const Auth = () => {
 
   const handleRoleSelect = (role: "learner" | "professional" | "admin") => {
     setSelectedRole(role);
-
+    localStorage.setItem("role", role);
     if (role === "learner") {
       navigate("/auth/learner");
     } else if (role === "professional") {
-      navigate("/auth/profesional");
+      navigate("/auth/professional");
     }
   };
 

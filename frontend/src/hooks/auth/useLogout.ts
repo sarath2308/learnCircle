@@ -19,7 +19,9 @@ export const useLogout = () => {
       toast.success("Logged out successfully");
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Logout failed");
+      // Axios stores the server response in err.response
+      const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
     },
   });
 };

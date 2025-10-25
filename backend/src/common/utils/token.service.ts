@@ -2,7 +2,8 @@ import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthConfig } from "@/config/authConfig";
 import { injectable, inject } from "inversify";
-import { IRedisRepository, TYPES } from "@/common";
+import { IRedisRepository } from "../Repo";
+import { TYPES } from "../types/inversify/types";
 import { RedisKeys } from "@/common";
 dotenv.config();
 type Tpayload = { userId: string; role?: string; type?: string };
@@ -42,9 +43,12 @@ export class TokenService implements ITokenService {
   }
 
   generateRefreshToken(payload: Tpayload): string {
-    return jwt.sign(payload, AuthConfig.refreshTokenSecret, {
+    let token = jwt.sign(payload, AuthConfig.refreshTokenSecret, {
       expiresIn: AuthConfig.refreshTokenExpiresIn,
     });
+    const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
+    this.redisService.set(`${RedisKeys.REFRESH}:${payload.userId}`, token, REFRESH_TOKEN_TTL);
+    return token;
   }
 
   verifyAccessToken(token: string): JwtPayload | null {

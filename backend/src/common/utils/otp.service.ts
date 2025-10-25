@@ -1,7 +1,9 @@
 import crypto from "crypto";
 import { inject, injectable } from "inversify";
-import { TYPES } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IRedisRepository } from "../Repo";
+import { AppError } from "../errors/app.error";
+import { HttpStatus, Messages } from "../constants";
 export interface IOtpService {
   generateOtp(): string;
   storeOtp(key: string, data: object, ttlSeconds: number): Promise<void>;
@@ -14,6 +16,7 @@ export interface OtpData {
   password?: string;
   role: "learner" | "professional" | "admin";
   otp: string;
+  newEmail?: string;
 }
 
 @injectable()
@@ -30,10 +33,10 @@ export class OtpService implements IOtpService {
   async verifyOtp(key: string, otp: string): Promise<OtpData> {
     let match = await this._redisRepo.get<OtpData>(`${key}`);
     if (!match) {
-      throw new Error("otp expired");
+      throw new AppError(Messages.OTP_EXPIRED, HttpStatus.BAD_REQUEST);
     }
-    if (match.otp !== otp) {
-      throw new Error("invalid Otp");
+    if (match?.otp !== otp) {
+      throw new AppError(Messages.OTP_INVALID, HttpStatus.BAD_REQUEST);
     }
     await this._redisRepo.delete(key);
     return match;

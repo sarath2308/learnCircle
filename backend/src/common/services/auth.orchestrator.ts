@@ -1,6 +1,7 @@
 import { inject, injectable, multiInject } from "inversify";
 import { IPasswordResetService } from "@/common";
-import { OtpRes, Role, TYPES } from "../types";
+import { OtpRes, Role } from "../types";
+import { TYPES } from "../types/inversify/types";
 import { IEmailAuthService } from "@/common";
 import { IAuthProviderService } from "../interface";
 import { UserResponseDto } from "../dtos";
@@ -46,18 +47,17 @@ export class AuthOrchestrator implements IAuthOrchestrator {
    */
   async signup(
     email: string,
-    token: string,
     otp: string,
   ): Promise<{ user: UserResponseDto; tokens: ITokens } | null> {
-    return await this._emailAuthService.signup(email, token, otp);
+    return await this._emailAuthService.signup(email, otp);
   }
   /**
    *
    * @param token
    * @returns
    */
-  async resendSignupOtp(token: string): Promise<OtpRes | null> {
-    return await this._emailAuthService.resendSignupOtp(token);
+  async resendSignupOtp(email: string): Promise<OtpRes | null> {
+    return await this._emailAuthService.resendSignupOtp(email);
   }
   /**
    *

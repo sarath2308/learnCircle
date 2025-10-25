@@ -1,323 +1,263 @@
-import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+"use client";
+import React, { useState, useEffect } from "react";
+import { Mail, Lock } from "lucide-react";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Edit, Lock, Send, Check, Mail } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "react-toastify";
-import { React } from "react";
+
 interface EditProfileDialogProps {
   userData: {
     name: string;
     email: string;
     hasPassword: boolean;
   };
-  onUpdateProfile: (data: { name?: string }) => void;
-  onUpdateEmail: (data: { email: string }) => void;
-  onUpdatePassword?: (data: { currentPassword: string; newPassword: string }) => void;
-  onVerifyOtp?: (data: { otp: string }) => void;
-  onResendOtp?: () => void;
+  onUpdateProfile: (data: { name: string }) => Promise<void>;
+  onRequestEmailOtp: (data: { email: string }) => Promise<void>;
+  onVerifyOtp: (data: { otp: string }) => Promise<void>;
+  onUpdateEmail: (data: { newEmail: string }) => Promise<void>;
+  onUpdatePassword: (data: { newPassword: string; password?: string }) => Promise<void>;
 }
 
-const OTP_TIMER_KEY = "email_otp_expiry";
-
-export default function EditProfileDialog({
+const EditProfileDialog = ({
   userData,
   onUpdateProfile,
-  onUpdateEmail,
+  onRequestEmailOtp,
   onVerifyOtp,
-  onResendOtp,
+  onUpdateEmail,
   onUpdatePassword,
-}: EditProfileDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<"profile" | "email" | "password">("profile");
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  // Sync formData whenever userData changes
-  useEffect(() => {
-    if (userData) {
-      setFormData({
-        name: userData.name,
-        email: userData.email,
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-    }
-  }, [userData]);
+}: EditProfileDialogProps) => {
+  const [activeTab, setActiveTab] = useState<"profile" | "email" | "password">("profile");
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: userData.name, email: userData.email });
+  const [passwords, setPasswords] = useState({ newPassword: "", password: "" });
 
   // OTP state
   const [emailOtp, setEmailOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-
-  // Timer setup
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const expiry = localStorage.getItem(OTP_TIMER_KEY);
-      if (expiry) {
-        const remaining = Math.floor((+expiry - Date.now()) / 1000);
-        if (remaining > 0) {
-          setTimeLeft(remaining);
-        } else {
-          localStorage.removeItem(OTP_TIMER_KEY);
-          setTimeLeft(0);
-        }
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Handlers
-  const handleSendOtp = () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("Please enter a valid email");
-      return;
-    }
-    toast.success("OTP sent to your email!");
-    setIsOtpSent(true);
-    const expiry = Date.now() + 60 * 1000;
-    localStorage.setItem(OTP_TIMER_KEY, expiry.toString());
-    setTimeLeft(60);
-  };
-
-  const handleVerifyOtpClick = () => {
-    if (emailOtp === "123456") {
-      setIsOtpVerified(true);
-      toast.success("Email verified successfully");
-    } else {
-      toast.error("Invalid OTP");
-    }
-  };
-
-  const handleSaveProfile = () => {
-    if (!formData.name.trim()) {
-      toast.error("Name cannot be empty");
-      return;
-    }
-    onUpdateProfile({ name: formData.name });
-    closeDialog();
-  };
-
-  const handleSaveEmail = () => {
-    if (!isOtpVerified) {
-      toast.error("Please verify your new email first");
-      return;
-    }
-    onUpdateEmail({ email: formData.email });
-    toast.success("Email updated successfully");
-    closeDialog();
-  };
-
-  const handleSavePassword = () => {
-    if (!formData.newPassword || formData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("New passwords don't match");
-      return;
-    }
-    if (onUpdatePassword) {
-      onUpdatePassword({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword,
-      });
-    }
-    toast.success("Password updated successfully");
-    closeDialog();
-  };
+  const OTP_TIMER_KEY = "otp_timer";
 
   const closeDialog = () => {
-    setOpen(false);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setActiveSection("profile");
+    setIsOpen(false);
+    setActiveTab("profile");
     setIsOtpSent(false);
     setIsOtpVerified(false);
     setEmailOtp("");
-    setTimeLeft(0);
-    localStorage.removeItem(OTP_TIMER_KEY);
-    if (userData) {
-      setFormData({
-        name: userData.name,
-        email: userData.email,
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
+  };
+
+  // 🕒 Timer setup for resend OTP
+  useEffect(() => {
+    const savedExpiry = localStorage.getItem(OTP_TIMER_KEY);
+    if (savedExpiry) {
+      const remaining = Math.floor((parseInt(savedExpiry) - Date.now()) / 1000);
+      if (remaining > 0) setTimeLeft(remaining);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!timeLeft) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          localStorage.removeItem(OTP_TIMER_KEY);
+          return 0;
+        }
+        return prev - 1;
       });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  // 📨 Send OTP
+  const handleSendOtp = async () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    try {
+      await onRequestEmailOtp({ email: formData.email });
+      toast.success("OTP sent successfully");
+      setIsOtpSent(true);
+      const expiry = Date.now() + 60 * 1000;
+      localStorage.setItem(OTP_TIMER_KEY, expiry.toString());
+      setTimeLeft(60);
+    } catch {
+      toast.error("Failed to send OTP. Please try again.");
+    }
+  };
+
+  // ✅ Verify OTP
+  const handleVerifyOtpClick = async () => {
+    try {
+      await onVerifyOtp({ otp: emailOtp });
+      toast.success("OTP verified successfully");
+      setIsOtpVerified(true);
+    } catch {
+      toast.error("Invalid OTP. Please try again.");
+    }
+  };
+
+  // 💾 Save profile
+  const handleSaveProfile = async () => {
+    try {
+      await onUpdateProfile({ name: formData.name });
+      toast.success("Profile updated successfully");
+      closeDialog();
+    } catch {
+      toast.error("Failed to update profile");
+    }
+  };
+
+  // 📧 Save new email
+  const handleSaveEmail = async () => {
+    if (!isOtpVerified) {
+      toast.error("Please verify the OTP first");
+      return;
+    }
+    try {
+      await onUpdateEmail({ email: formData.email });
+      toast.success("Email updated successfully");
+      closeDialog();
+    } catch {
+      toast.error("Failed to update email");
+    }
+  };
+
+  // 🔐 Save new password
+  const handleSavePassword = async () => {
+    try {
+      if (userData.hasPassword) {
+        await onUpdatePassword({
+          newPassword: passwords.newPassword,
+          password: passwords.password,
+        });
+      } else {
+        await onUpdatePassword({ newPassword: passwords.newPassword });
+      }
+
+      closeDialog();
+    } catch {
+      toast.error("Failed to update password");
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Edit className="h-4 w-4 mr-2" />
-          Edit Profile
-        </Button>
-      </DialogTrigger>
+    <>
+      <Button
+        variant="outline"
+        className="rounded-xl border-primary text-primary"
+        onClick={() => setIsOpen(true)}
+      >
+        Edit Profile
+      </Button>
 
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
-        </DialogHeader>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-md rounded-xl p-6">
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Section Switch */}
-          <div className="flex flex-col space-y-3">
-            <Button
-              variant="outline"
-              onClick={() => setActiveSection("profile")}
-              className={activeSection === "profile" ? "border-primary" : ""}
-            >
-              <Edit className="h-4 w-4 mr-2" /> Profile Info
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setActiveSection("email")}
-              className={activeSection === "email" ? "border-primary" : ""}
-            >
-              <Mail className="h-4 w-4 mr-2" /> Change Email
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setActiveSection("password")}
-              className={activeSection === "password" ? "border-primary" : ""}
-            >
-              <Lock className="h-4 w-4 mr-2" /> Change Password
-            </Button>
+          {/* Tabs */}
+          <div className="flex justify-around mb-6 border-b">
+            {["profile", "email", "password"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`pb-2 capitalize ${
+                  activeTab === tab ? "border-b-2 border-primary text-primary" : "text-gray-500"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
 
-          <Separator />
-
-          {/* Profile Section */}
-          {activeSection === "profile" && (
+          {/* PROFILE TAB */}
+          {activeTab === "profile" && (
             <div className="space-y-4">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={closeDialog}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveProfile}>Save</Button>
+              <div>
+                <Label>Name</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
               </div>
+              <Button className="w-full" onClick={handleSaveProfile}>
+                Save Changes
+              </Button>
             </div>
           )}
 
-          {/* Email Section */}
-          {activeSection === "email" && (
+          {/* EMAIL TAB */}
+          {activeTab === "email" && (
             <div className="space-y-4">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={isOtpSent && !isOtpVerified}
-              />
-              {!isOtpVerified && (
-                <Button variant="outline" onClick={handleSendOtp} disabled={timeLeft > 0}>
-                  <Send className="h-4 w-4 mr-2" />
-                  {timeLeft > 0 ? `Resend in ${timeLeft}s` : "Send OTP"}
-                </Button>
-              )}
-              {isOtpSent && !isOtpVerified && (
-                <div className="space-y-2">
-                  <Label htmlFor="otp">Verification Code</Label>
+              <div>
+                <Label>New Email</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                  <Button variant="outline" onClick={handleSendOtp} disabled={timeLeft > 0}>
+                    {timeLeft > 0 ? `Resend in ${timeLeft}s` : "Send OTP"}
+                  </Button>
+                </div>
+              </div>
+
+              {isOtpSent && (
+                <div>
+                  <Label>Enter OTP</Label>
                   <div className="flex gap-2">
                     <Input
-                      id="otp"
-                      placeholder="Enter 6-digit code"
                       value={emailOtp}
                       onChange={(e) => setEmailOtp(e.target.value)}
-                      maxLength={6}
+                      placeholder="Enter OTP"
                     />
-                    <Button onClick={handleVerifyOtpClick}>
-                      <Check className="h-4 w-4 mr-2" /> Verify
+                    <Button variant="outline" onClick={handleVerifyOtpClick}>
+                      Verify OTP
                     </Button>
                   </div>
                 </div>
               )}
-              {isOtpVerified && (
-                <div className="p-3 bg-success/10 border border-success/20 rounded-md">
-                  <p className="text-sm text-success">✓ Email verified successfully</p>
-                </div>
-              )}
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={closeDialog}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveEmail} disabled={!isOtpVerified}>
-                  Save
-                </Button>
-              </div>
+
+              <Button className="w-full" onClick={handleSaveEmail} disabled={!isOtpVerified}>
+                Save Email
+              </Button>
             </div>
           )}
 
-          {/* Password Section */}
-          {activeSection === "password" && (
+          {/* PASSWORD TAB */}
+          {activeTab === "password" && (
             <div className="space-y-4">
-              {userData.hasPassword && (
-                <>
-                  <Label htmlFor="current-password">Current Password</Label>
-                  <Input
-                    id="current-password"
-                    type="password"
-                    placeholder="Enter current password"
-                    value={formData.currentPassword}
-                    onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                  />
-                </>
-              )}
-              <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                placeholder="Enter new password"
-                value={formData.newPassword}
-                onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-              />
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="Confirm new password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              />
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={closeDialog}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSavePassword}>Update Password</Button>
+              <div>
+                <Label>Current Password</Label>
+                <Input
+                  type="password"
+                  value={passwords.password}
+                  onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
+                />
               </div>
+              <div>
+                <Label>New Password</Label>
+                <Input
+                  type="password"
+                  value={passwords.newPassword}
+                  onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                />
+              </div>
+              <Button className="w-full" onClick={handleSavePassword}>
+                Save Password
+              </Button>
             </div>
           )}
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   );
-}
+};
+
+export default EditProfileDialog;

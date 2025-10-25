@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { LearnerHomeController } from "@/learner";
-export function learnerHomeRoute(controller: LearnerHomeController) {
+import { ILearnerHomeController } from "../interface/ILearnerHomeController";
+export function learnerHomeRoute(controller: ILearnerHomeController) {
   const router = Router();
   router.get("/", controller.getHome.bind(controller));
   return router;
