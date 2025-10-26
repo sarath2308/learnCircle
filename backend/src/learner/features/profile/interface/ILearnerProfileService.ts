@@ -13,7 +13,7 @@ export interface ILearnerProfileService {
   updateProfilePhoto(
     userId: string,
     data: { originalName: string; mimeType: string; fileBuffer: Buffer },
-  ): Promise<LearnerProfileDTOType | null>;
+  ): Promise<string | null>;
   /**
    *
    * @param userId

@@ -31,7 +31,7 @@ export default function ProfesionalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: userData, isLoading, isError, error } = useGetDashboard();
   if (userData?.status === "processing") return <Processing />;
-  if (userData?.status === "rejected") return <Rejected reason={userData.RejectReason} />;
+  if (userData?.status === "rejected") return <Rejected reason={userData.rejectReason || "No reason Provided Check Your Email"} />;
   if (userData?.status === "pending") return <Verification />;
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -103,7 +103,7 @@ export default function ProfesionalLayout() {
 
         {/* Page content */}
         <main className="p-6 flex-1">
-          <h1 className="text-xl font-semibold">Welcome to Dashboard </h1>
+          <h1 className="text-xl font-semibold">Welcome {userData?.user.name} </h1>
         </main>
       </div>
     </div>

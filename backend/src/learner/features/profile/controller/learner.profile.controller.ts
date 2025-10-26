@@ -58,7 +58,7 @@ export class LearnerProfileController implements ILearnerProfileController {
       });
       res
         .status(HttpStatus.OK)
-        .json({ success: true, message: Messages.PROFILE_UPDATED, userData: result });
+        .json({ success: true, message: Messages.PROFILE_UPDATED, profileUrl: result });
     } catch (error) {
       next(error);
     }

@@ -26,6 +26,10 @@ import { ROLE } from "./common/constants/Role";
 import { ILearnerProfileController } from "./learner/features/profile/interface/ILearnerProfileController";
 import { IAuthenticateMiddleware } from "./common/interface/IAuthenticateMiddleware";
 import { ILearnerHomeController } from "./learner/features/home/interface/ILearnerHomeController";
+import { IProfessionalProfileController } from "./professionals/features/profile/interface/IProfessionalProfileController";
+import { professionalProfileRoutes } from "./professionals";
+import { IProfessionalDashboardController } from "./professionals/features/dashboard/interfaces/IProfessionalDashboardController";
+import { professionalDashboardRoutes } from "./professionals/features/dashboard/routes/professional.dashboard";
 
 dotenv.config();
 const app = express();
@@ -72,6 +76,12 @@ async function startServer() {
   );
   const learnerHomeController = container.get<ILearnerHomeController>(TYPES.ILearnerHomeController);
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
+  const professionalProfileController = container.get<IProfessionalProfileController>(
+    TYPES.IProfessionalProfileController,
+  );
+  const professionalDashboardController = container.get<IProfessionalDashboardController>(
+    TYPES.IProfessionalDashboardController,
+  );
   // Routes
 
   app.use("/api/auth", authRoutes(authController));
@@ -91,7 +101,18 @@ async function startServer() {
     authorizeRoles(ROLE.LEARNER),
     learnerHomeRoute(learnerHomeController),
   );
-
+  app.use(
+    "/api/professional",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.PROFESSIONAL),
+    professionalProfileRoutes(professionalProfileController),
+  );
+  app.use(
+    "/api/professional/dashboard",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.PROFESSIONAL),
+    professionalDashboardRoutes(professionalDashboardController),
+  );
   app.use(
     expressWinston.errorLogger({
       winstonInstance: logger,
