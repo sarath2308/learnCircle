@@ -1,46 +1,90 @@
-// import { injectable, inject } from "inversify";
-// import { TYPES } from "../../../../common/types/inversify/types";
-// import { ProfesionalRepo } from "../../../";
-// import { CloudinaryService } from "../../utils/cloudinary.service";
-// import { uuid } from "zod";
-// import { CloudFiles } from "../../constants/cloudinary.folder";
-// import { mapToProfileInfo } from "../../dtos/profesional/profesionaInfo.mapper";
-// import { mapProfessionalToDTO } from "../../dtos/profesional/profesional.mapper";
-// interface UploadFiles {
-//   avatar?: Buffer;
-//   resume?: Buffer;
-// }
+import { injectable, inject } from "inversify";
+import { TYPES } from "../../../../common/types/inversify/types";
+import { IProfessionalProfileRepo } from "@/professionals/features/profile/interface/IProfessionalProfileRepo";
+import { AppError, HttpStatus, IS3Service, Messages } from "@/common";
+import { Types } from "mongoose";
+import { IUserRepo } from "@/common/Repo";
+import { IProfessionalProfileService } from "../interface/IProfessionalProfileService";
+import { ProfessionalProfileDTOType } from "../dtos/profile.request.schema";
 
-// @injectable()
-// export class ProfesionalVerificationService {
-//   constructor(
-//     @inject(TYPES.ProfesionalRepo) private repo: ProfesionalRepo,
-//     @inject(TYPES.CloudinaryService) private cloudinary: CloudinaryService,
-//   ) {}
+export interface UploadFiles {
+  avatar?: {
+    buffer?: Buffer;
+    mimeType?: string;
+    originalName?: string;
+  };
+  resume?: {
+    buffer?: Buffer;
+    mimeType?: string;
+    originalName?: string;
+  };
+}
 
-//   async uploadData(userId: string, data: any, files: UploadFiles) {
-//     const publicId = `user_profile${userId}_${uuid()}`;
-//     const resumeId = `user_resume${userId}_${uuid()}`;
-//     const user = await this.repo.findById(userId);
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
-//     if (files.avatar) {
-//       await this.cloudinary.uploadImage(files.avatar, CloudFiles.Profile);
-//     }
-//     if (files.resume) {
-//       await this.cloudinary.uploadImage(files.resume, CloudFiles.Resume);
-//     }
-//     let profileInfo = mapToProfileInfo({ ...data, resumeId });
-//     let updated = await this.repo.update(userId, { publicId, status: "processing", profileInfo });
-//     return { user: updated };
-//   }
-//   async getDashboard(userId: string) {
-//     let user = await this.repo.findById(userId);
-//     if (user) {
-//       return mapProfessionalToDTO(user);
-//     } else {
-//       throw new Error("user not found");
-//     }
-//   }
-// }
+@injectable()
+export class ProfessionalProfileService implements IProfessionalProfileService {
+  constructor(
+    @inject(TYPES.IProfesionalProfileRepo) private _profileRepo: IProfessionalProfileRepo,
+    @inject(TYPES.IS3Service) private _s3Service: IS3Service,
+    @inject(TYPES.IUserRepo) private _userRepo: IUserRepo,
+  ) {}
+  /**
+   *
+   * @param userId
+   * @param data
+   * @param files
+   */
+  async uploadData(userId: string, data: ProfessionalProfileDTOType, files: UploadFiles) {
+    const user = await this._userRepo.findById(userId);
+
+    if (!user) {
+      throw new AppError(Messages.NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    let profileData = await this._profileRepo.getProfile(userId);
+
+    if (!profileData) {
+      profileData = await this._profileRepo.create({
+        userId: new Types.ObjectId(userId),
+        title: data.title,
+        bio: data.bio,
+        companyName: data.companyName,
+        experience: data.experience,
+        skills: data.skills,
+        typesOfSessions: data.typesOfSessions,
+        status: "processing",
+      });
+    } else {
+      // Update existing profile fields
+      profileData.title = data.title;
+      profileData.bio = data.bio;
+      profileData.companyName = data.companyName;
+      profileData.experience = data.experience;
+      profileData.skills = data.skills;
+      profileData.typesOfSessions = data.typesOfSessions;
+
+      await profileData.save(); // Save updated fields
+    }
+
+    if (files.avatar?.buffer && files.avatar.mimeType && files.avatar.originalName) {
+      const profile_key = await this._s3Service.generateS3Key(userId, files.avatar.originalName);
+      await this._s3Service.uploadFileFromBuffer(
+        files.avatar.buffer,
+        profile_key,
+        files.avatar.mimeType,
+      );
+      profileData.profile_key = profile_key;
+      await profileData.save();
+    }
+
+    if (files.resume?.buffer && files.resume.mimeType && files.resume.originalName) {
+      const resume_key = await this._s3Service.generateS3Key(userId, files.resume.originalName);
+      await this._s3Service.uploadFileFromBuffer(
+        files.resume.buffer,
+        resume_key,
+        files.resume.mimeType,
+      );
+      profileData.resume_key = resume_key;
+      await profileData.save();
+    }
+  }
+}

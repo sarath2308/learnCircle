@@ -1,3 +1,3 @@
-export * from "./controller/profesional.verification.controller";
-export * from "./routes/profesionalVerificationRoutes";
+export * from "./controller/profesional.profile.controller";
+export * from "./routes/professional.profile.routes";
 // export * from "./services/profesional.verification.service";

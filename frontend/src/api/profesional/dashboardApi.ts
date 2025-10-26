@@ -6,6 +6,6 @@ export interface UpdateAvatarResponse {
 }
 
 export const dashboardApi = {
-  getDashboard: () => api.get("/profesional/dashboard").then((res) => res.data),
+  getDashboard: () => api.get("/professional/dashboard").then((res) => res.data),
   getProfileInfo: () => api.get("/profesional/profileinfo").then((res) => res.data),
 };

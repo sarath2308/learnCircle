@@ -32,4 +32,9 @@ export const TYPES = {
   ILearnerProfileDto: Symbol.for("ILearnerProfileDto"),
   IAuthenticateMiddleware: Symbol.for("IAuthenticateMiddleware"),
   IProfessionalProfileRepo: Symbol.for("IProfessionalProfileRepo"),
+  IProfessionalProfileService: Symbol.for("IProfessionalProfileService"),
+  IProfessionalProfileController: Symbol.for("IProfessionalProfileController"),
+  IProfessionalDashboardDtoMap: Symbol.for("IProfessionalDashboardDtoMap"),
+  IProfessionalDashboardService: Symbol.for("IProfessionalDashboardService"),
+  IProfessionalDashboardController: Symbol.for("IProfessionalDashboardController"),
 };

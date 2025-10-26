@@ -32,7 +32,7 @@ import {
   LearnerProfileService,
 } from "@/learner";
 import { CloudinaryService } from "@/common";
-import { IProfessionalProfile, ProfesionalVerificationController } from "@/professionals";
+import { IProfessionalProfile, ProfessionalProfileController } from "@/professionals";
 import { IUserRepo, UserRepo } from "@/common/Repo";
 import { UserDtoMapper } from "@/common/dtos/mapper/user.map";
 import { AuthOrchestrator } from "@/common/services/auth.orchestrator";
@@ -48,9 +48,18 @@ import { ILearnerHomeController } from "@/learner/features/home/interface/ILearn
 import { ILearnerProfileService } from "@/learner/features/profile/interface/ILearnerProfileService";
 import { ILearnerProfileMapperService } from "@/learner/features/profile/interface/ILearnerProfileMapper";
 import { LearnerProfileMapperService } from "@/learner/features/profile/dtos/mapper/learnerProfile.dto.mapper";
-import ProfessionalProfile from "@/professionals/models/profesional.profile";
-import { ProfessionalProfileRepo } from "@/professionals/Repo/professional.profile.repo";
-import { IProfessionalProfileRepo } from "@/professionals/interface/IProfessionalProfileRepo";
+import ProfessionalProfile from "@/professionals/features/profile/models/profesional.profile";
+import { ProfessionalProfileRepo } from "@/professionals/features/profile/Repo/professional.profile.repo";
+import { IProfessionalProfileRepo } from "@/professionals/features/profile/interface/IProfessionalProfileRepo";
+import { IProfessionalProfileService } from "@/professionals/features/profile/interface/IProfessionalProfileService";
+import { ProfessionalProfileService } from "@/professionals/features/profile/services/profesional.profile.service";
+import { IProfessionalProfileController } from "@/professionals/features/profile/interface/IProfessionalProfileController";
+import { IProfessionalDashboardDtoMap } from "@/professionals/features/dashboard/interfaces/IProfessionalDasboardDtoMap";
+import { ProfessionalDashboardDtoMapper } from "@/professionals/features/dashboard/dtos/dashboard.dtos.mapper";
+import { IProfessionalDashboardService } from "@/professionals/features/dashboard/interfaces/IProfessionalDashboard";
+import { ProfessionalDashboardService } from "@/professionals/features/dashboard/service/professional.dashboard.service";
+import { IProfessionalDashboardController } from "@/professionals/features/dashboard/interfaces/IProfessionalDashboardController";
+import { ProfessionalDashboardController } from "@/professionals/features/dashboard/controller/professional.dashboard.controller";
 export const container = new Container();
 
 // Bindings
@@ -78,6 +87,21 @@ container.bind<IPasswordResetService>(TYPES.IPasswordResetService).to(PasswordRe
 container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
 container.bind<ILearnerProfileService>(TYPES.ILearnerProfileService).to(LearnerProfileService);
 container
+  .bind<IProfessionalDashboardController>(TYPES.IProfessionalDashboardController)
+  .to(ProfessionalDashboardController);
+container
+  .bind<IProfessionalDashboardDtoMap>(TYPES.IProfessionalDashboardDtoMap)
+  .to(ProfessionalDashboardDtoMapper);
+container
+  .bind<IProfessionalDashboardService>(TYPES.IProfessionalDashboardService)
+  .to(ProfessionalDashboardService);
+container
+  .bind<IProfessionalProfileService>(TYPES.IProfessionalProfileService)
+  .to(ProfessionalProfileService);
+container
+  .bind<IProfessionalProfileController>(TYPES.IProfessionalProfileController)
+  .to(ProfessionalProfileController);
+container
   .bind<ILearnerProfileMapperService>(TYPES.ILearnerProfileDto)
   .to(LearnerProfileMapperService);
 container
@@ -90,12 +114,6 @@ container.bind(TYPES.IRefreshService).toDynamicValue(() => {
   return new RefreshTokenService(
     container.get(TYPES.ITokenService),
     container.get(TYPES.IRedisRepository),
-  );
-});
-
-container.bind(TYPES.IProfesionalVerificationController).toDynamicValue(() => {
-  return new ProfesionalVerificationController(
-    container.get(TYPES.IProfesionalVerificationService),
   );
 });
 

@@ -2,8 +2,9 @@ import { PROFILE_API } from "@/contstant/learner/profile.api.constant";
 import api from "../api";
 
 export interface UpdateAvatarResponse {
-  profileImg: string;
+  profileUrl: string;
   message: string;
+  success: boolean;
 }
 
 export const profileApi = {

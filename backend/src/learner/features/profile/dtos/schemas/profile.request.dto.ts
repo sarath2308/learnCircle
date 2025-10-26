@@ -20,42 +20,34 @@ export const UpdateProfilePhotoSchema = z.object({
  * POST /email/change/request-otp
  */
 export const RequestEmailChangeOtpSchema = z.object({
-  body: z.object({
-    newEmail: z.string().email("Invalid email format"),
-  }),
+  newEmail: z.string().email("Invalid email format"),
 });
 
 /**
  * POST /email/change/verify-otp
  */
 export const VerifyEmailChangeOtpSchema = z.object({
-  body: z.object({
-    otp: z.string().min(4, "OTP must be at least 4 digits long"),
-  }),
+  otp: z.string().min(4, "OTP must be at least 4 digits long"),
 });
 
 /**
  * PATCH /profile/name
  */
 export const UpdateNameSchema = z.object({
-  body: z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-  }),
+  name: z.string().min(2, "Name must be at least 2 characters"),
 });
 
 /**
  * PATCH /profile/password
  */
 export const UpdatePasswordSchema = z.object({
-  body: z.object({
-    newPassword: z
-      .string()
-      .min(6, "New password must be at least 6 characters")
-      .refine((val) => /[A-Z]/.test(val), {
-        message: "New password must contain at least one uppercase letter",
-      }),
-    password: z.string().min(6, "Password must be at least 6 characters").optional(),
-  }),
+  newPassword: z
+    .string()
+    .min(6, "New password must be at least 6 characters")
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "New password must contain at least one uppercase letter",
+    }),
+  password: z.string().min(6, "Password must be at least 6 characters").optional(),
 });
 
 /**

@@ -162,7 +162,7 @@ export class AuthController implements IAuthController {
     try {
       const { token, role } = req.body;
       const result = await this._auth.providersSignin(Providers.Google, token, role);
-      setTokens(res, result?.tokens.accessToken!, result?.tokens.refreshToken);
+      setTokens(res, result.tokens.accessToken!, result?.tokens.refreshToken);
       res.status(HttpStatus.OK).json({ user: result?.user });
     } catch (error) {
       next(error);

@@ -119,7 +119,7 @@ export class LearnerProfileService implements ILearnerProfileService {
     await this._profileRepo.storeProfileKey(userId, key);
 
     // Return DTO
-    return this._profileMapper.toDTO(user, profile, uploadUrl);
+    return uploadUrl;
   }
   /**
    *

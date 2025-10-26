@@ -41,4 +41,7 @@ export const Messages = {
 
   //home realted
   HOME_RENDERED: "Home Page rendered",
+
+  //professional
+  DASHBOARD_FETCHED: "Dashboard Successfully fetched",
 };

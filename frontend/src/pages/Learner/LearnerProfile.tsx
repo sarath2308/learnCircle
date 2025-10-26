@@ -48,7 +48,7 @@ export default function LearnerProfile() {
     profileImg = profilePicture,
     hasPassword = false,
     lastLogin = "-",
-    streak = 1
+    streak = 1,
   } = userData || {};
 
   const stats: Stats = {

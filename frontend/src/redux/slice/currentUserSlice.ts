@@ -5,11 +5,7 @@ export interface ICurrentUser {
   email: string;
   name: string;
   role: string;
-  passwordHash?: boolean;
   profileImg?: string;
-  joinedAt?: Date;
-  lastLogin?: Date;
-  hasPassword: boolean;
 }
 export interface ICurrentUserState {
   currentUser?: ICurrentUser;
