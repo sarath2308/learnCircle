@@ -31,7 +31,8 @@ export default function ProfesionalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: userData, isLoading, isError, error } = useGetDashboard();
   if (userData?.status === "processing") return <Processing />;
-  if (userData?.status === "rejected") return <Rejected reason={userData.rejectReason || "No reason Provided Check Your Email"} />;
+  if (userData?.status === "rejected")
+    return <Rejected reason={userData.rejectReason || "No reason Provided Check Your Email"} />;
   if (userData?.status === "pending") return <Verification />;
   return (
     <div className="flex min-h-screen bg-gray-100">

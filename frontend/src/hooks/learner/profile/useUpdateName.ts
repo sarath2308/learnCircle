@@ -28,8 +28,7 @@ export const useUpdatName = () => {
         let updated = { ...currentUser, name: res.userData.name };
         dispatch(setCurrentUser(updated));
       }
-        queryClient.invalidateQueries({ queryKey: ["profile"] });
-    
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (err: unknown) => {
       if (err instanceof AxiosError) {

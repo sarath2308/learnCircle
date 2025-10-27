@@ -5,7 +5,7 @@ import { ROLE } from "@/contstant/role";
 
 // ✅ Lazy import for better code-splitting
 const ProfessionalDashboard = lazy(() => import("@/pages/Profesional/profesionalDashboard"));
-const ProfessionalLayout = lazy(()=> import("@/pages/Profesional/ProfesionalLayout"));
+const ProfessionalLayout = lazy(() => import("@/pages/Profesional/ProfesionalLayout"));
 
 // ✅ Wrap lazy components inside <Suspense> *in element, not in children array*
 const professionalRoutes: RouteObject[] = [
