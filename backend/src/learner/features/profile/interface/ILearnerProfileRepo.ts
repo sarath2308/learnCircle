@@ -28,4 +28,6 @@ export interface ILearnerProfileRepo extends IBaseRepo<ILearnerProfile> {
    * @returns
    */
   updateLastLogin: (userId: string) => Promise<ILearnerProfile | null>;
+
+  getAllProfile: () => Promise<ILearnerProfile[] | null>;
 }

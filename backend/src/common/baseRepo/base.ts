@@ -24,8 +24,10 @@ export class BaseRepo<T> implements IBaseRepo<T> {
   async create(data: Partial<T>): Promise<T & Document> {
     try {
       return await this.model.create(data);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
+      if (err instanceof Error) console.error("❌ Mongoose create() failed:", err.message);
+      console.error("📦 Data:", data);
       throw new Error("Error occurred while creating record");
     }
   }

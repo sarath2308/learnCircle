@@ -60,6 +60,10 @@ import { IProfessionalDashboardService } from "@/professionals/features/dashboar
 import { ProfessionalDashboardService } from "@/professionals/features/dashboard/service/professional.dashboard.service";
 import { IProfessionalDashboardController } from "@/professionals/features/dashboard/interfaces/IProfessionalDashboardController";
 import { ProfessionalDashboardController } from "@/professionals/features/dashboard/controller/professional.dashboard.controller";
+import { IAdminDashboardService } from "@/admin/features/dashboard/interface/IAdminDashboardService";
+import { AdminDashboardService } from "@/admin/features/dashboard/service/admin.dashboard.service";
+import { IAdminDashboardController } from "@/admin/features/dashboard/interface/IAdminDashboardController";
+import { AdminDashboardController } from "@/admin/features/dashboard/controller/admin.dashboard.controller";
 export const container = new Container();
 
 // Bindings
@@ -107,6 +111,11 @@ container
 container
   .bind<ILearnerProfileController>(TYPES.ILearnerProfileController)
   .to(LearnerProfileController);
+
+container.bind<IAdminDashboardService>(TYPES.IAdminDashboardService).to(AdminDashboardService);
+container
+  .bind<IAdminDashboardController>(TYPES.IAdminDasboardController)
+  .to(AdminDashboardController);
 container.bind<ILearnerHomeService>(TYPES.ILearnerHomeService).to(LearnerHomeService);
 container.bind<ILearnerHomeController>(TYPES.ILearnerHomeController).to(LearnerHomeController);
 //refresh service

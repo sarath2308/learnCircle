@@ -7,7 +7,7 @@ import { injectable } from "inversify";
 export class ProfessionalDashboardDtoMapper implements IProfessionalDashboardDtoMap {
   constructor() {}
 
-  toDto(profile: IProfessionalProfile): ProfessionalDashboardResponseDTO {
+  toDto(profile: IProfessionalProfile, profileUrl?: string): ProfessionalDashboardResponseDTO {
     const user = profile.userId as unknown as { _id: string; name: string; email: string };
 
     const dto = {
@@ -18,9 +18,8 @@ export class ProfessionalDashboardDtoMapper implements IProfessionalDashboardDto
       bio: profile.bio ?? "",
       companyName: profile.companyName ?? "",
       experience: profile.experience ?? 0,
-      profileUrl: profile.profile_key ?? "",
-      resumeUrl: profile.resume_key ?? "",
       rating: profile.rating ?? 0,
+      profileUrl: profileUrl ?? "",
       sessionPrice: profile.sessionPrice ?? 0,
       skills: profile.skills || [],
       title: profile.title ?? "",

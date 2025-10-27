@@ -37,4 +37,6 @@ export const TYPES = {
   IProfessionalDashboardDtoMap: Symbol.for("IProfessionalDashboardDtoMap"),
   IProfessionalDashboardService: Symbol.for("IProfessionalDashboardService"),
   IProfessionalDashboardController: Symbol.for("IProfessionalDashboardController"),
+  IAdminDashboardService: Symbol.for("IAdminDashboardService"),
+  IAdminDasboardController: Symbol.for("IAdminDashboardController"),
 };

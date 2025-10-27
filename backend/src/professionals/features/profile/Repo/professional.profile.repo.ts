@@ -17,4 +17,28 @@ export class ProfessionalProfileRepo
   async getProfile(id: string): Promise<IProfessionalProfile | null> {
     return await this._model.findOne({ userId: id }).populate("userId");
   }
+  async getAllProfile(): Promise<IProfessionalProfile[] | null> {
+    return await this._model.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          status: 1,
+          profile_key: 1,
+          rating: 1,
+          resume_key: 1,
+          totalSessions: 1,
+        },
+      },
+    ]);
+  }
 }

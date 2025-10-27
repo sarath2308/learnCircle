@@ -51,4 +51,27 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
       { new: true },
     );
   }
+  async getAllProfile(): Promise<ILearnerProfile[] | null> {
+    return await this._model.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          name: "$user.name",
+          email: "$user.email",
+          isBlocked: "$user.isBlocked",
+          profile_key: 1,
+        },
+      },
+    ]);
+  }
 }

@@ -61,6 +61,7 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
       profileData.experience = data.experience;
       profileData.skills = data.skills;
       profileData.typesOfSessions = data.typesOfSessions;
+      profileData.status = "processing";
 
       await profileData.save(); // Save updated fields
     }

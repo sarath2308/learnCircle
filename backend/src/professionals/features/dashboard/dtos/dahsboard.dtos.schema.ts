@@ -13,7 +13,6 @@ export const ProfessionalProfileResponseSchema = z.object({
   companyName: z.string(),
   experience: z.number(),
   profileUrl: z.string(),
-  resumeUrl: z.string(),
   rating: z.number().optional().default(0),
   sessionPrice: z.number().optional(),
   skills: z.array(z.string()).default([]),
