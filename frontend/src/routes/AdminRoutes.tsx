@@ -1,32 +1,34 @@
-import LearnerHomeLayout from "@/components/LearnerHomeLayout";
-import LearnerProfile from "@/pages/Learner/LearnerProfile";
-import LearnerProfileLayout from "@/pages/Learner/LearnerProfileLayout";
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 
-const LearnerHome = lazy(() => import("@/pages/Learner/LearnerHome"));
-// import LearnerLayout from "@/layouts/LearnerLayout";
-// import LearnerHome from "@/pages/learner/Home";
-// import LearnerCourses from "@/pages/learner/Courses";
-// import LearnerProfile from "@/pages/learner/Profile";
+const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout"));
+const AdminSign = lazy(() => import("@/pages/admin/AdminSign"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+// you can add other admin pages like:
+// const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
+// const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
 
 const AdminRoutes: RouteObject[] = [
   {
     path: "/admin",
-    element: <LearnerHomeLayout />, // main layout
     children: [
-      { path: "home", element: <LearnerHome /> },
-      // { path: "courses", element: <LearnerCourses /> },
-
-      // {
-      //   path: "profile",
-      //   element: <LearnerProfileLayout />, // 👈 nested layout
-      //   children: [
-      //     { index: true, element: <LearnerProfile /> }, // /learner/profile
-      //     // { path: "settings", element: <ProfileSettings /> }, // /learner/profile/settings
-      //     // { path: "security", element: <ProfileSecurity /> }, // /learner/profile/security
-      //   ],
-      // },
+      {
+        index: true, // default route -> /admin
+        element: <AdminSign />,
+      },
+      {
+        path: "",
+        element: <AdminLayout />, // shared layout
+        children: [
+          {
+            path: "dashboard",
+            element: <AdminDashboard />,
+          },
+          //   // Example:
+          //   // { path: "users", element: <AdminUsers /> },
+          //   // { path: "settings", element: <AdminSettings /> },
+        ],
+      },
     ],
   },
 ];

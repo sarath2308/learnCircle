@@ -1,58 +1,63 @@
 import React, { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import LoginForm from "@/components/LoginForm";
+import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useGoogle } from "@/hooks/auth/useGoogleAuth";
 import toast from "react-hot-toast";
 
 const AdminSign = () => {
   const navigate = useNavigate();
-  const { login } = useLogin();
-  const { mutateAsync } = useGoogle();
+
+  const { mutateAsync: login } = useLogin();
+
+  const { mutateAsync, isPending } = useGoogle();
 
   const onLogin = useCallback(
     async (role: string, data: { email: string; password: string }) => {
       try {
-        const result = await login(role, data);
+        const result = await login({ ...data, role });
+        navigate("/admin/dashboard");
         console.log(result);
-        navigate(`/${role}/home`);
       } catch (err) {
         console.error(err);
-        toast.error("Login failed. Please check your credentials.");
       }
     },
-    [login, navigate],
+    [login],
   );
 
-  const onForgotPassword = useCallback(() => {
-    navigate("/auth/admin/forgot");
+  const onBack = useCallback(() => {
+    navigate("/");
   }, [navigate]);
 
-  const handleGoogleSign = useCallback(
-    async (role: string, response: any) => {
-      console.log("fired...." + response.credential);
-      try {
-        await mutateAsync({
-          role,
-          token: response.credential,
-        });
-        navigate(`/${role}/home`);
-      } catch (error) {
-        console.error("Google login error:", error);
-        toast.error("Google login failed. Please try again.");
-      }
-    },
-    [mutateAsync, navigate],
-  );
+  const onForgotPassword = useCallback(() => {
+    navigate("/auth/forgot");
+  }, []);
+
+  const handleGoogleSign = async (role: string, response: any) => {
+    console.log("fired...." + response.credential);
+    try {
+      await mutateAsync({
+        role,
+        token: response.credential,
+      });
+      navigate(`/${role}/dashboard`);
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Login failed. Please try again.");
+    }
+  };
 
   return (
     <div>
+      (
       <LoginForm
         role="admin"
         onSubmit={onLogin}
+        onBack={onBack}
         onForgotPassword={onForgotPassword}
         handleGoogleSign={handleGoogleSign}
       />
+      )
     </div>
   );
 };
