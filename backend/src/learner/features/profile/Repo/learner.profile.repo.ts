@@ -4,6 +4,7 @@ import { ILearnerProfile } from "../model/learner.profile.model";
 import { inject, injectable } from "inversify";
 import { Model } from "mongoose";
 import { TYPES } from "@/common/types/inversify/types";
+import { AggregatedLearnerProfile } from "../type/AggregatedLearnerProfile";
 @injectable()
 export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILearnerProfileRepo {
   constructor(@inject(TYPES.ILearnerProfileModel) private _model: Model<ILearnerProfile>) {
@@ -51,7 +52,7 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
       { new: true },
     );
   }
-  async getAllProfile(): Promise<ILearnerProfile[] | null> {
+  async getAllProfile(): Promise<AggregatedLearnerProfile[] | []> {
     return await this._model.aggregate([
       {
         $lookup: {
@@ -69,6 +70,7 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
           name: "$user.name",
           email: "$user.email",
           isBlocked: "$user.isBlocked",
+          role: "$user.role",
           profile_key: 1,
         },
       },

@@ -4,6 +4,7 @@ import { TYPES } from "@/common/types/inversify/types";
 import { IProfessionalProfile } from "../models/profesional.profile";
 import { Model } from "mongoose";
 import { BaseRepo } from "@/common/baseRepo";
+import { AggregatedProfessionalProfile } from "../types/AggregatedProfessionalProfile";
 @injectable()
 export class ProfessionalProfileRepo
   extends BaseRepo<IProfessionalProfile>
@@ -17,7 +18,7 @@ export class ProfessionalProfileRepo
   async getProfile(id: string): Promise<IProfessionalProfile | null> {
     return await this._model.findOne({ userId: id }).populate("userId");
   }
-  async getAllProfile(): Promise<IProfessionalProfile[] | null> {
+  async getAllProfile(): Promise<AggregatedProfessionalProfile[] | []> {
     return await this._model.aggregate([
       {
         $lookup: {
@@ -31,6 +32,10 @@ export class ProfessionalProfileRepo
       {
         $project: {
           _id: 1,
+          email: "$user.email",
+          name: "$user.name",
+          isBlocked: "$user.isBlocked",
+          role: "$user.role",
           userId: 1,
           status: 1,
           profile_key: 1,

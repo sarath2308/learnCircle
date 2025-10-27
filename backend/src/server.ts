@@ -32,6 +32,8 @@ import { IProfessionalDashboardController } from "./professionals/features/dashb
 import { professionalDashboardRoutes } from "./professionals/features/dashboard/routes/professional.dashboard";
 import { IAdminDashboardController } from "./admin/features/dashboard/interface/IAdminDashboardController";
 import { adminDashboardRoutes } from "./admin/features/dashboard/routes/admin.dashboard.routes";
+import { IAdminUserManagementController } from "./admin/features/userManagement/interfaces/IAdminUserManagementController";
+import { userManagementRoutes } from "./admin/features/userManagement/routes/admin.userManagement.routes";
 
 dotenv.config();
 const app = express();
@@ -87,6 +89,9 @@ async function startServer() {
   const adminDashboardController = container.get<IAdminDashboardController>(
     TYPES.IAdminDasboardController,
   );
+  const adminUserManagementController = container.get<IAdminUserManagementController>(
+    TYPES.IAdminUserManagementController,
+  );
   // Routes
 
   app.use("/api/auth", authRoutes(authController));
@@ -125,6 +130,13 @@ async function startServer() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.ADMIN),
     adminDashboardRoutes(adminDashboardController),
+  );
+
+  app.use(
+    "/api/admin/users",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.ADMIN),
+    userManagementRoutes(adminUserManagementController),
   );
 
   app.use(

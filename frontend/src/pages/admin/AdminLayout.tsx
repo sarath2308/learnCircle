@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { React } from "react";
 import {
   Bell,
@@ -18,35 +18,42 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const menuItems = [
-  { name: "Dashboard", icon: LayoutDashboard },
-  { name: "Users", icon: Users },
-  { name: "Subjects", icon: BookOpen },
-  { name: "Steps", icon: List },
-  { name: "Resources", icon: FileText },
-  { name: "Reports", icon: BarChart2 },
-  { name: "Sessions", icon: Clock },
-  { name: "Payments", icon: DollarSign },
-  { name: "Reviews", icon: Star },
+  { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+  { name: "Users", icon: Users, path: "/admin/users" },
+  { name: "Subjects", icon: BookOpen, path: "/admin/subjects" },
+  { name: "Steps", icon: List, path: "/admin/steps" },
+  { name: "Resources", icon: FileText, path: "/admin/resources" },
+  { name: "Reports", icon: BarChart2, path: "/admin/reports" },
+  { name: "Sessions", icon: Clock, path: "/admin/sessions" },
+  { name: "Payments", icon: DollarSign, path: "/admin/payments" },
+  { name: "Reviews", icon: Star, path: "/admin/reviews" },
 ];
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex flex-col w-64 bg-white shadow-lg">
-        <div className="p-4 font-bold text-lg">My App</div>
+        <div className="p-4 font-bold text-lg">Admin Panel</div>
         <nav className="flex flex-col gap-2 px-2">
-          {menuItems.map((item) => (
-            <a
-              key={item.name}
-              href="#"
-              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-200"
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </a>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = location.pathname.startsWith(item.path);
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex items-center gap-3 p-2 rounded-md hover:bg-gray-200 transition ${
+                  isActive ? "bg-gray-200 font-medium" : ""
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.name}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
 
@@ -59,14 +66,15 @@ export default function AdminLayout() {
             </button>
             <nav className="flex flex-col gap-2">
               {menuItems.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href="#"
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
                   className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-200"
                 >
                   <item.icon className="w-5 h-5" />
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
@@ -83,7 +91,6 @@ export default function AdminLayout() {
           </button>
 
           <div className="flex items-center gap-4 ml-auto">
-            {/* Notification */}
             <div className="relative">
               <Bell className="w-6 h-6" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
@@ -91,7 +98,6 @@ export default function AdminLayout() {
               </span>
             </div>
 
-            {/* Profile */}
             <Avatar className="w-9 h-9 cursor-pointer">
               <AvatarImage src="https://i.pravatar.cc/300" alt="Profile" />
               <AvatarFallback>U</AvatarFallback>

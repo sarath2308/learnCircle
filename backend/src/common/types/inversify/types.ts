@@ -39,4 +39,6 @@ export const TYPES = {
   IProfessionalDashboardController: Symbol.for("IProfessionalDashboardController"),
   IAdminDashboardService: Symbol.for("IAdminDashboardService"),
   IAdminDasboardController: Symbol.for("IAdminDashboardController"),
+  IAdminUserManagementService: Symbol.for("IAdminUserManagementService"),
+  IAdminUserManagementController: Symbol.for("IAdminUserManagementController"),
 };

@@ -23,7 +23,7 @@ export interface UploadFiles {
 @injectable()
 export class ProfessionalProfileService implements IProfessionalProfileService {
   constructor(
-    @inject(TYPES.IProfesionalProfileRepo) private _profileRepo: IProfessionalProfileRepo,
+    @inject(TYPES.IProfessionalProfileRepo) private _profileRepo: IProfessionalProfileRepo,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
     @inject(TYPES.IUserRepo) private _userRepo: IUserRepo,
   ) {}

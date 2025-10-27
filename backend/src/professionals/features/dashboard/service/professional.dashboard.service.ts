@@ -10,7 +10,7 @@ import { IS3Service } from "@/common";
 @injectable()
 export class ProfessionalDashboardService implements IProfessionalDashboardService {
   constructor(
-    @inject(TYPES.IProfesionalProfileRepo) private _profileRepo: IProfessionalProfileRepo,
+    @inject(TYPES.IProfessionalProfileRepo) private _profileRepo: IProfessionalProfileRepo,
     @inject(TYPES.IProfessionalDashboardDtoMap) private _dtoMaping: IProfessionalDashboardDtoMap,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
   ) {}

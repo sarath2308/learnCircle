@@ -64,6 +64,10 @@ import { IAdminDashboardService } from "@/admin/features/dashboard/interface/IAd
 import { AdminDashboardService } from "@/admin/features/dashboard/service/admin.dashboard.service";
 import { IAdminDashboardController } from "@/admin/features/dashboard/interface/IAdminDashboardController";
 import { AdminDashboardController } from "@/admin/features/dashboard/controller/admin.dashboard.controller";
+import { IAdminUserManagementService } from "@/admin/features/userManagement/interfaces/IAdminUserManagementService";
+import { AdminUserManagementService } from "@/admin/features/userManagement/service/admin.userManagement.service";
+import { IAdminUserManagementController } from "@/admin/features/userManagement/interfaces/IAdminUserManagementController";
+import { AdminUserManagementController } from "@/admin/features/userManagement/controller/admin.userManagement.controller";
 export const container = new Container();
 
 // Bindings
@@ -73,7 +77,9 @@ container.bind<Model<ILearnerProfile>>(TYPES.ILearnerProfileModel).toConstantVal
 container
   .bind<Model<IProfessionalProfile>>(TYPES.IProfessionalProfileModel)
   .toConstantValue(ProfessionalProfile);
-container.bind<IProfessionalProfileRepo>(TYPES.IProfesionalProfileRepo).to(ProfessionalProfileRepo);
+container
+  .bind<IProfessionalProfileRepo>(TYPES.IProfessionalProfileRepo)
+  .to(ProfessionalProfileRepo);
 container.bind<ILearnerProfileRepo>(TYPES.ILearnerProfileRepo).to(LearnerProfileRepo);
 container.bind(TYPES.ITokenService).to(TokenService).inSingletonScope();
 container.bind(TYPES.IEmailService).to(EmailService).inSingletonScope();
@@ -111,7 +117,12 @@ container
 container
   .bind<ILearnerProfileController>(TYPES.ILearnerProfileController)
   .to(LearnerProfileController);
-
+container
+  .bind<IAdminUserManagementService>(TYPES.IAdminUserManagementService)
+  .to(AdminUserManagementService);
+container
+  .bind<IAdminUserManagementController>(TYPES.IAdminUserManagementController)
+  .to(AdminUserManagementController);
 container.bind<IAdminDashboardService>(TYPES.IAdminDashboardService).to(AdminDashboardService);
 container
   .bind<IAdminDashboardController>(TYPES.IAdminDasboardController)

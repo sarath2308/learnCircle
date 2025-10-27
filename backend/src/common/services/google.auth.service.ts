@@ -53,6 +53,10 @@ export class GoogleAuthProvider implements IAuthProviderService {
       if (!user) {
         throw new AppError(Messages.NOT_FOUND, HttpStatus.NOT_FOUND);
       }
+    } else {
+      if (user.isBlocked) {
+        throw new AppError(Messages.BLOCKED_USER, HttpStatus.FORBIDDEN);
+      }
     }
     let tokens = await this._tokenService.generateTokens({ userId: user.id, role: user.role });
 

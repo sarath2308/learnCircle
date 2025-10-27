@@ -14,6 +14,8 @@ export interface IEmailService {
   sendSignupOtp: (to: string, otp: string) => Promise<void>;
   sendForgotPasswordOtp: (to: string, otp: string) => Promise<void>;
   sendChangeEmailOtp: (to: string, otp: string) => Promise<void>;
+  sendProfileApprovedMail: (to: string, name: string) => Promise<void>;
+  sendProfileRejectedMail: (to: string, name: string, reason?: string) => Promise<void>;
 }
 
 @injectable()
@@ -84,5 +86,36 @@ export class EmailService implements IEmailService {
       "This OTP is valid for 1 minute. If you didn’t request this change, please secure your account.",
     );
     await this.sendMail({ to, subject: "Change Email Verification OTP", html });
+  }
+
+  async sendProfileApprovedMail(to: string, name: string) {
+    const html = this.buildTemplate(
+      "Profile Approved 🎉",
+      `Hi ${name},`,
+      "Your professional profile has been successfully approved on LearnCircle!",
+      "You can now start connecting with learners and conducting sessions. Log in to your dashboard to explore opportunities.",
+    );
+
+    await this.sendMail({
+      to,
+      subject: "Your LearnCircle Profile Has Been Approved 🎉",
+      html,
+    });
+  }
+  async sendProfileRejectedMail(to: string, name: string, reason?: string) {
+    const html = this.buildTemplate(
+      "Profile Review Update ❗",
+      `Hi ${name},`,
+      "We’ve reviewed your professional profile on LearnCircle, and unfortunately, it has not been approved at this time.",
+      reason
+        ? `Reason: ${reason}`
+        : "Please review your profile information and try updating it with accurate details or supporting documents before resubmitting.",
+    );
+
+    await this.sendMail({
+      to,
+      subject: "Your LearnCircle Profile Review Update ❗",
+      html,
+    });
   }
 }

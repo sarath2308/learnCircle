@@ -44,4 +44,11 @@ export const Messages = {
 
   //professional
   DASHBOARD_FETCHED: "Dashboard Successfully fetched",
+
+  //admin
+  USER_MANAGEMENT_FETCHED: "User Data fetched",
+  USER_BLOCKED: "User Blocked",
+  USER_UNBLOCKED: "User UNblocked",
+  USER_APPROVED: "Application Approved",
+  USER_REJECTED: "User Application Rejected",
 };

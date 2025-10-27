@@ -1,5 +1,6 @@
 import { IBaseRepo } from "@/common/baseRepo";
 import { ILearnerProfile } from "../model/learner.profile.model";
+import { AggregatedLearnerProfile } from "../type/AggregatedLearnerProfile";
 
 export interface ILearnerProfileRepo extends IBaseRepo<ILearnerProfile> {
   /**
@@ -29,5 +30,5 @@ export interface ILearnerProfileRepo extends IBaseRepo<ILearnerProfile> {
    */
   updateLastLogin: (userId: string) => Promise<ILearnerProfile | null>;
 
-  getAllProfile: () => Promise<ILearnerProfile[] | null>;
+  getAllProfile: () => Promise<AggregatedLearnerProfile[] | []>;
 }
