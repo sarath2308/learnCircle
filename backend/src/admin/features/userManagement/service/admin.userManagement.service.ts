@@ -54,15 +54,15 @@ export class AdminUserManagementService implements IAdminUserManagementService {
     @inject(TYPES.IRedisRepository) private _redisRepo: IRedisRepository,
   ) {}
 
-  async getUserData(): Promise<{
-    learners: AdminLearnerArrayDTO;
-    professionals: AdminProfessionalArrayDTO;
+  async getLearnerData(
+    page: number,
+    search: string,
+  ): Promise<{
+    data: AdminLearnerArrayDTO;
+    totalCount: number;
   }> {
-    const [learners, professionals] = await Promise.all([
-      this._learnerRepo.getAllProfile(),
-      this._professionalRepo.getAllProfile(),
-    ]);
-
+    const learners = await this._learnerRepo.getAllProfile(page, search);
+    const totalCount = await this._learnerRepo.countAll(search);
     const learnerData = await Promise.all(
       learners.map(async (learner: LearnerData) => {
         const profileUrl = learner.profile_key
@@ -81,6 +81,25 @@ export class AdminUserManagementService implements IAdminUserManagementService {
         };
       }),
     );
+
+    return {
+      data: AdminLearnerArraySchema.parse(learnerData),
+      totalCount,
+    };
+  }
+  /**
+   *
+   * @param userId
+   */
+  async getProfessionalData(
+    page: number,
+    search: string,
+  ): Promise<{
+    data: AdminProfessionalArrayDTO;
+    totalCount: number;
+  }> {
+    const professionals = await this._professionalRepo.getAllProfile(page, search);
+    const totalCount = await this._professionalRepo.countAll(search);
 
     const professionalData = await Promise.all(
       professionals.map(async (pro: ProfessionalData) => {
@@ -107,15 +126,10 @@ export class AdminUserManagementService implements IAdminUserManagementService {
     );
 
     return {
-      learners: AdminLearnerArraySchema.parse(learnerData),
-      professionals: AdminProfessionalArraySchema.parse(professionalData),
+      data: AdminProfessionalArraySchema.parse(professionalData),
+      totalCount,
     };
   }
-  /**
-   *
-   * @param userId
-   */
-
   async blockUser(userId: string): Promise<void> {
     let userData = await this._userRepo.findById(userId);
 

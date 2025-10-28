@@ -2,9 +2,19 @@ import { AdminLearnerArrayDTO } from "../dtos/schema/admin.learner.schema";
 import { AdminProfessionalArrayDTO } from "../dtos/schema/admin.professional.schema";
 
 export interface IAdminUserManagementService {
-  getUserData: () => Promise<{
-    learners: AdminLearnerArrayDTO;
-    professionals: AdminProfessionalArrayDTO;
+  getLearnerData: (
+    page: number,
+    search: string,
+  ) => Promise<{
+    data: AdminLearnerArrayDTO;
+    totalCount: number;
+  }>;
+  getProfessionalData: (
+    page: number,
+    search: string,
+  ) => Promise<{
+    data: AdminProfessionalArrayDTO;
+    totalCount: number;
   }>;
 
   blockUser: (userId: string) => Promise<void>;

@@ -16,7 +16,7 @@ const AdminSign = () => {
     async (role: string, data: { email: string; password: string }) => {
       try {
         const result = await login({ ...data, role });
-        navigate("/admin/dashboard",{ replace: true });
+        navigate("/admin/dashboard", { replace: true });
         console.log(result);
       } catch (err) {
         console.error(err);
@@ -40,7 +40,7 @@ const AdminSign = () => {
         role,
         token: response.credential,
       });
-      navigate(`/${role}/dashboard`,{ replace: true });
+      navigate(`/${role}/dashboard`, { replace: true });
     } catch (error) {
       console.error("Google login error:", error);
       toast.error("Login failed. Please try again.");

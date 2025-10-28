@@ -18,7 +18,19 @@ export class ProfessionalProfileRepo
   async getProfile(id: string): Promise<IProfessionalProfile | null> {
     return await this._model.findOne({ userId: id }).populate("userId");
   }
-  async getAllProfile(): Promise<AggregatedProfessionalProfile[] | []> {
+  async getAllProfile(page: number, search: string): Promise<AggregatedProfessionalProfile[] | []> {
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const searchFilter = search
+      ? {
+          $or: [
+            { "user.name": { $regex: search, $options: "i" } },
+            { "user.email": { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
     return await this._model.aggregate([
       {
         $lookup: {
@@ -29,6 +41,9 @@ export class ProfessionalProfileRepo
         },
       },
       { $unwind: "$user" },
+      { $match: searchFilter },
+      { $skip: skip },
+      { $limit: limit },
       {
         $project: {
           _id: 1,
@@ -45,5 +60,9 @@ export class ProfessionalProfileRepo
         },
       },
     ]);
+  }
+  async countAll(search: string) {
+    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+    return this._model.countDocuments(query);
   }
 }

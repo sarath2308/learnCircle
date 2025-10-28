@@ -30,5 +30,6 @@ export interface ILearnerProfileRepo extends IBaseRepo<ILearnerProfile> {
    */
   updateLastLogin: (userId: string) => Promise<ILearnerProfile | null>;
 
-  getAllProfile: () => Promise<AggregatedLearnerProfile[] | []>;
+  getAllProfile: (page: number, search: string) => Promise<AggregatedLearnerProfile[] | []>;
+  countAll: (search: string) => Promise<number>;
 }

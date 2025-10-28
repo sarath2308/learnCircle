@@ -4,5 +4,6 @@ import { AggregatedProfessionalProfile } from "../types/AggregatedProfessionalPr
 
 export interface IProfessionalProfileRepo extends IBaseRepo<IProfessionalProfile> {
   getProfile: (id: string) => Promise<IProfessionalProfile | null>;
-  getAllProfile: () => Promise<AggregatedProfessionalProfile[] | []>;
+  getAllProfile: (page: number, search: string) => Promise<AggregatedProfessionalProfile[] | []>;
+  countAll: (search: string) => Promise<number>;
 }

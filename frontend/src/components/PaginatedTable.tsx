@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -9,27 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 
 interface PaginatedTableProps {
   headers: string[];
   data: Record<string, any>[];
-  rowsPerPage?: number;
   renderActions?: (row: Record<string, any>) => React.ReactNode;
+  isLoading?: boolean;
 }
 
 export function PaginatedTable({
   headers,
   data,
-  rowsPerPage = 5,
   renderActions,
+  isLoading = false,
 }: PaginatedTableProps) {
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(data.length / rowsPerPage);
-
-  const start = (page - 1) * rowsPerPage;
-  const currentData = data.slice(start, start + rowsPerPage);
-
   return (
     <div className="w-full space-y-4">
       <Table>
@@ -43,34 +36,36 @@ export function PaginatedTable({
         </TableHeader>
 
         <TableBody>
-          {currentData.map((row, idx) => (
-            <TableRow key={idx}>
-              {headers.map((header) => (
-                <TableCell key={header}>{row[header]}</TableCell>
-              ))}
-
-              {renderActions && <TableCell>{renderActions(row)}</TableCell>}
+          {isLoading ? (
+            <TableRow>
+              <TableCell
+                colSpan={headers.length + (renderActions ? 1 : 0)}
+                className="text-center py-6 text-sm text-muted-foreground"
+              >
+                Loading...
+              </TableCell>
             </TableRow>
-          ))}
+          ) : data.length > 0 ? (
+            data.map((row, idx) => (
+              <TableRow key={idx}>
+                {headers.map((header) => (
+                  <TableCell key={header}>{row[header]}</TableCell>
+                ))}
+                {renderActions && <TableCell>{renderActions(row)}</TableCell>}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={headers.length + (renderActions ? 1 : 0)}
+                className="text-center py-6 text-sm text-muted-foreground"
+              >
+                No data available
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
-
-      {/* Pagination */}
-      <div className="flex justify-end items-center gap-2">
-        <Button variant="outline" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-          Prev
-        </Button>
-        <span className="text-sm">
-          Page {page} of {totalPages}
-        </span>
-        <Button
-          variant="outline"
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </Button>
-      </div>
     </div>
   );
 }

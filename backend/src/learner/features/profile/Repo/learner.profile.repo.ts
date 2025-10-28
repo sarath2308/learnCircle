@@ -52,7 +52,18 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
       { new: true },
     );
   }
-  async getAllProfile(): Promise<AggregatedLearnerProfile[] | []> {
+  async getAllProfile(page: number, search: string): Promise<AggregatedLearnerProfile[] | []> {
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const searchFilter = search
+      ? {
+          $or: [
+            { "user.name": { $regex: search, $options: "i" } },
+            { "user.email": { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
     return await this._model.aggregate([
       {
         $lookup: {
@@ -63,6 +74,9 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
         },
       },
       { $unwind: "$user" },
+      { $match: searchFilter },
+      { $skip: skip },
+      { $limit: limit },
       {
         $project: {
           _id: 1,
@@ -75,5 +89,9 @@ export class LearnerProfileRepo extends BaseRepo<ILearnerProfile> implements ILe
         },
       },
     ]);
+  }
+  async countAll(search: string) {
+    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+    return this._model.countDocuments(query);
   }
 }

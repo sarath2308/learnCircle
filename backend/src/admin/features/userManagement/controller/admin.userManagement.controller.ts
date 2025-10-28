@@ -10,14 +10,31 @@ export class AdminUserManagementController implements IAdminUserManagementContro
   constructor(
     @inject(TYPES.IAdminUserManagementService) private _service: IAdminUserManagementService,
   ) {}
-  async getUserManagement(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
+  async getLearnerData(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      let response = await this._service.getUserData();
+      const page = Number(req.query.page || 1);
+      const search = String(req.query.search || "");
+      let response = await this._service.getLearnerData(page, search);
       res.status(HttpStatus.OK).json({
         success: true,
         message: Messages.USER_MANAGEMENT_FETCHED,
-        learnerData: response.learners,
-        professionalData: response.professionals,
+        data: response.data,
+        totalCount: response.totalCount,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getProfessionalData(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const page = Number(req.query.page || 1);
+      const search = String(req.query.search || "");
+      let response = await this._service.getProfessionalData(page, search);
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: Messages.USER_MANAGEMENT_FETCHED,
+        data: response.data,
+        totalCount: response.totalCount,
       });
     } catch (error) {
       next(error);

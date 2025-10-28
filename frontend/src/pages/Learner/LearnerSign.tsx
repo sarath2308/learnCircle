@@ -68,7 +68,7 @@ const LearnerSign = () => {
         role,
         token: response.credential,
       });
-      navigate(`/${role}/home`,{ replace: true });
+      navigate(`/${role}/home`, { replace: true });
     } catch (error) {
       console.error("Google login error:", error);
       toast.error("Login failed. Please try again.");
