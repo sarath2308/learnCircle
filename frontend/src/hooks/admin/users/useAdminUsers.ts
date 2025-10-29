@@ -51,10 +51,7 @@ export function useAdminUsers<T extends "learner" | "professional">({
   T extends "learner" ? GetLearnerResponse : GetProfessionalResponse,
   Error
 > {
-  return useQuery<
-    T extends "learner" ? GetLearnerResponse : GetProfessionalResponse,
-    Error
-  >({
+  return useQuery<T extends "learner" ? GetLearnerResponse : GetProfessionalResponse, Error>({
     queryKey: ["admin-users", userType, page, search],
     queryFn: async () =>
       userType === "learner"

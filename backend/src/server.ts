@@ -1,4 +1,5 @@
 import express from "express";
+import { json, urlencoded } from "express";
 import dotenv from "dotenv";
 import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
@@ -7,33 +8,19 @@ import logger from "./logs.config/logger";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./common/middleware";
-import { IAuthController } from "@/common";
 
 // Inversify Dependency Injection
 import { container } from "./config/inversify/inversify.config";
 import { TYPES } from "./common/types/inversify/types";
 
-// Common
-import { RefreshController } from "./common/controller";
-import { refreshRoutes } from "@/common";
-
-// Learner Controllers and Routes
-import { learnerHomeRoute, learnerProfileRoute } from "@/learner";
 // Professional Controllers and Routes
 import { authorizeRoles } from "./common/middleware";
-import { authRoutes } from "./common/routes/auth.routes";
 import { ROLE } from "./common/constants/Role";
-import { ILearnerProfileController } from "./learner/features/profile/interface/ILearnerProfileController";
 import { IAuthenticateMiddleware } from "./common/interface/IAuthenticateMiddleware";
-import { ILearnerHomeController } from "./learner/features/home/interface/ILearnerHomeController";
-import { IProfessionalProfileController } from "./professionals/features/profile/interface/IProfessionalProfileController";
-import { professionalProfileRoutes } from "./professionals";
-import { IProfessionalDashboardController } from "./professionals/features/dashboard/interfaces/IProfessionalDashboardController";
-import { professionalDashboardRoutes } from "./professionals/features/dashboard/routes/professional.dashboard";
-import { IAdminDashboardController } from "./admin/features/dashboard/interface/IAdminDashboardController";
-import { adminDashboardRoutes } from "./admin/features/dashboard/routes/admin.dashboard.routes";
-import { IAdminUserManagementController } from "./admin/features/userManagement/interfaces/IAdminUserManagementController";
-import { userManagementRoutes } from "./admin/features/userManagement/routes/admin.userManagement.routes";
+import { adminEntryRoute } from "./admin/routes/admin.entry.route";
+import { learnerEntryRoute } from "./learner/routes/learner.entry.route";
+import { professionalEntryRoute } from "./professionals/route/professional.entry.route";
+import { authEntryRoute } from "./common/routes/auth.entry.route";
 
 dotenv.config();
 const app = express();
@@ -45,9 +32,9 @@ app.use(
 );
 
 // Middleware
-app.use(express.json());
+app.use(json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.use(urlencoded({ extended: true }));
 
 app.use(
   expressWinston.logger({
@@ -72,71 +59,31 @@ async function startServer() {
   await db.connect();
   console.log("MongoDB connected");
 
-  //refresh controller
-  const refreshController = container.get<RefreshController>(TYPES.IRefreshController);
-  const authController = container.get<IAuthController>(TYPES.IAuthController);
-  const learnerProfileController = container.get<ILearnerProfileController>(
-    TYPES.ILearnerProfileController,
-  );
-  const learnerHomeController = container.get<ILearnerHomeController>(TYPES.ILearnerHomeController);
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
-  const professionalProfileController = container.get<IProfessionalProfileController>(
-    TYPES.IProfessionalProfileController,
-  );
-  const professionalDashboardController = container.get<IProfessionalDashboardController>(
-    TYPES.IProfessionalDashboardController,
-  );
-  const adminDashboardController = container.get<IAdminDashboardController>(
-    TYPES.IAdminDasboardController,
-  );
-  const adminUserManagementController = container.get<IAdminUserManagementController>(
-    TYPES.IAdminUserManagementController,
-  );
+
   // Routes
 
-  app.use("/api/auth", authRoutes(authController));
+  app.use("/api/auth", authEntryRoute());
 
   app.use(
-    "/api/learner/profile",
+    "/api/learner",
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.LEARNER),
-    learnerProfileRoute(learnerProfileController),
-  );
-
-  app.use("/api/auth", refreshRoutes(refreshController));
-
-  app.use(
-    "/api/learner/home",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.LEARNER),
-    learnerHomeRoute(learnerHomeController),
+    learnerEntryRoute(),
   );
 
   app.use(
     "/api/professional",
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.PROFESSIONAL),
-    professionalProfileRoutes(professionalProfileController),
-  );
-  app.use(
-    "/api/professional/dashboard",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.PROFESSIONAL),
-    professionalDashboardRoutes(professionalDashboardController),
+    professionalEntryRoute(),
   );
 
   app.use(
-    "/api/admin/dashboard",
+    "/api/admin",
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.ADMIN),
-    adminDashboardRoutes(adminDashboardController),
-  );
-
-  app.use(
-    "/api/admin/users",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.ADMIN),
-    userManagementRoutes(adminUserManagementController),
+    adminEntryRoute(),
   );
 
   app.use(
