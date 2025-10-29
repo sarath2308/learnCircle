@@ -9,7 +9,7 @@ import { NextFunction, Response } from "express";
 
 @injectable()
 export class LearnerHomeController implements ILearnerHomeController {
-  constructor(@inject(TYPES.ILearnerHomeService) private service: ILearnerHomeService) {}
+  constructor(@inject(TYPES.ILearnerHomeService) private _service: ILearnerHomeService) {}
 
   async getHome(req: IAuthRequest, res: Response, next: NextFunction) {
     try {

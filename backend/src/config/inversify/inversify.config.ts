@@ -125,7 +125,7 @@ container
   .to(AdminUserManagementController);
 container.bind<IAdminDashboardService>(TYPES.IAdminDashboardService).to(AdminDashboardService);
 container
-  .bind<IAdminDashboardController>(TYPES.IAdminDasboardController)
+  .bind<IAdminDashboardController>(TYPES.IAdminDashboardController)
   .to(AdminDashboardController);
 container.bind<ILearnerHomeService>(TYPES.ILearnerHomeService).to(LearnerHomeService);
 container.bind<ILearnerHomeController>(TYPES.ILearnerHomeController).to(LearnerHomeController);

@@ -1,6 +1,6 @@
 import axios from "axios";
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
 });
 
@@ -38,7 +38,7 @@ api.interceptors.response.use(
     try {
       await api.post("/auth/refresh-token");
       console.log("Refresh token called from frontend");
-      await new Promise((res) => setTimeout(res, 50));
+      await new Promise((res) => window.setTimeout(res, 50));
       return api(originalRequest); // Retry original request
     } catch (refreshError) {
       // Refresh failed (maybe expired), redirect to login

@@ -25,12 +25,14 @@ export interface GetLearnerResponse {
   success: boolean;
   message: string;
   data: LearnerData[];
+  totalCount: number;
 }
 
 export interface GetProfessionalResponse {
   success: boolean;
   message: string;
   data: ProfessionalData[];
+   totalCount: number;
 }
 
 interface UseAdminUsersParams<T extends "learner" | "professional"> {

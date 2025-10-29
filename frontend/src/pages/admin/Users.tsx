@@ -8,6 +8,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PaginatedTable } from "@/components/PaginatedTable";
@@ -21,41 +30,50 @@ const Users = () => {
   const [role, setRole] = useState<"learner" | "professional">("learner");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [page, setPage] = useState(1);
 
-  // 🧠 Debounce logic (runs after 500ms of inactivity)
+  // Debounce search
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedSearch(search), 500);
     return () => window.clearTimeout(handler);
   }, [search]);
 
+  // Reset page when role or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [role, debouncedSearch]);
+
+  // Mutations
   const { mutateAsync: blockUser } = useBlockUser();
   const { mutateAsync: unblockUser } = useUnblockUser();
   const { mutateAsync: ApproveProfessional } = useApproveProfessional();
   const { mutateAsync: rejectUser } = useRejectProfessional();
 
-  // ✅ Fetch users dynamically based on role + debounced search
+  // Fetch users
   const { data, isLoading, isError } = useAdminUsers({
     userType: role,
-    page: 1,
-    search: debouncedSearch, // 👈 use debounced value
+    page,
+    search: debouncedSearch,
   });
 
   const users = data?.data ?? [];
+  const totalCount = data?.totalCount ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / 10)); // Adjust page size if needed
 
-  // 🧾 Action handlers
+  // Handlers
   const handleBlock = async (userId: string) => await blockUser({ userId });
   const handleUnblock = async (userId: string) => await unblockUser({ userId });
   const handleApprove = async (userId: string) => await ApproveProfessional({ userId });
   const handleReject = async (userId: string) => await rejectUser({ userId });
   const handleViewCV = (url: string) => window.open(url, "_blank");
 
-  // 🧾 Table headers
+  // Headers
   const headers =
     role === "learner"
       ? ["name", "email", "role", "status"]
       : ["name", "email", "status", "totalSessions", "role", "state"];
 
-  // 🧠 Render actions
+  // Action Renderer
   const renderActions = (user: any) => {
     const isBlocked = user.isBlocked;
     const isApproved = user.status === "approved";
@@ -150,10 +168,63 @@ const Users = () => {
         </Select>
       </div>
 
-      {/* Table */}
+      {/* Table + Pagination */}
       <Card className="p-4">
         {users.length > 0 ? (
-          <PaginatedTable headers={headers} data={users} renderActions={renderActions} />
+          <>
+            <PaginatedTable headers={headers} data={users} renderActions={renderActions} />
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination className="mt-4">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                      className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNum = index + 1;
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      Math.abs(pageNum - page) <= 1
+                    ) {
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink
+                            onClick={() => setPage(pageNum)}
+                            isActive={page === pageNum}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (
+                      (pageNum === page - 2 && page > 3) ||
+                      (pageNum === page + 2 && page < totalPages - 2)
+                    ) {
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                      className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
         ) : (
           <p className="text-gray-500 text-sm text-center">No users found.</p>
         )}

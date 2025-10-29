@@ -50,7 +50,12 @@ export class S3Service implements IS3Service {
   /**
    * Upload file from buffer and return signed URL
    */
-  async uploadFileFromBuffer(fileBuffer: Buffer, key: string, mimeType: string, expiresIn = 3600) {
+  async uploadFileFromBuffer(
+    fileBuffer: Buffer,
+    key: string,
+    mimeType: string,
+    expiresIn = Number(process.env.S3_URL_EXPIRES_IN),
+  ) {
     // Upload to S3
     const uploadParams = {
       Bucket: bucketName,

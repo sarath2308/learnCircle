@@ -32,8 +32,8 @@ const allowedMimeTypes: { [key: string]: string[] } = {
 
 // File size limits in bytes
 const fileSizeLimits: { [key: string]: number } = {
-  avatar: 2 * 1024 * 1024, // 2 MB
-  resume: 5 * 1024 * 1024, // 5 MB
+  avatar: Number(process.env.AVATAR_SIZE),
+  resume: Number(process.env.RESUME_SIZE),
 };
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {

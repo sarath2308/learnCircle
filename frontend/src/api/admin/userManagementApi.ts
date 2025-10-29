@@ -7,7 +7,7 @@ export const userManagementApi = {
       .then((res) => res.data),
   getProfessionalData: (payload: { page: number; search: string }) =>
     api
-      .get(`/admin/users/professional?page${payload.page}&search=${payload.search}`)
+      .get(`/admin/users/professional?page=${payload.page}&search=${payload.search}`)
       .then((res) => res.data),
   blockUser: (payload: { userId: string }) =>
     api.patch("/admin/users/block-user", payload).then((res) => res.data),

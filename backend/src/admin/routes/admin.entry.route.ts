@@ -7,10 +7,10 @@ import { adminDashboardRoutes } from "../features/dashboard/routes/admin.dashboa
 import { userManagementRoutes } from "../features/userManagement/routes/admin.userManagement.routes";
 export function adminEntryRoute() {
   const router = Router();
-  let dashboardController = container.get<IAdminDashboardController>(
+  const dashboardController = container.get<IAdminDashboardController>(
     TYPES.IAdminDashboardController,
   );
-  let userManagementController = container.get<IAdminUserManagementController>(
+  const userManagementController = container.get<IAdminUserManagementController>(
     TYPES.IAdminUserManagementController,
   );
 
