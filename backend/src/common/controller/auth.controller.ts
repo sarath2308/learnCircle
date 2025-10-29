@@ -2,11 +2,12 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import { setTokens } from "../middleware";
-import { HttpStatus } from "@/common";
+import { HttpStatus, Messages } from "@/common";
 import { IAuthOrchestrator } from "@/common";
 import { Providers } from "../constants/providers";
 import { TYPES } from "../types/inversify/types";
 import { IAuthController } from "../interface/IAuthController";
+import { IAuthRequest } from "../interface/IAuthRequest";
 
 @injectable()
 export class AuthController implements IAuthController {
@@ -149,9 +150,31 @@ export class AuthController implements IAuthController {
    * @param res
    * @returns
    */
-  async logout(req: Request, res: Response): Promise<Response> {
-    return res.json();
+  async logout(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+      });
+
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+      });
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: Messages.LOGOUT_SUCCESS,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
+
   /**
    *
    * @param req

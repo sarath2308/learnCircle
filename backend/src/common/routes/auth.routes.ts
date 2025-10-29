@@ -61,7 +61,7 @@ export function authRoutes(controller: IAuthController) {
   );
 
   router.post("/google", zodValidation(GoogleLoginSchema), controller.googleSign.bind(controller));
-  // router.post('/logout',controller.logout)
+  router.post("/logout", controller.logout.bind(controller));
 
   return router;
 }

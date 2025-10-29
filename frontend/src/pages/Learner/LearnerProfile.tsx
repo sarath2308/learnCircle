@@ -88,7 +88,6 @@ export default function LearnerProfile() {
     try {
       await updateAvatar(file, {
         onSuccess: () => {
-          // Update React Query cache instead of local state
           queryClient.setQueryData(["profile"], (oldData: any) => ({
             ...oldData,
             profileImg: previewUrl,
@@ -125,6 +124,11 @@ export default function LearnerProfile() {
     let res = await verifyAndChangeEmail(data);
   };
 
+  // ✅ Logout logic
+  const handleLogout = () => {
+   
+  };
+
   return (
     <div className="space-y-6 p-4">
       {/* Profile Header */}
@@ -136,12 +140,10 @@ export default function LearnerProfile() {
               <AvatarFallback className="text-2xl">{getInitials(name)}</AvatarFallback>
             </Avatar>
 
-            {/* Streak Badge */}
             <Badge className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
               {streak} day streak
             </Badge>
 
-            {/* Change Picture Button */}
             <button
               type="button"
               aria-label="Change Profile Picture"
@@ -153,7 +155,6 @@ export default function LearnerProfile() {
               <Camera className="h-4 w-4" />
             </button>
 
-            {/* Hidden File Input */}
             <input
               type="file"
               accept="image/*"
@@ -166,14 +167,24 @@ export default function LearnerProfile() {
           <div className="flex-1 space-y-2">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
-              <EditProfileDialog
-                userData={{ name, email, hasPassword }}
-                onUpdateProfile={handleUpdateName}
-                onUpdateEmail={requestEmailChange}
-                onResendOtp={requestResendEmailOtp}
-                onVerifyOtp={verifyOtp}
-                onUpdatePassword={updatePassword}
-              />
+              <div className="flex items-center gap-2">
+                <EditProfileDialog
+                  userData={{ name, email, hasPassword }}
+                  onUpdateProfile={handleUpdateName}
+                  onUpdateEmail={requestEmailChange}
+                  onResendOtp={requestResendEmailOtp}
+                  onVerifyOtp={verifyOtp}
+                  onUpdatePassword={updatePassword}
+                />
+
+                {/* ✅ Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
             <p className="text-gray-500 dark:text-gray-400">{email}</p>
             <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
@@ -233,7 +244,6 @@ export default function LearnerProfile() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Skill Progress */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 dark:text-white">Skill Development</h3>
               {Object.entries(skillProgress).map(([skill, value]) => (
@@ -249,7 +259,6 @@ export default function LearnerProfile() {
               ))}
             </div>
 
-            {/* Course Completion */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 dark:text-white">Course Completion</h3>
               <div className="space-y-1">

@@ -33,4 +33,6 @@ export const profileApi = {
     api.patch(PROFILE_API.UPDATE_PASSWORD, payload).then((res) => res.data),
 
   getProfileUrl: () => api.get(PROFILE_API.GET_PROFILE_URL).then((res) => res.data),
+
+  logout:() => api.get("/auth/logout").then((res)=>res.data),
 };

@@ -16,7 +16,6 @@ const profileMenuItems = [
   { icon: Calendar, label: "My Bookings", path: "/learner/profile/bookings" },
   { icon: Trophy, label: "LeaderBoard", path: "/learner/profile/leaderboard" },
   { icon: Settings, label: "Settings", path: "/learner/profile/settings" },
-  { icon: LogOut, label: "Logout", path: "/logout" },
 ];
 
 export function LearnerProfileSidebar() {
