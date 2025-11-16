@@ -7,20 +7,20 @@ import expressWinston from "express-winston";
 import logger from "./logs.config/logger";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { errorHandler } from "./common/middleware";
+import { errorHandler } from "./middleware";
 
 // Inversify Dependency Injection
 import { container } from "./config/inversify/inversify.config";
-import { TYPES } from "./common/types/inversify/types";
+import { TYPES } from "./types/shared/inversify/types";
 
 // Professional Controllers and Routes
-import { authorizeRoles } from "./common/middleware";
-import { ROLE } from "./common/constants/Role";
-import { IAuthenticateMiddleware } from "./common/interface/IAuthenticateMiddleware";
-import { adminEntryRoute } from "./admin/routes/admin.entry.route";
-import { learnerEntryRoute } from "./learner/routes/learner.entry.route";
-import { professionalEntryRoute } from "./professionals/route/professional.entry.route";
-import { authEntryRoute } from "./common/routes/auth.entry.route";
+import { authorizeRoles } from "./middleware";
+import { ROLE } from "./constants/shared/Role";
+import { IAuthenticateMiddleware } from "./interface/shared/IAuthenticateMiddleware";
+import { adminEntryRoute } from "./routes/admin/admin.entry.route";
+import { learnerEntryRoute } from "./routes/learner/learner.entry.route";
+import { professionalEntryRoute } from "./routes/professional/professional.entry.route";
+import { authEntryRoute } from "./routes/shared/auth.entry.route";
 
 dotenv.config();
 const app = express();
@@ -43,7 +43,7 @@ app.use(
     msg: "HTTP {{req.method}} {{req.url}} | status: {{res.statusCode}} | responseTime: {{res.responseTime}}ms",
     requestWhitelist: ["body", "params", "query"], // remove headers
     responseWhitelist: ["body"],
-    dynamicMeta: (req, res) => {
+    dynamicMeta: (req) => {
       // remove sensitive data
       const safeBody = { ...req.body };
       if (safeBody.password) delete safeBody.password;

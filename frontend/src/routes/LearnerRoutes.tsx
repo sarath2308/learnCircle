@@ -1,30 +1,25 @@
-import LearnerHomeLayout from "@/components/LearnerHomeLayout";
-import LearnerProfile from "@/pages/Learner/LearnerProfile";
-import LearnerProfileLayout from "@/pages/Learner/LearnerProfileLayout";
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
-
+import ProtectedLearnerRoute from "./protected/protected.learner.routes";
 const LearnerHome = lazy(() => import("@/pages/Learner/LearnerHome"));
-// import LearnerLayout from "@/layouts/LearnerLayout";
-// import LearnerHome from "@/pages/learner/Home";
-// import LearnerCourses from "@/pages/learner/Courses";
-// import LearnerProfile from "@/pages/learner/Profile";
+const LearnerHomeLayout = lazy(() => import("@/components/LearnerHomeLayout"));
+const LearnerProfile = lazy(() => import("@/pages/Learner/LearnerProfile"));
+const LearnerProfileLayout = lazy(() => import("@/pages/Learner/LearnerProfileLayout"));
 
 const learnerRoutes: RouteObject[] = [
   {
-    path: "/learner",
-    element: <LearnerHomeLayout />, // main layout
+    element: <ProtectedLearnerRoute />, // PROTECT EVERYTHING UNDER /learner
     children: [
-      { path: "home", element: <LearnerHome /> },
-      // { path: "courses", element: <LearnerCourses /> },
-
       {
-        path: "profile",
-        element: <LearnerProfileLayout />, // 👈 nested layout
+        path: "/learner",
+        element: <LearnerHomeLayout />,
         children: [
-          { index: true, element: <LearnerProfile /> }, // /learner/profile
-          // { path: "settings", element: <ProfileSettings /> }, // /learner/profile/settings
-          // { path: "security", element: <ProfileSecurity /> }, // /learner/profile/security
+          { path: "home", element: <LearnerHome /> },
+          {
+            path: "profile",
+            element: <LearnerProfileLayout />,
+            children: [{ index: true, element: <LearnerProfile /> }],
+          },
         ],
       },
     ],

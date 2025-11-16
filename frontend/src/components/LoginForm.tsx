@@ -4,8 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import { React } from "react";
 import type { Roles } from "@/types/role.type";
+import { React } from "react";
 interface LoginFormProps {
   role: Roles;
   onSubmit: (role: string, data: { email: string; password: string }) => Promise<void>;
@@ -54,7 +54,6 @@ const LoginForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
 
@@ -65,32 +64,28 @@ const LoginForm = ({
 
     setIsLoading(true);
     try {
-      await onSubmit(role, { email: email, password: password });
+      await onSubmit(role, { email, password });
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setIsLoading(false);
     }
   };
 
-  const roleTitle = role;
-
   return (
-    <div className="w-full max-w-md mx-auto my-8 animate-fade-in">
+    <div className="w-full max-w-md mx-auto my-8">
       {role !== "admin" && (
-        <button
-          onClick={onBack}
-          className="mb-6 flex border-1 rounded-2xl  p-2 items-center text-gray-500 hover:text-black"
-        >
+        <button onClick={onBack} className="mb-6 flex items-center text-gray-500 hover:text-black">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Role Selection
         </button>
       )}
 
-      <Card className="shadow-md border border-gray-300">
+      <Card className="shadow-md border border-gray-300 ">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Sign in as {roleTitle}</CardTitle>
+          <CardTitle className="text-2xl font-bold">Sign in as {role}</CardTitle>
           <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-6">
           {role !== "admin" && (
             <GoogleLogin
@@ -105,9 +100,7 @@ const LoginForm = ({
               <span className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-gray-200 px-2 text-gray-500 rounded-2xl">
-                Or continue with email
-              </span>
+              <span className="bg-white px-2 text-gray-500">Or continue with email</span>
             </div>
           </div>
 
@@ -123,12 +116,12 @@ const LoginForm = ({
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => handleEmailChange(e.target.value)}
-                  className={`pl-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                    errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
+                  className={`pl-10 w-full ${
+                    errors.email ? "border-red-500 focus:ring-red-500" : ""
                   }`}
                 />
               </div>
-              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
             </div>
 
             {/* Password */}
@@ -142,8 +135,8 @@ const LoginForm = ({
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => handlePasswordChange(e.target.value)}
-                  className={`pl-10 pr-10 border rounded-md w-full py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                    errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
+                  className={`pl-10 pr-10 w-full ${
+                    errors.password ? "border-red-500 focus:ring-red-500" : ""
                   }`}
                 />
                 <button
@@ -158,7 +151,7 @@ const LoginForm = ({
                   )}
                 </button>
               </div>
-              {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
             </div>
 
             {/* Forgot password */}
@@ -175,7 +168,8 @@ const LoginForm = ({
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md"
+              disabled={isLoading}
+              className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md transition"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
@@ -189,7 +183,7 @@ const LoginForm = ({
                 onClick={onSwitchToSignup}
                 className="text-sm text-gray-500 hover:text-black"
               >
-                Don`t have an account? Sign up
+                Don’t have an account? Sign up
               </button>
             </div>
           )}

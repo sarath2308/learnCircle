@@ -1,0 +1,22 @@
+import { TYPES } from "@/types/shared/inversify/types";
+import { inject, injectable } from "inversify";
+import { ILearnerHomeController } from "@/interface/learner/ILearnerHomeController";
+import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { ILearnerHomeService } from "@/interface/learner/ILearnerHomeService";
+import { NextFunction, Response } from "express";
+import { AppError } from "@/errors/app.error";
+import { Messages } from "@/constants/shared/messages";
+import { HttpStatus } from "@/constants/shared/httpStatus";
+
+@injectable()
+export class LearnerHomeController implements ILearnerHomeController {
+  constructor(@inject(TYPES.ILearnerHomeService) private _service: ILearnerHomeService) {}
+
+  async getHome(req: IAuthRequest, res: Response, next: NextFunction) {
+    try {
+      res.status(HttpStatus.OK).json({ success: true, message: Messages.HOME_RENDERED });
+    } catch (error) {
+      next(error);
+    }
+  }
+}

@@ -1,0 +1,10 @@
+import { ProfessionalProfileDTOType } from "@/schema/professional/profile.request.schema";
+import { UploadFiles } from "@/services/professional/profesional.profile.service";
+
+export interface IProfessionalProfileService {
+  uploadData: (
+    userId: string,
+    data: ProfessionalProfileDTOType,
+    files: UploadFiles,
+  ) => Promise<void>;
+}

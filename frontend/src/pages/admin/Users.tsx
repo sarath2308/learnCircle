@@ -187,11 +187,7 @@ const Users = () => {
 
                   {[...Array(totalPages)].map((_, index) => {
                     const pageNum = index + 1;
-                    if (
-                      pageNum === 1 ||
-                      pageNum === totalPages ||
-                      Math.abs(pageNum - page) <= 1
-                    ) {
+                    if (pageNum === 1 || pageNum === totalPages || Math.abs(pageNum - page) <= 1) {
                       return (
                         <PaginationItem key={pageNum}>
                           <PaginationLink

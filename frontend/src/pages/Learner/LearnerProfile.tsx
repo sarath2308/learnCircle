@@ -125,9 +125,7 @@ export default function LearnerProfile() {
   };
 
   // ✅ Logout logic
-  const handleLogout = () => {
-   
-  };
+  const handleLogout = () => {};
 
   return (
     <div className="space-y-6 p-4">

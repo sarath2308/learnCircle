@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 import { React } from "react";
+import AdminCourse from "@/pages/admin/admin.course";
 
 const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout"));
 const AdminSign = lazy(() => import("@/pages/admin/AdminSign"));
@@ -27,7 +28,7 @@ const AdminRoutes: RouteObject[] = [
             element: <AdminDashboard />,
           },
           { path: "users", element: <Users /> },
-          //   // { path: "settings", element: <AdminSettings /> },
+          { path: "courses", element: <AdminCourse /> },
         ],
       },
     ],

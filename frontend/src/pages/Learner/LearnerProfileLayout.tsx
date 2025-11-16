@@ -1,23 +1,25 @@
+import React from "react";
 import { Outlet } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar";
-import { LearnerProfileSidebar } from "../../components/LearnerProfileSidebar";
-import { React } from "react";
+import { SidebarLayout } from "@/components/SidebarLayout";
+import { IconUser, IconCalendar, IconTrophy, IconSettings } from "@tabler/icons-react";
 
 export default function LearnerProfileLayout() {
+  const links = [
+    { label: "My Profile", path: "/learner/profile", icon: <IconUser /> },
+    { label: "Bookings", path: "/learner/bookings", icon: <IconCalendar /> },
+    { label: "Leaderboard", path: "/learner/leaderboard", icon: <IconTrophy /> },
+    { label: "Settings", path: "/learner/settings", icon: <IconSettings /> },
+  ];
+
+  const user = {
+    name: "John Doe",
+    avatar: "https://via.placeholder.com/40",
+    profilePath: "/learner/profile",
+  };
+
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <LearnerProfileSidebar />
-        <div className="flex-1">
-          <header className="h-12 flex items-center border-b bg-card px-4">
-            <SidebarTrigger />
-            <h2 className="ml-4 text-lg font-semibold">Profile Management</h2>
-          </header>
-          <main className="p-6">
-            <Outlet />
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <SidebarLayout links={links} user={user} logoText="Learner Panel">
+      <Outlet />
+    </SidebarLayout>
   );
 }
