@@ -2,24 +2,36 @@ import { lazy, Suspense } from "react";
 import type { RouteObject } from "react-router-dom";
 import Verification from "@/pages/Profesional/Verification";
 import { ROLE } from "@/contstant/role";
+import ProtectedProfessionalRoute from "./protected/protected.professional.routes";
 
-// ✅ Lazy import for better code-splitting
 const ProfessionalDashboard = lazy(() => import("@/pages/Profesional/profesionalDashboard"));
 const ProfessionalLayout = lazy(() => import("@/pages/Profesional/ProfesionalLayout"));
 
-// ✅ Wrap lazy components inside <Suspense> *in element, not in children array*
 const professionalRoutes: RouteObject[] = [
   {
-    path: `/${ROLE.PROFESSIONAL}`,
-    element: <ProfessionalLayout />, // layout with sidebar/navbar
+    element: <ProtectedProfessionalRoute />,
     children: [
       {
-        path: "home",
+        path: `/${ROLE.PROFESSIONAL}`,
         element: (
-          <Suspense fallback={<div>Loading ...</div>}>
-            <ProfessionalDashboard />
+          <Suspense fallback={<div>Loading Layout...</div>}>
+            <ProfessionalLayout />
           </Suspense>
         ),
+        children: [
+          {
+            path: "home",
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <ProfessionalDashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "verification",
+            element: <Verification />,
+          },
+        ],
       },
     ],
   },

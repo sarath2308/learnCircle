@@ -26,20 +26,12 @@ export class ProfessionalProfileController implements IProfessionalProfileContro
         res.status(400).json({ message: "Avatar or resume file is required." });
       }
 
-      const avatarBuffer = req.avatar?.buffer;
-      const resumeBuffer = req.resume?.buffer;
+      const avatarBuffer = req.avatar;
+      const resumeBuffer = req.resumeFile;
 
       await this._service.uploadData(userId, req.body, {
-        avatar: {
-          buffer: avatarBuffer,
-          mimeType: req.avatar?.mimetype,
-          originalName: req.avatar?.originalname,
-        },
-        resume: {
-          buffer: resumeBuffer,
-          mimeType: req.resume?.mimetype,
-          originalName: req.resume?.originalname,
-        },
+        avatar: avatarBuffer,
+        resume: resumeBuffer,
       });
 
       res.status(HttpStatus.CREATED).json({ message: Messages.PROFILE_UPDATED });

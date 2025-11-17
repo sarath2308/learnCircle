@@ -8,7 +8,7 @@ import {
 import dotenv from "dotenv";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Buffer } from "buffer";
-import { IS3Service } from "../interface";
+import { IS3Service } from "@/interface/shared/IS3Service";
 import { randomUUID } from "crypto";
 
 dotenv.config();

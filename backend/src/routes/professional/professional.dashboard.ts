@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IProfessionalDashboardController } from "../interfaces/IProfessionalDashboardController";
+import { IProfessionalDashboardController } from "@/interface/professional/IProfessionalDashboardController";
 
 export function professionalDashboardRoutes(controller: IProfessionalDashboardController) {
   const router = Router();

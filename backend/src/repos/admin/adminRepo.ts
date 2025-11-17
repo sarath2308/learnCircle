@@ -1,12 +1,12 @@
-import { BaseRepo } from "@/common";
-import { IAdmin } from "../models/Admin";
+import { BaseRepo } from "../shared/base";
+import { IAdmin } from "@/model/admin/Admin";
 import { Model } from "mongoose";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/shared/inversify/types";
 
 injectable();
 export class AdminRepo extends BaseRepo<IAdmin> {
-  constructor(@inject(TYPES.AdminModel) adminModel: Model<IAdmin>) {
+  constructor(@inject(TYPES.IAdminModel) adminModel: Model<IAdmin>) {
     super(adminModel);
   }
 

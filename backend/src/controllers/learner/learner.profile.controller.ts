@@ -7,7 +7,8 @@ import { IAuthRequest } from "@/interface/shared/IAuthRequest";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
-
+import { IProfileUploadRequest } from "@/interface/shared/profile.upload.request.interface";
+import { Request } from "express";
 @injectable()
 export class LearnerProfileController implements ILearnerProfileController {
   constructor(
@@ -43,13 +44,17 @@ export class LearnerProfileController implements ILearnerProfileController {
    * @param res
    * @param next
    */
-  async updateProfilePhoto(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
+  async updateProfilePhoto(
+    req: Request & IAuthRequest & IProfileUploadRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       if (!req.user?.userId) {
         throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
       }
       const { userId } = req?.user;
-      let file = req?.avatar;
+      let file = req.avatar;
       if (!file) {
         throw new AppError(Messages.PROFILE_NOT_UPDATED, HttpStatus.BAD_REQUEST);
       }

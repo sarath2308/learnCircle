@@ -253,7 +253,7 @@ export default function CreateCourseStepper() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label>Course Title</Label>
+                  <Label className="p-1">Course Title</Label>
                   <Input
                     value={courseDetails.title}
                     onChange={(e) => setCourseDetails({ ...courseDetails, title: e.target.value })}
@@ -268,7 +268,7 @@ export default function CreateCourseStepper() {
                 </div>
 
                 <div>
-                  <Label>Description</Label>
+                  <Label className="p-1">Description</Label>
                   <Textarea
                     value={courseDetails.description}
                     onChange={(e) =>
@@ -289,7 +289,7 @@ export default function CreateCourseStepper() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label>Category</Label>
+                    <Label className="p-1">Category</Label>
                     <Select
                       onValueChange={(v) => setCourseDetails({ ...courseDetails, category: v })}
                     >
@@ -322,7 +322,7 @@ export default function CreateCourseStepper() {
                   </div>
 
                   <div>
-                    <Label>Skill Level</Label>
+                    <Label className="p-1">Skill Level</Label>
                     <Select
                       onValueChange={(v) => setCourseDetails({ ...courseDetails, skillLevel: v })}
                     >
@@ -349,7 +349,7 @@ export default function CreateCourseStepper() {
 
                 {/* Thumbnail Upload */}
                 <div>
-                  <Label>Thumbnail / Cover Image</Label>
+                  <Label className="p-1">Thumbnail / Cover Image</Label>
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 p-4 text-center rounded-lg transition-all hover:border-blue-400 dark:hover:border-blue-500">
                     {thumbnailPreview ? (
                       <div className="relative w-full max-w-md mx-auto">

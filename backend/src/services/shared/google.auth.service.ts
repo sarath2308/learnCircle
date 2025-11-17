@@ -6,11 +6,10 @@ import { ITokens, ITokenService, verifyGoogleToken } from "@/utils";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import { Providers } from "@/constants/shared/providers";
 import { IUserDtoMapper } from "@/mapper/shared/user.map";
-import type { Provider } from "react";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
-import { Role } from "@/types";
+import { Provider, Role } from "@/types";
 
 @injectable()
 export class GoogleAuthProvider implements IAuthProviderService {
@@ -26,10 +25,7 @@ export class GoogleAuthProvider implements IAuthProviderService {
    * @param role
    * @returns
    */
-  async signIn(
-    token: string,
-    role: string,
-  ): Promise<{ user: UserResponseDto; tokens: ITokens } | void> {
+  async signIn(token: string, role: string): Promise<{ user: UserResponseDto; tokens: ITokens }> {
     const payload = await verifyGoogleToken(token);
 
     if (!payload) {

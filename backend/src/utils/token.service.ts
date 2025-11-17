@@ -1,11 +1,13 @@
-import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError, SignOptions } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AuthConfig } from "@/config/authConfig";
 import { injectable, inject } from "inversify";
 import { IRedisRepository } from "@/repos/shared/redisRepo";
 import { TYPES } from "../types/shared/inversify/types";
 import { RedisKeys } from "@/constants/shared/redisKeys";
+
 dotenv.config();
+
 type Tpayload = { userId: string; role?: string; type?: string };
 
 export interface ITokenService {
@@ -13,10 +15,11 @@ export interface ITokenService {
   signTempToken(payload: Tpayload, expiresIn?: string): string;
   generateRefreshToken(payload: Tpayload): string;
   verifyAccessToken(token: string): JwtPayload | null;
-  verifyRefreshToken(token: string): JwtPayload | null;
+  verifyRefreshToken(token: string): Promise<JwtPayload | null>;
   generateTokens(payload: Tpayload): Promise<ITokens>;
   verifyTempToken(token: string): Promise<ITempTokenRes | null>;
 }
+
 export interface ITokens {
   accessToken: string;
   refreshToken: string;
@@ -27,30 +30,41 @@ export interface ITempTokenRes {
   message: string;
   data: Tpayload;
 }
+
 @injectable()
 export class TokenService implements ITokenService {
   constructor(@inject(TYPES.IRedisRepository) private redisService: IRedisRepository) {}
+
+  // ---------------- TEMP TOKEN ----------------
   signTempToken(payload: Tpayload): string {
-    return jwt.sign(payload, AuthConfig.accessTokenSecret, {
-      expiresIn: "5m",
-    });
+    const options: SignOptions = { expiresIn: "5m" as any };
+    return jwt.sign(payload, AuthConfig.accessTokenSecret, options);
   }
 
+  // ---------------- ACCESS TOKEN ----------------
   signAccessToken(payload: Tpayload): string {
-    return jwt.sign(payload, AuthConfig.accessTokenSecret, {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m",
-    });
+    const options: SignOptions = {
+      expiresIn: AuthConfig.accessTokenExpiresIn as any,
+    };
+
+    return jwt.sign(payload, AuthConfig.accessTokenSecret, options);
   }
 
+  // ---------------- REFRESH TOKEN ----------------
   generateRefreshToken(payload: Tpayload): string {
-    let token = jwt.sign(payload, AuthConfig.refreshTokenSecret, {
-      expiresIn: AuthConfig.refreshTokenExpiresIn,
-    });
-    const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
+    const options: SignOptions = {
+      expiresIn: AuthConfig.refreshTokenExpiresIn as any,
+    };
+
+    const token = jwt.sign(payload, AuthConfig.refreshTokenSecret, options);
+
+    const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60; // 7 days
     this.redisService.set(`${RedisKeys.REFRESH}:${payload.userId}`, token, REFRESH_TOKEN_TTL);
+
     return token;
   }
 
+  // ---------------- VERIFY ACCESS ----------------
   verifyAccessToken(token: string): JwtPayload | null {
     try {
       return jwt.verify(token, AuthConfig.accessTokenSecret) as JwtPayload;
@@ -58,6 +72,8 @@ export class TokenService implements ITokenService {
       return null;
     }
   }
+
+  // ---------------- VERIFY REFRESH ----------------
   async verifyRefreshToken(token: string): Promise<JwtPayload | null> {
     try {
       const payload = jwt.verify(token, AuthConfig.refreshTokenSecret) as JwtPayload;
@@ -65,27 +81,27 @@ export class TokenService implements ITokenService {
       if (!payload || !payload.userId) return null;
 
       const storedToken = await this.redisService.get(`${RedisKeys.REFRESH}:${payload.userId}`);
-      if (storedToken !== token) {
-        console.log("Refresh token invalidated in Redis");
-        return null;
-      }
+      if (storedToken !== token) return null;
 
       return payload;
-    } catch (err) {
-      console.log("Refresh token verification failed", err);
+    } catch {
       return null;
     }
   }
 
+  // ---------------- GENERATE BOTH TOKENS ----------------
   async generateTokens(payload: Tpayload): Promise<ITokens> {
-    let accessToken = await this.signAccessToken(payload);
-    let refreshToken = await this.generateRefreshToken(payload);
-    return { accessToken, refreshToken };
+    return {
+      accessToken: this.signAccessToken(payload),
+      refreshToken: this.generateRefreshToken(payload),
+    };
   }
 
+  // ---------------- VERIFY TEMP TOKEN ----------------
   async verifyTempToken(token: string): Promise<ITempTokenRes> {
     try {
       const decoded = jwt.verify(token, AuthConfig.accessTokenSecret) as Tpayload;
+
       return {
         success: true,
         message: "Token is valid",
@@ -100,15 +116,17 @@ export class TokenService implements ITokenService {
           message: "Token expired",
           data: decoded ?? { userId: "", type: "unknown" },
         };
-      } else if (error.name === "JsonWebTokenError") {
+      }
+
+      if (error.name === "JsonWebTokenError") {
         return {
           success: false,
           message: "Invalid token",
           data: decoded ?? { userId: "", type: "unknown" },
         };
-      } else {
-        throw error;
       }
+
+      throw error;
     }
   }
 }

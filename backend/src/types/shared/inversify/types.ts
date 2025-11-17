@@ -45,4 +45,5 @@ export const TYPES = {
   ICourseRepo: Symbol.for("ICourseRepo"),
   ILessonModel: Symbol.for("ILessonModel"),
   ILessonRepo: Symbol.for("ILessonRepo"),
+  IAdminModel: Symbol.for("IAdminModel"),
 };

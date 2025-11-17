@@ -1,4 +1,4 @@
-import { IProfessionalDashboardDtoMap } from "../interfaces/IProfessionalDasboardDtoMap";
+import { IProfessionalDashboardDtoMap } from "@/interface/professional/IProfessionalDasboardDtoMap";
 import { IProfessionalProfile } from "../../model/professional/profesional.profile";
 import { ProfessionalDashboardResponseDTO } from "./dahsboard.dtos.schema";
 import { ProfessionalProfileResponseSchema } from "./dahsboard.dtos.schema";

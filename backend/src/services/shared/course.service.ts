@@ -1,4 +1,4 @@
-import ICourseService from "../interface/ICourseService";
+import ICourseService from "@/interface/shared/ICourseService";
 
 export class CourceService implements ICourseService {
   constructor() {}

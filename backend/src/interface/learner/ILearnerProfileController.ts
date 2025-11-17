@@ -1,11 +1,17 @@
 import { IAuthRequest } from "@/interface/shared/IAuthRequest";
 import { NextFunction } from "express";
 import { Response } from "express";
+import { IProfileUploadRequest } from "../shared/profile.upload.request.interface";
+import { Request } from "express";
 
 export interface ILearnerProfileController {
   getProfile: (req: IAuthRequest, res: Response, next: NextFunction) => Promise<void>;
 
-  updateProfilePhoto: (req: IAuthRequest, res: Response, next: NextFunction) => Promise<void>;
+  updateProfilePhoto: (
+    req: Request & IAuthRequest & IProfileUploadRequest,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<void>;
 
   requestEmailChangeOtp: (req: IAuthRequest, res: Response, next: NextFunction) => Promise<void>;
 

@@ -30,7 +30,7 @@ export class PasswordResetService implements IPasswordResetService {
    * @param role
    * @returns
    */
-  async reqResetOtp(email: string, role: string): Promise<OtpRes | null> {
+  async reqResetOtp(email: string, role: string): Promise<OtpRes> {
     const match = await this._userRepo.findWithEmailAndRole(email, role);
 
     if (!match) {
@@ -79,7 +79,7 @@ export class PasswordResetService implements IPasswordResetService {
    * @param otp
    * @returns
    */
-  async verify(email: string, otp: string): Promise<OtpRes | null> {
+  async verify(email: string, otp: string): Promise<OtpRes> {
     console.log(`email:${email},otp:${otp}`);
     await this._otpService.verifyOtp(`${RedisKeys.FORGOT}:${email}`, otp);
 
@@ -107,7 +107,7 @@ export class PasswordResetService implements IPasswordResetService {
    * @param newPassword
    * @returns
    */
-  async reset(token: string, email: string, newPassword: string): Promise<OtpRes | null> {
+  async reset(token: string, email: string, newPassword: string): Promise<OtpRes> {
     console.log(`--------token---${token}`);
     let verify = await this._redisRepo.get(`${RedisKeys.RESET_TOKEN}:${token}`);
     if (!verify) {

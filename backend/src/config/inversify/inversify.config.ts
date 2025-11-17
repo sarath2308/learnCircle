@@ -74,6 +74,7 @@ import {
   PasswordService,
   TokenService,
 } from "@/utils";
+import { Admin, IAdmin } from "@/model/admin/Admin";
 export const container = new Container();
 
 // Bindings
@@ -81,6 +82,7 @@ container.bind<Model<IUser>>(TYPES.IUserModel).toConstantValue(User);
 container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
 container.bind<Model<ILearnerProfile>>(TYPES.ILearnerProfileModel).toConstantValue(LearnerProfile);
 container.bind<Model<ICourse>>(TYPES.ICourseModel).toConstantValue(Course);
+container.bind<Model<IAdmin>>(TYPES.IAdminModel).toConstantValue(Admin);
 container.bind<Model<ILesson>>(TYPES.ILessonModel).toConstantValue(Lesson);
 container.bind<ILessonRepo>(TYPES.ILessonRepo).to(LessonRepo);
 
