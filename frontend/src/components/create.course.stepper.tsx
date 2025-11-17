@@ -294,11 +294,12 @@ export default function CreateCourseStepper() {
                       onValueChange={(v) => setCourseDetails({ ...courseDetails, category: v })}
                     >
                       <SelectTrigger
-                        className={`dark:bg-gray-800 dark:border-gray-700 ${errors.category ? "border-red-500" : ""}`}
+                        className={`dark:bg-gray-800
+                          dark:border-gray-700 ${errors.category ? "border-red-500" : ""}`}
                       >
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="dark:bg-gray-800 dark:text-gray-100">
+                      <SelectContent className="dark:bg-gray-800  bg-gray-400 dark:text-gray-100">
                         {[
                           "Web Development",
                           "Data Science",
@@ -331,7 +332,7 @@ export default function CreateCourseStepper() {
                       >
                         <SelectValue placeholder="Select skill level" />
                       </SelectTrigger>
-                      <SelectContent className="dark:bg-gray-800 dark:text-gray-100">
+                      <SelectContent className="dark:bg-gray-800  bg-gray-400 dark:text-gray-100">
                         {["Beginner", "Intermediate", "Advanced"].map((level) => (
                           <SelectItem key={level} value={level}>
                             {level}

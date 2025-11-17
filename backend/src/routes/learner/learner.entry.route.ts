@@ -1,4 +1,4 @@
-import container from "@/config/inversify/inversify.config";
+import container from "@/di/di.container";
 import { Router } from "express";
 import { ILearnerHomeController } from "@/interface/learner/ILearnerHomeController";
 import { TYPES } from "@/types/shared/inversify/types";

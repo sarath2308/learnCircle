@@ -1,5 +1,5 @@
 import { Router } from "express";
-import container from "@/config/inversify/inversify.config";
+import container from "@/di/di.container";
 import { TYPES } from "@/types/shared/inversify/types";
 import { professionalDashboardRoutes } from "./professional.dashboard";
 import { professionalProfileRoutes } from "./professional.profile.routes";

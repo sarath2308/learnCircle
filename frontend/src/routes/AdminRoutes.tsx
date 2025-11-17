@@ -6,7 +6,7 @@ const AdminSign = lazy(() => import("@/pages/admin/AdminSign"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const Users = lazy(() => import("@/pages/admin/Users"));
 const AdminCourse = lazy(() => import("@/pages/admin/admin.course"));
-const AdminCategory = lazy(()=> import("@/pages/admin/admin.category"))
+const AdminCategory = lazy(() => import("@/pages/admin/admin.category"));
 
 import ProtectedAdminRoute from "./protected/protected.admin.routes";
 

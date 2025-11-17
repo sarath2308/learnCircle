@@ -10,7 +10,7 @@ import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
 
 // Inversify Dependency Injection
-import { container } from "./config/inversify/inversify.config";
+import container from "@/di/di.container";
 import { TYPES } from "./types/shared/inversify/types";
 
 // Professional Controllers and Routes

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { TYPES } from "../../types/shared/inversify/types";
-import container from "@/config/inversify/inversify.config";
+import container from "@/di/di.container";
 import { IAdminDashboardController } from "@/interface/admin/IAdminDashboardController";
 import { IAdminUserManagementController } from "@/interface/admin/IAdminUserManagementController";
 import { adminDashboardRoutes } from "./admin.dashboard.routes";

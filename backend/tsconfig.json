@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-     "typeRoots": ["./src/types", "./node_modules/@types"],  //customized type root - mind it when you are writing it 
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./dist",
@@ -15,17 +14,15 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
     },
-
-    "typeRoots": ["./node_modules/@types"]
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/**/*.de.ts"
   ],
   "exclude": ["node_modules"]
 }
