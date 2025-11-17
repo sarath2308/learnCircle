@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { multerMiddleware } from "../../middleware/multer.middleware";
+import { busboyUpload } from "../../middleware/multiFileUpload.middleware";
 import { ILearnerProfileController } from "../../interface/learner/ILearnerProfileController";
 import { LearnerProfileSchemas } from "../../schema/learner/profile.request.dto";
 import { zodValidation } from "@/middleware";
@@ -13,7 +13,7 @@ export function learnerProfileRoute(controller: ILearnerProfileController) {
   router.patch(
     PROFILE_ROUTES.UPDATE_AVATAR,
     zodValidation(LearnerProfileSchemas.updateProfilePhoto),
-    multerMiddleware,
+    busboyUpload,
     controller.updateProfilePhoto.bind(controller),
   );
 

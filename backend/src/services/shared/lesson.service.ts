@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
-import ILessonService from "../interface/ILessonService";
-import { TYPES } from "../types/inversify/types";
-import ILessonRepo from "../interface/ILessonRepo";
+import ILessonService from "@/interface/shared/ILessonService";
+import ILessonRepo from "@/interface/shared/ILessonRepo";
+import { TYPES } from "@/types/shared/inversify/types";
 @injectable()
 export class LessonService implements ILessonService {
   constructor(@inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo) {}
