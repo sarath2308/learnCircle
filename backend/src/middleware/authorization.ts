@@ -1,14 +1,11 @@
 import { injectable, inject } from "inversify";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { ITokenService } from "@/utils";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { IAuthenticateMiddleware } from "@/interface/shared/IAuthenticateMiddleware";
 import { TYPES } from "../types/shared/inversify/types";
 import { Messages } from "@/constants/shared/messages";
-
-export interface IAuthRequest extends Request {
-  user?: { userId: string; role: string };
-}
+import { IAuthRequest } from "@/interface/shared/IAuthRequest";
 
 @injectable()
 export class AuthenticateMiddleware implements IAuthenticateMiddleware {

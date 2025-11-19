@@ -48,4 +48,10 @@ export const TYPES = {
   IAdminModel: Symbol.for("IAdminModel"),
   ICategoryModel: Symbol.for("ICategoryModel"),
   ISubCategoryModel: Symbol.for("ISubCategory"),
+  ICategoryRepo: Symbol.for("ICategoryRepo"),
+  ISubCategoryRepo: Symbol.for("ISubCategory"),
+  ICategoryService: Symbol.for("ICategoryService"),
+  ICategoryController: Symbol.for("ICategoryController"),
+  ISubCategoryService: Symbol.for("ISubCategoryService"),
+  ISubCategoryController: Symbol.for("ISubCategoryController"),
 };

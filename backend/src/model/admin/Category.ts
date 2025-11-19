@@ -1,8 +1,8 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface ICategory extends Document {
+  _id: Types.ObjectId;
   name: string;
-  description?: string;
   isBlocked: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -11,7 +11,6 @@ export interface ICategory extends Document {
 const CategorySchema = new Schema<ICategory>(
   {
     name: { type: String, required: true, unique: true },
-    description: { type: String },
     isBlocked: { type: Boolean, default: false },
   },
   { timestamps: true },

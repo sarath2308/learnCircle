@@ -1,0 +1,42 @@
+import { HttpStatus } from "@/constants/shared/httpStatus";
+import { ICategoryController } from "@/interface/admin/category.controller.interface";
+import { ICategoryService } from "@/interface/admin/category.service.interface";
+import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { TYPES } from "@/types/shared/inversify/types";
+import { Response } from "express";
+import { inject, injectable } from "inversify";
+
+@injectable()
+export class CategoryController implements ICategoryController {
+  constructor(@inject(TYPES.ICategoryService) private _categoryService: ICategoryService) {}
+
+  async listCategory(req: IAuthRequest, res: Response): Promise<void> {
+    let result = await this._categoryService.listCategories();
+    res
+      .status(HttpStatus.OK)
+      .json({ success: true, categoryData: result.category, total: result.total });
+  }
+
+  async createCategory(req: IAuthRequest, res: Response): Promise<void> {
+    let result = await this._categoryService.createCategory(req.body);
+    res.status(HttpStatus.CREATED).json({ success: true, newData: result });
+  }
+
+  async updateCategory(req: IAuthRequest, res: Response): Promise<void> {
+    let { id } = req.params;
+    let result = await this._categoryService.updateCategory(id, req.body);
+    res.status(HttpStatus.CREATED).json({ success: true, updatedData: result });
+  }
+
+  async unblockCategory(req: IAuthRequest, res: Response): Promise<void> {
+    let { id } = req.params;
+    await this._categoryService.unblockCategory(id);
+    res.status(HttpStatus.CREATED).json({ success: true });
+  }
+
+  async blockCategory(req: IAuthRequest, res: Response): Promise<void> {
+    let { id } = req.params;
+    await this._categoryService.blockCategory(id);
+    res.status(HttpStatus.CREATED).json({ success: true });
+  }
+}

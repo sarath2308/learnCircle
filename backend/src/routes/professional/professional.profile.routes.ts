@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { busboyUpload, zodValidation } from "@/middleware";
+import { busboyUpload } from "@/middleware";
+import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { IProfessionalProfileController } from "../../interface/professional/IProfessionalProfileController";
 import { ProfessionalProfileSchema } from "../../schema/professional/profile.request.schema";
 export function professionalProfileRoutes(controller: IProfessionalProfileController) {
@@ -7,7 +8,7 @@ export function professionalProfileRoutes(controller: IProfessionalProfileContro
   router.post(
     "/profile",
     busboyUpload,
-    zodValidation(ProfessionalProfileSchema),
+    validateRequest(ProfessionalProfileSchema),
     controller.uploadProfile.bind(controller),
   );
 

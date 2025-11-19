@@ -5,12 +5,15 @@ import { TYPES } from "@/types/shared/inversify/types";
 import { ILearnerProfileController } from "@/interface/learner/ILearnerProfileController";
 import { learnerHomeRoute } from "./learner.home.route.";
 import { learnerProfileRoute } from "./learner.profile.route";
+import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 
 export function learnerEntryRoute() {
   const router = Router();
-  const learnerHomeController = container.get<ILearnerHomeController>(TYPES.ILearnerHomeController);
-  const learnerProfileController = container.get<ILearnerProfileController>(
-    TYPES.ILearnerProfileController,
+  const learnerHomeController = wrapAsyncController(
+    container.get<ILearnerHomeController>(TYPES.ILearnerHomeController),
+  );
+  const learnerProfileController = wrapAsyncController(
+    container.get<ILearnerProfileController>(TYPES.ILearnerProfileController),
   );
 
   router.use("/home", learnerHomeRoute(learnerHomeController));

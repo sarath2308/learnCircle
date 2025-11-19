@@ -1,10 +1,10 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
-export function errorHandler(err: any, req: Request, res: Response) {
+export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
   console.error(`[ERROR] ${req.method} ${req.url}`, err);
 
   if (err instanceof AppError) {

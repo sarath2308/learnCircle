@@ -12,22 +12,32 @@ import { Container } from "inversify";
 import { Model } from "mongoose";
 import { Category, ICategory } from "@/model/admin/Category";
 import { ISubcategory, Subcategory } from "@/model/admin/SubCategory";
+import { ICategoryRepo } from "@/interface/admin/category.repo.interface";
+import { CategoryRepo } from "@/repos/admin/category.repo";
+import { ICategoryService } from "@/interface/admin/category.service.interface";
+import { CategoryService } from "@/services/admin/admin.category.service";
+import { ICategoryController } from "@/interface/admin/category.controller.interface";
+import { CategoryController } from "@/controllers/admin/admin.category.controller";
 
 export const registerAdmin = (container: Container): void => {
   /*--------------Models-----------------------*/
   container.bind<Model<IAdmin>>(TYPES.IAdminModel).toConstantValue(Admin);
   container.bind<Model<ICategory>>(TYPES.ICategoryModel).toConstantValue(Category);
   container.bind<Model<ISubcategory>>(TYPES.ISubCategoryModel).toConstantValue(Subcategory);
+
+  /*--------------Repo-----------------------*/
+  container.bind<ICategoryRepo>(TYPES.ICategoryRepo).to(CategoryRepo);
   /*--------------Service-------------*/
   container
     .bind<IAdminUserManagementService>(TYPES.IAdminUserManagementService)
     .to(AdminUserManagementService);
   container.bind<IAdminDashboardService>(TYPES.IAdminDashboardService).to(AdminDashboardService);
-
+  container.bind<ICategoryService>(TYPES.ICategoryService).to(CategoryService);
   /*--------------Controller-------------*/
   container
     .bind<IAdminUserManagementController>(TYPES.IAdminUserManagementController)
     .to(AdminUserManagementController);
+  container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
 
   container
     .bind<IAdminDashboardController>(TYPES.IAdminDashboardController)

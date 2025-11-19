@@ -1,5 +1,5 @@
-import { AdminLearnerArrayDTO } from "@/schema/admin/admin.learner.schema";
-import { AdminProfessionalArrayDTO } from "@/schema/admin/admin.professional.schema";
+import { AdminLearnerArrayDTO } from "@/schema/admin/user/admin.learner.schema";
+import { AdminProfessionalArrayDTO } from "@/schema/admin/user/admin.professional.schema";
 
 export interface IAdminUserManagementService {
   getLearnerData: (

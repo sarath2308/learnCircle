@@ -6,11 +6,11 @@ import { IProfessionalProfileRepo } from "@/interface/professional/IProfessional
 import {
   AdminLearnerArraySchema,
   AdminLearnerArrayDTO,
-} from "../../schema/admin/admin.learner.schema";
+} from "../../schema/admin/user/admin.learner.schema";
 import {
   AdminProfessionalArraySchema,
   AdminProfessionalArrayDTO,
-} from "../../schema/admin/admin.professional.schema";
+} from "../../schema/admin/user/admin.professional.schema";
 import { IRedisRepository } from "@/repos/shared/redisRepo";
 import { IS3Service } from "@/interface/shared/IS3Service";
 import { IUserRepo } from "@/repos/shared/user.repo";

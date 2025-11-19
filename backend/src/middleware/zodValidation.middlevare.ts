@@ -1,16 +1,17 @@
-import { ZodObject, ZodError } from "zod";
-import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from "@/constants/shared/httpStatus";
+import { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 
-export const zodValidation =
-  (schema: ZodObject<any>) => (req: Request, res: Response, next: NextFunction) => {
+export const validateRequest = (schema: any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Only validate req.body
-      const validatedData = schema.parse(req.body);
-      req.body = validatedData; // replace with validated data
+      if (schema.body) req.body = schema.body.parse(req.body);
+      if (schema.params) req.params = schema.params.parse(req.params);
+      if (schema.query) req.query = schema.query.parse(req.query);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        return res.status(400).json({
+        return res.status(HttpStatus.BAD_REQUEST).json({
           success: false,
           message: "validation error",
           errors: error.issues,
@@ -19,3 +20,4 @@ export const zodValidation =
       next(error);
     }
   };
+};

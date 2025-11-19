@@ -1,53 +1,57 @@
 import { z } from "zod";
 
-/**
- * Common Schema for authenticated user
- */
-/**
- * PATCH /profile/photo
- */
 export const UpdateProfilePhotoSchema = z.object({
-  avatar: z
-    .object({
-      originalname: z.string(),
-      mimetype: z.string(),
-      buffer: z.instanceof(Buffer),
-    })
-    .optional(),
+  body: z.object({
+    avatar: z
+      .object({
+        originalname: z.string(),
+        mimetype: z.string(),
+        buffer: z.instanceof(Buffer),
+      })
+      .optional(),
+  }),
 });
 
 /**
  * POST /email/change/request-otp
  */
 export const RequestEmailChangeOtpSchema = z.object({
-  newEmail: z.string().email("Invalid email format"),
+  body: z.object({
+    newEmail: z.string().email("Invalid email format"),
+  }),
 });
 
 /**
  * POST /email/change/verify-otp
  */
 export const VerifyEmailChangeOtpSchema = z.object({
-  otp: z.string().min(4, "OTP must be at least 4 digits long"),
+  body: z.object({
+    otp: z.string().min(4, "OTP must be at least 4 digits long"),
+  }),
 });
 
 /**
  * PATCH /profile/name
  */
 export const UpdateNameSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  body: z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+  }),
 });
 
 /**
  * PATCH /profile/password
  */
 export const UpdatePasswordSchema = z.object({
-  newPassword: z
-    .string()
-    .min(6, "New password must be at least 6 characters")
-    .refine((val) => /[A-Z]/.test(val), {
-      message: "New password must contain at least one uppercase letter",
-    }),
-  password: z.string().min(6, "Password must be at least 6 characters").optional(),
+  body: z.object({
+    newPassword: z
+      .string()
+      .min(6, "New password must be at least 6 characters")
+      .refine((val) => /[A-Z]/.test(val), {
+        message: "New password must contain at least one uppercase letter",
+      }),
+    password: z.string().min(6, "Password must be at least 6 characters").optional(),
+  }),
 });
 
 /**

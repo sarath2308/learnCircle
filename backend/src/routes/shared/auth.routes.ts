@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { zodValidation } from "@/middleware";
+import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { IAuthController } from "@/interface/shared/IAuthController";
 import {
   ForgotPasswordSchema,
@@ -18,49 +18,53 @@ export function authRoutes(controller: IAuthController) {
 
   router.post(
     "/request-signup",
-    zodValidation(SignupRequestSchema),
+    validateRequest(SignupRequestSchema),
     controller.reqSignup.bind(controller),
   );
 
   router.post(
     "/signup",
-    zodValidation(VerifySignupOtpSchema),
+    validateRequest(VerifySignupOtpSchema),
     controller.verifyAndSignup.bind(controller),
   );
 
   router.post(
     "/signup/resend-otp",
-    zodValidation(ResendSignupOtpSchema),
+    validateRequest(ResendSignupOtpSchema),
     controller.resendSignupOtp.bind(controller),
   );
 
-  router.post("/login", zodValidation(LoginRequestSchema), controller.login.bind(controller));
+  router.post("/login", validateRequest(LoginRequestSchema), controller.login.bind(controller));
 
   router.post(
     "/forgot",
-    zodValidation(ForgotPasswordSchema),
+    validateRequest(ForgotPasswordSchema),
     controller.forgotPassword.bind(controller),
   );
 
   router.post(
     "/forgot/verify-otp",
-    zodValidation(VerifyForgotOtpSchema),
+    validateRequest(VerifyForgotOtpSchema),
     controller.verifyForgotOtp.bind(controller),
   );
 
   router.post(
     "/forgot/resend-otp",
-    zodValidation(ResendForgotOtpSchema),
+    validateRequest(ResendForgotOtpSchema),
     controller.resendForgotOtp.bind(controller),
   );
 
   router.put(
     "/reset-password",
-    zodValidation(ResetPasswordSchema),
+    validateRequest(ResetPasswordSchema),
     controller.resetPassword.bind(controller),
   );
 
-  router.post("/google", zodValidation(GoogleLoginSchema), controller.googleSign.bind(controller));
+  router.post(
+    "/google",
+    validateRequest(GoogleLoginSchema),
+    controller.googleSign.bind(controller),
+  );
   router.post("/logout", controller.logout.bind(controller));
 
   return router;

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { busboyUpload } from "../../middleware/multiFileUpload.middleware";
 import { ILearnerProfileController } from "../../interface/learner/ILearnerProfileController";
 import { LearnerProfileSchemas } from "../../schema/learner/profile.request.dto";
-import { zodValidation } from "@/middleware";
+import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { PROFILE_ROUTES } from "../../constants/learner/learner.profile.route.constant";
 export function learnerProfileRoute(controller: ILearnerProfileController) {
   const router = Router();
@@ -12,14 +12,14 @@ export function learnerProfileRoute(controller: ILearnerProfileController) {
 
   router.patch(
     PROFILE_ROUTES.UPDATE_AVATAR,
-    zodValidation(LearnerProfileSchemas.updateProfilePhoto),
+    validateRequest(LearnerProfileSchemas.updateProfilePhoto),
     busboyUpload,
     controller.updateProfilePhoto.bind(controller),
   );
 
   router.post(
     PROFILE_ROUTES.EMAIL_REQUEST_OTP,
-    zodValidation(LearnerProfileSchemas.requestEmailChangeOtp),
+    validateRequest(LearnerProfileSchemas.requestEmailChangeOtp),
     controller.requestEmailChangeOtp.bind(controller),
   );
 
@@ -27,19 +27,19 @@ export function learnerProfileRoute(controller: ILearnerProfileController) {
 
   router.post(
     PROFILE_ROUTES.EMAIL_VERIFY_OTP,
-    zodValidation(LearnerProfileSchemas.verifyEmailChangeOtp),
+    validateRequest(LearnerProfileSchemas.verifyEmailChangeOtp),
     controller.verifyEmailChangeOtp.bind(controller),
   );
 
   router.patch(
     PROFILE_ROUTES.UPDATE_PASSWORD,
-    zodValidation(LearnerProfileSchemas.updatePassword),
+    validateRequest(LearnerProfileSchemas.updatePassword),
     controller.updatePassword.bind(controller),
   );
 
   router.patch(
     PROFILE_ROUTES.UPDATE_USERNAME,
-    zodValidation(LearnerProfileSchemas.updateName),
+    validateRequest(LearnerProfileSchemas.updateName),
     controller.updateName.bind(controller),
   );
   // router.post("/")

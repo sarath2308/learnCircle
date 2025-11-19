@@ -5,15 +5,16 @@ import { professionalDashboardRoutes } from "./professional.dashboard";
 import { professionalProfileRoutes } from "./professional.profile.routes";
 import { IProfessionalDashboardController } from "@/interface/professional/IProfessionalDashboardController";
 import { IProfessionalProfileController } from "@/interface/professional/IProfessionalProfileController";
+import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 
 export function professionalEntryRoute() {
   const router = Router();
 
-  const professionalProfileController = container.get<IProfessionalProfileController>(
-    TYPES.IProfessionalProfileController,
+  const professionalProfileController = wrapAsyncController(
+    container.get<IProfessionalProfileController>(TYPES.IProfessionalProfileController),
   );
-  const professionalDashboardController = container.get<IProfessionalDashboardController>(
-    TYPES.IProfessionalDashboardController,
+  const professionalDashboardController = wrapAsyncController(
+    container.get<IProfessionalDashboardController>(TYPES.IProfessionalDashboardController),
   );
   router.use("/dashboard", professionalDashboardRoutes(professionalDashboardController));
   router.use("/profile", professionalProfileRoutes(professionalProfileController));

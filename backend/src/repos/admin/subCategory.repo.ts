@@ -1,13 +1,14 @@
-import { ICategory } from "@/model/admin/Category";
 import { BaseRepo } from "../shared/base";
-import { CategoryListArgs, ICategoryRepo } from "@/interface/admin/category.repo.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
 import { FlattenMaps, Model } from "mongoose";
+import { ISubcategory } from "@/model/admin/SubCategory";
+import { ISubCategoryRepo } from "@/interface/admin/subCaregory.repo.interface";
+import { CategoryListArgs } from "@/interface/admin/category.repo.interface";
 
 @injectable()
-export class CategoryRepo extends BaseRepo<ICategory> implements ICategoryRepo {
-  constructor(@inject(TYPES.ICategoryModel) private _model: Model<ICategory>) {
+export class SubCategoryRepo extends BaseRepo<ISubcategory> implements ISubCategoryRepo {
+  constructor(@inject(TYPES.ISubCategoryModel) private _model: Model<ISubcategory>) {
     super(_model);
   }
   async list({
@@ -15,7 +16,7 @@ export class CategoryRepo extends BaseRepo<ICategory> implements ICategoryRepo {
     limit,
     skip,
     sort,
-  }: CategoryListArgs): Promise<Array<FlattenMaps<ICategory>>> {
+  }: CategoryListArgs): Promise<Array<FlattenMaps<ISubcategory>>> {
     return await this._model.find(query).sort(sort).skip(skip).limit(limit).lean();
   }
   async count(query: any): Promise<number> {

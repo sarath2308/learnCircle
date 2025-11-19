@@ -51,4 +51,8 @@ export const Messages = {
   USER_UNBLOCKED: "User UNblocked",
   USER_APPROVED: "Application Approved",
   USER_REJECTED: "User Application Rejected",
+
+  //Category
+  CATEGORY_NOT_CREATED: "Category Not Created",
+  CATEGORY_NOT_FOUND: "Category Not Found",
 };
