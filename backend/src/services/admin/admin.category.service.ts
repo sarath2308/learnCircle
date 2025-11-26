@@ -110,10 +110,7 @@ export class CategoryService implements ICategoryService {
     ]);
 
     // Inject id and validate with Zod
-    const formatted = categories
-      .map((c) => ({ id: String(c._id), ...c }))
-      .filter((c) => typeof c.name === "string" && c.name.trim().length >= 3)
-      .map((c) => CategorySchema.parse(c));
+    const formatted = categories.map((c) => CategorySchema.parse({ id: String(c._id), ...c }));
 
     return { category: formatted, total };
   }

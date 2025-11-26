@@ -10,4 +10,18 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
   constructor(@inject(TYPES.ICourseModel) private _model: Model<ICourse>) {
     super(_model);
   }
+
+  async updatePrice(
+    id: string,
+    payload: { price: number; discount: number; type: "Free" | "Paid" },
+  ): Promise<void> {
+    await this._model.updateOne(
+      { id },
+      { $set: { price: payload.price, discount: payload.discount, type: payload.type } },
+    );
+  }
+
+  async updateThumbnail(id: string, key: string): Promise<void> {
+    await this._model.updateOne({ id }, { $set: { thumbnail_key: key } });
+  }
 }

@@ -98,15 +98,10 @@ const CategoryManagement = () => {
       return;
     }
 
-    try {
-      await createCategory.mutateAsync({ name: name.trim() });
-      toast.success("Category created successfully");
-      refetchCategories();
-      setCreateOpen(false);
-      resetForm();
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to create category");
-    }
+    await createCategory.mutateAsync({ name: name.trim() });
+    refetchCategories();
+    setCreateOpen(false);
+    resetForm();
   };
 
   const handleEdit = async () => {
@@ -115,16 +110,11 @@ const CategoryManagement = () => {
       return;
     }
 
-    try {
-      await updateCategory.mutateAsync({ id: editingItem.id, name: name.trim() });
-      toast.success("Category updated successfully");
-      refetchCategories();
-      setEditOpen(false);
-      setEditingItem(null);
-      resetForm();
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to update category");
-    }
+    await updateCategory.mutateAsync({ id: editingItem.id, payload: { name: name.trim() } });
+    refetchCategories();
+    setEditOpen(false);
+    setEditingItem(null);
+    resetForm();
   };
 
   const handleBlockUnblock = async () => {
@@ -205,9 +195,7 @@ const CategoryManagement = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Category Management
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Manage your product categories
-            </p>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your product categories</p>
           </div>
 
           <div className="flex gap-4 items-center w-full sm:w-auto">
@@ -285,7 +273,11 @@ const CategoryManagement = () => {
                       <PaginationItem>
                         <PaginationPrevious
                           onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          className={page === 1 ? "pointer-events-none opacity-50" : "hover:bg-gray-100 dark:hover:bg-gray-700"}
+                          className={
+                            page === 1
+                              ? "pointer-events-none opacity-50"
+                              : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                          }
                         />
                       </PaginationItem>
 
@@ -297,7 +289,11 @@ const CategoryManagement = () => {
                             <PaginationLink
                               onClick={() => setPage(n)}
                               isActive={page === n}
-                              className={page === n ? "bg-blue-600 text-white" : "hover:bg-gray-100 dark:hover:bg-gray-700"}
+                              className={
+                                page === n
+                                  ? "bg-blue-600 text-white"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                              }
                             >
                               {n}
                             </PaginationLink>
@@ -308,7 +304,11 @@ const CategoryManagement = () => {
                       <PaginationItem>
                         <PaginationNext
                           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                          className={page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-gray-100 dark:hover:bg-gray-700"}
+                          className={
+                            page === totalPages
+                              ? "pointer-events-none opacity-50"
+                              : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                          }
                         />
                       </PaginationItem>
                     </PaginationContent>
@@ -345,7 +345,9 @@ const CategoryManagement = () => {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setEditOpen(false)}>
+                Cancel
+              </Button>
               <Button
                 onClick={handleEdit}
                 disabled={updateCategory.isPending}
@@ -358,7 +360,10 @@ const CategoryManagement = () => {
         </Dialog>
 
         {/* Block/Unblock Confirmation */}
-        <AlertDialog open={confirmDialog.open} onOpenChange={(o) => setConfirmDialog(prev => ({ ...prev, open: o }))}>
+        <AlertDialog
+          open={confirmDialog.open}
+          onOpenChange={(o) => setConfirmDialog((prev) => ({ ...prev, open: o }))}
+        >
           <AlertDialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-gray-900 dark:text-white">
@@ -374,9 +379,10 @@ const CategoryManagement = () => {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleBlockUnblock}
-                className={confirmDialog.action === "block"
-                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  : "bg-green-600 hover:bg-green-700 dark:bg-green-500"
+                className={
+                  confirmDialog.action === "block"
+                    ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    : "bg-green-600 hover:bg-green-700 dark:bg-green-500"
                 }
               >
                 {confirmDialog.action === "block" ? "Block Category" : "Unblock Category"}

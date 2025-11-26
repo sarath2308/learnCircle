@@ -54,4 +54,8 @@ export const TYPES = {
   ICategoryController: Symbol.for("ICategoryController"),
   ISubCategoryService: Symbol.for("ISubCategoryService"),
   ISubCategoryController: Symbol.for("ISubCategoryController"),
+  ICourseService: Symbol.for("ICourseService"),
+  ICourseController: Symbol.for("ICourseController"),
+  VideoCompressService: Symbol.for("VideoCompressService"),
+  ImageCompressService: Symbol.for("ImageCompressService"),
 };

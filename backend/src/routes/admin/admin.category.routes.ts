@@ -15,17 +15,17 @@ export function categoryRoutes(controller: ICategoryController) {
     controller.createCategory.bind(controller),
   );
   router.patch(
-    "/",
+    "/:id",
     validateRequest(CategoryUpdateSchema),
     controller.updateCategory.bind(controller),
   );
   router.patch(
-    "/unblock",
+    "/unblock/:id",
     validateRequest(CategoryUnBlockSchema),
     controller.unblockCategory.bind(controller),
   );
   router.patch(
-    "/block",
+    "/block/:id",
     validateRequest(CategoryBlockSchema),
     controller.blockCategory.bind(controller),
   );

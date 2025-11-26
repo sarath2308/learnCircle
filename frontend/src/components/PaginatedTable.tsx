@@ -26,7 +26,9 @@ export function PaginatedTable({
   className,
 }: PaginatedTableProps) {
   return (
-    <div className={`w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 ${className || ""}`}>
+    <div
+      className={`w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 ${className || ""}`}
+    >
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/50">
@@ -55,9 +57,7 @@ export function PaginatedTable({
               >
                 <div className="flex items-center justify-center space-x-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 dark:border-blue-400"></div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Loading...
-                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
                 </div>
               </TableCell>
             </TableRow>
@@ -68,10 +68,7 @@ export function PaginatedTable({
                 className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
               >
                 {headers.map((header) => (
-                  <TableCell
-                    key={header}
-                    className="text-gray-800 dark:text-gray-200"
-                  >
+                  <TableCell key={header} className="text-gray-800 dark:text-gray-200">
                     {row[header] ?? "-"}
                   </TableCell>
                 ))}

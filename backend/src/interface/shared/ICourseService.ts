@@ -1,4 +1,11 @@
+import { createCourseDtoType } from "@/schema/shared/course.create.schema";
+import { CoursePriceDtoType } from "@/schema/shared/course.pricing.schema";
+import { UploadedFile } from "./uploadFile.interface";
+
 export default interface ICourseService {
-  createCourse: (data: any) => Promise<{ courseId: string } | void>;
-  updatePriceDetails: (data: any) => Promise<void>;
+  createCourse: (
+    data: createCourseDtoType,
+    thumbnail: UploadedFile,
+  ) => Promise<{ courseId: string }>;
+  updatePriceDetails: (id: string, data: CoursePriceDtoType) => Promise<void>;
 }

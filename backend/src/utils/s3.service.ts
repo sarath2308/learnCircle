@@ -7,7 +7,7 @@ import {
 
 import dotenv from "dotenv";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Buffer } from "buffer";
+import fs from "fs";
 import { IS3Service } from "@/interface/shared/IS3Service";
 import { randomUUID } from "crypto";
 
@@ -50,28 +50,25 @@ export class S3Service implements IS3Service {
   /**
    * Upload file from buffer and return signed URL
    */
-  async uploadFileFromBuffer(
-    fileBuffer: Buffer,
+  async uploadFileFromStream(
+    filePath: string,
     key: string,
     mimeType: string,
     expiresIn = Number(process.env.S3_URL_EXPIRES_IN),
   ) {
-    // Upload to S3
+    const fileStream = fs.createReadStream(filePath);
+
     const uploadParams = {
       Bucket: bucketName,
       Key: key,
-      Body: fileBuffer,
+      Body: fileStream,
       ContentType: mimeType,
     };
 
     await s3.send(new PutObjectCommand(uploadParams));
 
-    // Return signed URL
     const command = new GetObjectCommand({ Bucket: bucketName, Key: key });
-
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn });
-
-    return signedUrl;
+    return await getSignedUrl(s3, command, { expiresIn });
   }
 
   /**

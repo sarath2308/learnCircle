@@ -1,5 +1,3 @@
-import { Buffer } from "buffer";
-
 export interface IS3Service {
   /**
    *
@@ -16,12 +14,12 @@ export interface IS3Service {
    * @param mimeType - MIME type of the file
    * @param expiresIn - Signed URL expiration in seconds (default: 3600)
    */
-  uploadFileFromBuffer(
-    fileBuffer: Buffer,
+  uploadFileFromStream: (
+    filePath: string,
     key: string,
     mimeType: string,
-    expiresIn?: number,
-  ): Promise<string>;
+    expiresIn: number,
+  ) => Promise<string>;
 
   /**
    * Generate a signed URL for an existing S3 file

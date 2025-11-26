@@ -22,6 +22,5 @@ export const useListCategory = ({ page = 1, limit = 10, search = "" }: ListCateg
   return useQuery<PaginatedResponse<Category>, Error>({
     queryKey: ["category", page, limit, search],
     queryFn: () => categoryApi.listCategory(page, limit, search),
-    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 };

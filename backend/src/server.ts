@@ -21,6 +21,7 @@ import { adminEntryRoute } from "./routes/admin/admin.entry.route";
 import { learnerEntryRoute } from "./routes/learner/learner.entry.route";
 import { professionalEntryRoute } from "./routes/professional/professional.entry.route";
 import { authEntryRoute } from "./routes/shared/auth.entry.route";
+import { courseEntryRoute } from "./routes/shared/course.entry.routes";
 
 dotenv.config();
 const app = express();
@@ -84,6 +85,13 @@ async function startServer() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.ADMIN),
     adminEntryRoute(),
+  );
+
+  app.use(
+    "/api/course",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL),
+    courseEntryRoute(),
   );
 
   app.use(

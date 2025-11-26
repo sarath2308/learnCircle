@@ -55,4 +55,8 @@ export const Messages = {
   //Category
   CATEGORY_NOT_CREATED: "Category Not Created",
   CATEGORY_NOT_FOUND: "Category Not Found",
+
+  //course
+  COURSE_NOT_CREATED: "Failed to create course. Please try again later.",
+  COURSE_NOT_FOUND: "Course Not found",
 };
