@@ -1,7 +1,7 @@
-import { ICourseController } from "@/interface/shared/course.controller.interface";
+import { ICourseController } from "@/interface/shared/course/course.controller.interface";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
-import { createCourseSchema } from "@/schema/shared/course.create.schema";
-import { coursePriceSchema } from "@/schema/shared/course.pricing.schema";
+import { createCourseSchema } from "@/schema/shared/course/course.create.schema";
+import { coursePriceSchema } from "@/schema/shared/course/course.pricing.schema";
 import { Router } from "express";
 
 export function courseRoutes(controller: ICourseController) {

@@ -2,8 +2,8 @@ import container from "@/di/di.container";
 import { Router } from "express";
 import { IRefreshController } from "@/controllers/shared/refreshController";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IAuthController } from "@/interface/shared/IAuthController";
-import { authRoutes } from "./auth.routes";
+import { IAuthController } from "@/interface/shared/auth/IAuthController";
+import { authRoutes } from "./auth/auth.routes";
 import { refreshRoutes } from "./refresh.routes";
 import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 export function authEntryRoute() {

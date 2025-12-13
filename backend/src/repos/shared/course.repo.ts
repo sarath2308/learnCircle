@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import ICourseRepo from "@/interface/shared/ICourseRepo";
+import ICourseRepo from "@/interface/shared/course/ICourseRepo";
 import { ICourse } from "@/model/shared/course.model";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
@@ -23,5 +23,9 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
 
   async updateThumbnail(id: string, key: string): Promise<void> {
     await this._model.updateOne({ id }, { $set: { thumbnail_key: key } });
+  }
+
+  async getCourseWithTitle(title: string): Promise<ICourse | null> {
+    return await this._model.findOne({ title: title, isDeleted: false });
   }
 }

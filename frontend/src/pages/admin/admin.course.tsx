@@ -1,4 +1,4 @@
-import CreateCourseStepper from "@/components/create.course.stepper";
+import CreateCourseStepper from "@/components/createCourse/create.course.stepper";
 import React from "react";
 
 const AdminCourse = () => {

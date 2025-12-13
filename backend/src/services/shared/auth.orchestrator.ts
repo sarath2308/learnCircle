@@ -2,11 +2,11 @@ import { inject, injectable, multiInject } from "inversify";
 import { IPasswordResetService } from "@/interface/shared/IPasswordResetService";
 import { OtpRes, Role } from "@/types";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IEmailAuthService } from "@/interface/shared/IEmailAuthService";
-import { IAuthProviderService } from "@/interface/shared/IAuthProviderService";
-import { UserResponseDto } from "@/schema/shared/auth.dto.schema";
+import { IEmailAuthService } from "@/interface/shared/auth/IEmailAuthService";
+import { IAuthProviderService } from "@/interface/shared/auth/IAuthProviderService";
+import { UserResponseDto } from "@/schema/shared/auth/auth.dto.schema";
 import { ITokens } from "@/utils";
-import { IAuthOrchestrator } from "@/interface/shared/IAuthOrchestrator";
+import { IAuthOrchestrator } from "@/interface/shared/auth/IAuthOrchestrator";
 @injectable()
 export class AuthOrchestrator implements IAuthOrchestrator {
   private providerMap: Map<string, IAuthProviderService> = new Map();

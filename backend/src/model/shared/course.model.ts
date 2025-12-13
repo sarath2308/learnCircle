@@ -3,7 +3,7 @@ import { Schema, model, Document, Types } from "mongoose";
 export interface ICourse extends Document {
   title: string;
   description: string;
-  category: string;
+  category: Types.ObjectId;
   skillLevel: "Beginner" | "Intermediate" | "Advanced";
   thumbnail_key: string;
   price?: number;
@@ -14,6 +14,7 @@ export interface ICourse extends Document {
   rejectReason?: string;
   lessonCount?: number;
   totalDuration?: number;
+  isDeleted: boolean;
   averageRating?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -23,7 +24,7 @@ const courseSchema = new Schema<ICourse>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    category: { type: String, required: true },
+    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     skillLevel: {
       type: String,
       enum: ["Beginner", "Intermediate", "Advanced"],
@@ -39,6 +40,7 @@ const courseSchema = new Schema<ICourse>(
       enum: ["draft", "pending", "approved", "rejected", "published"],
       default: "draft",
     },
+    isDeleted: { type: Boolean, default: false },
     rejectReason: String,
     lessonCount: { type: Number, default: 0 },
     totalDuration: { type: Number, default: 0 },

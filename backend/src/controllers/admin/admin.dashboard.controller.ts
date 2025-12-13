@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { IAdminDashboardController } from "@/interface/admin/IAdminDashboardController";
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 import { Response } from "express";
 import { TYPES } from "@/types/shared/inversify/types";
 import { IAdminDashboardService } from "@/interface/admin/IAdminDashboardService";

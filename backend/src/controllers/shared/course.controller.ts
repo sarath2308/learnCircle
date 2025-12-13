@@ -1,9 +1,9 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
-import { ICourseController } from "@/interface/shared/course.controller.interface";
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
-import ICourseService from "@/interface/shared/ICourseService";
+import { ICourseController } from "@/interface/shared/course/course.controller.interface";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import ICourseService from "@/interface/shared/course/ICourseService";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Response } from "express";
 import { inject, injectable } from "inversify";

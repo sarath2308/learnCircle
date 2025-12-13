@@ -2,12 +2,12 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
 import { ICompressor } from "@/interface/shared/compressor.interface";
-import ICourseRepo from "@/interface/shared/ICourseRepo";
-import ICourseService from "@/interface/shared/ICourseService";
+import ICourseRepo from "@/interface/shared/course/ICourseRepo";
+import ICourseService from "@/interface/shared/course/ICourseService";
 import { IS3Service } from "@/interface/shared/IS3Service";
 import { UploadedFile } from "@/interface/shared/uploadFile.interface";
-import { createCourseDtoType } from "@/schema/shared/course.create.schema";
-import { CoursePriceDtoType } from "@/schema/shared/course.pricing.schema";
+import { createCourseDtoType } from "@/schema/shared/course/course.create.schema";
+import { CoursePriceDtoType } from "@/schema/shared/course/course.pricing.schema";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 import fs from "fs";
@@ -25,10 +25,18 @@ export class CourceService implements ICourseService {
     data: createCourseDtoType,
     thumbnail: UploadedFile,
   ): Promise<{ courseId: string }> {
+    const present = await this._courseRepo.getCourseWithTitle(data.title);
+
+    if (present) {
+      throw new AppError(Messages.COURSE_DUPLICATE, HttpStatus.BAD_REQUEST);
+    }
+
     const createdCourse = await this._courseRepo.create(data);
+
     if (!createdCourse) {
       throw new AppError(Messages.COURSE_NOT_CREATED, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     const courseId = String(createdCourse._id);
 
     const compressedPath = await this._imageCompressService.compress(thumbnail.path);
@@ -69,5 +77,19 @@ export class CourceService implements ICourseService {
         type: data.type,
       });
     }
+  }
+
+  async getCourse(courseId: string): Promise<any> {
+    const courseData = await this._courseRepo.findById(courseId);
+
+    if (!courseData) {
+      throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    return courseData;
+  }
+
+  async getAllCourse(): Promise<any> {
+    return await this._courseRepo.getAll();
   }
 }

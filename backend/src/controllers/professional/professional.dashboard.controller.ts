@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { IProfessionalDashboardController } from "@/interface/professional/IProfessionalDashboardController";
 import { TYPES } from "@/types/shared/inversify/types";
 import { IProfessionalDashboardService } from "@/interface/professional/IProfessionalDashboard";
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 import { Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";

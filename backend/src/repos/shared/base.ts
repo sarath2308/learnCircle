@@ -4,7 +4,6 @@ export interface IBaseRepo<T> {
   getAll: () => Promise<Array<T & Document>>;
   create: (userData: Partial<T>) => Promise<T & Document>;
   findById: (id: string) => Promise<(T & Document) | null>;
-  findByEmail: (email: string) => Promise<(T & Document) | null>;
   update: (id: string, data: Partial<T>) => Promise<(T & Document) | null>;
   delete: (id: string) => Promise<(T & Document) | null>;
 }
@@ -42,22 +41,13 @@ export class BaseRepo<T> implements IBaseRepo<T> {
     }
   }
 
-  async findByEmail(email: string): Promise<(T & Document) | null> {
-    try {
-      return await this.model.findOne({ email }).exec();
-    } catch (err) {
-      console.error(err);
-      throw new Error("Error occurred while finding record by email");
-    }
-  }
-
   async update(id: string, data: Partial<T>): Promise<(T & Document) | null> {
     try {
       const user = await this.model.findByIdAndUpdate(id, data as any, { new: true }).exec();
       return user;
     } catch (error) {
       console.error(error);
-      throw new Error("Couldn't update the user");
+      throw new Error("Couldn't update the data");
     }
   }
 

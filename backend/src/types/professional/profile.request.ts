@@ -1,4 +1,4 @@
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 
 export interface ProfileRequest extends IAuthRequest {
   avatar?: Express.Multer.File;

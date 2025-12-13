@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
-import { IAuthController } from "@/interface/shared/IAuthController";
+import { IAuthController } from "@/interface/shared/auth/IAuthController";
 import {
   ForgotPasswordSchema,
   GoogleLoginSchema,
@@ -11,7 +11,7 @@ import {
   SignupRequestSchema,
   VerifyForgotOtpSchema,
   VerifySignupOtpSchema,
-} from "@/schema/shared/auth.dto.schema";
+} from "@/schema/shared/auth/auth.dto.schema";
 
 export function authRoutes(controller: IAuthController) {
   const router = Router();

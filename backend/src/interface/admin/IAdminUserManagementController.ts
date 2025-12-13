@@ -1,4 +1,4 @@
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 import { NextFunction, Response } from "express";
 
 export interface IAdminUserManagementController {

@@ -19,20 +19,22 @@ export function ProgressBar({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {label && (
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-foreground">{label}</span>
-          {showPercentage && (
-            <span className="text-sm text-muted-foreground">{Math.round(percentage)}%</span>
-          )}
-        </div>
+  {label && (
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-foreground">{label}</span>
+      {showPercentage && (
+        <span className="text-sm text-muted-foreground">{Math.round(percentage)}%</span>
       )}
-      <div className="progress-bar h-2 rounded-full overflow-hidden">
-        <div
-          className="progress-fill h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
     </div>
+  )}
+
+  <div className="progress-bar h-2 rounded-full overflow-hidden bg-gray-200">
+    <div
+      className="progress-fill h-full rounded-full bg-amber-500 transition-all duration-500 ease-out"
+      style={{ width: `${percentage}%` }}
+    />
+  </div>
+</div>
+
   );
 }

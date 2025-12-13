@@ -2,10 +2,10 @@ import { injectable, inject } from "inversify";
 import { Response, NextFunction } from "express";
 import { ITokenService } from "@/utils";
 import { HttpStatus } from "@/constants/shared/httpStatus";
-import { IAuthenticateMiddleware } from "@/interface/shared/IAuthenticateMiddleware";
+import { IAuthenticateMiddleware } from "@/interface/shared/auth/IAuthenticateMiddleware";
 import { TYPES } from "../types/shared/inversify/types";
 import { Messages } from "@/constants/shared/messages";
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 
 @injectable()
 export class AuthenticateMiddleware implements IAuthenticateMiddleware {

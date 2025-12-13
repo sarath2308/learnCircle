@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
-import { UserResponseDto } from "@/schema/shared/auth.dto.schema";
-import { IAuthProviderService } from "@/interface/shared/IAuthProviderService";
+import { UserResponseDto } from "@/schema/shared/auth/auth.dto.schema";
+import { IAuthProviderService } from "@/interface/shared/auth/IAuthProviderService";
 import { TYPES } from "@/types/shared/inversify/types";
 import { ITokens, ITokenService, verifyGoogleToken } from "@/utils";
 import { IUserRepo } from "@/repos/shared/user.repo";

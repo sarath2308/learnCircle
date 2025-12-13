@@ -58,4 +58,8 @@ export const TYPES = {
   ICourseController: Symbol.for("ICourseController"),
   VideoCompressService: Symbol.for("VideoCompressService"),
   ImageCompressService: Symbol.for("ImageCompressService"),
+  IChapterModel: Symbol.for("IChapterModel"),
+  IChapterRepo: Symbol.for("IChapterRepo"),
+  IChapterService: Symbol.for("IChapterService"),
+  IChapterController: Symbol.for("IChapterController"),
 };

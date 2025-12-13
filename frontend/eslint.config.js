@@ -12,6 +12,11 @@ export default defineConfig([
   {
     files: ["**/*.{ts,tsx,js,jsx}"],
 
+      env: {
+      browser: true,
+      es2021: true
+    },
+
     languageOptions: {
       parser: tsParser,
       parserOptions: {

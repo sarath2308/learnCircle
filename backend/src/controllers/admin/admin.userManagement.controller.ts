@@ -1,4 +1,4 @@
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 import { Response } from "express";
 import { IAdminUserManagementController } from "@/interface/admin/IAdminUserManagementController";
 import { inject, injectable } from "inversify";

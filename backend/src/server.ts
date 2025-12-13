@@ -8,20 +8,7 @@ import logger from "./logs.config/logger";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
-
-// Inversify Dependency Injection
-import container from "@/di/di.container";
-import { TYPES } from "./types/shared/inversify/types";
-
-// Professional Controllers and Routes
-import { authorizeRoles } from "./middleware";
-import { ROLE } from "./constants/shared/Role";
-import { IAuthenticateMiddleware } from "./interface/shared/IAuthenticateMiddleware";
-import { adminEntryRoute } from "./routes/admin/admin.entry.route";
-import { learnerEntryRoute } from "./routes/learner/learner.entry.route";
-import { professionalEntryRoute } from "./routes/professional/professional.entry.route";
-import { authEntryRoute } from "./routes/shared/auth.entry.route";
-import { courseEntryRoute } from "./routes/shared/course.entry.routes";
+import { entryRoute } from "./routes/entry.route";
 
 dotenv.config();
 const app = express();
@@ -60,39 +47,9 @@ async function startServer() {
   await db.connect();
   console.log("MongoDB connected");
 
-  const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
-
   // Routes
 
-  app.use("/api/auth", authEntryRoute());
-
-  app.use(
-    "/api/learner",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.LEARNER),
-    learnerEntryRoute(),
-  );
-
-  app.use(
-    "/api/professional",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.PROFESSIONAL),
-    professionalEntryRoute(),
-  );
-
-  app.use(
-    "/api/admin",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.ADMIN),
-    adminEntryRoute(),
-  );
-
-  app.use(
-    "/api/course",
-    authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL),
-    courseEntryRoute(),
-  );
+  app.use("/api", entryRoute());
 
   app.use(
     expressWinston.errorLogger({

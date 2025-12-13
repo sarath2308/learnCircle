@@ -59,4 +59,10 @@ export const Messages = {
   //course
   COURSE_NOT_CREATED: "Failed to create course. Please try again later.",
   COURSE_NOT_FOUND: "Course Not found",
+  COURSE_DUPLICATE: "A Course with this title already exists.",
+  //chapter
+  CHAPTER_NOT_UPDATED: "Chapter Not Updated",
+  CHAPTER_NOT_FOUND: "Chapter not found",
+  CHAPTERS_NOT_FOUND: "there are no chapters for this course",
+  CHAPTER_DUPLICATE: "Chapter title must be unique within a course.",
 };

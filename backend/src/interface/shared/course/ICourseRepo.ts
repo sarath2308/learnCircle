@@ -8,4 +8,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   ) => Promise<void>;
 
   updateThumbnail: (id: string, key: string) => Promise<void>;
+  getCourseWithTitle: (title: string) => Promise<ICourse | null>;
 }

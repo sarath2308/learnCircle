@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify";
 import { Response } from "express";
 import { ILearnerProfileService } from "@/interface/learner/ILearnerProfileService";
 import { ILearnerProfileController } from "@/interface/learner/ILearnerProfileController";
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";

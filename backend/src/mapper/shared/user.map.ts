@@ -1,6 +1,6 @@
 // mappers/user.mapper.ts
 import { IUser } from "@/model/shared/user.model";
-import { UserResponseDto, UserResponseSchema } from "@/schema/shared/auth.dto.schema";
+import { UserResponseDto, UserResponseSchema } from "@/schema/shared/auth/auth.dto.schema";
 
 export interface IUserDtoMapper {
   toResponse: (user: IUser) => Promise<UserResponseDto>;

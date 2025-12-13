@@ -2,11 +2,11 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { setTokens } from "@/middleware";
-import { IAuthOrchestrator } from "@/interface/shared/IAuthOrchestrator";
+import { IAuthOrchestrator } from "@/interface/shared/auth/IAuthOrchestrator";
 import { Providers } from "@/constants/shared/providers";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IAuthController } from "@/interface/shared/IAuthController";
-import { IAuthRequest } from "@/interface/shared/IAuthRequest";
+import { IAuthController } from "@/interface/shared/auth/IAuthController";
+import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 

@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IEmailAuthService } from "@/interface/shared/IEmailAuthService";
+import { IEmailAuthService } from "@/interface/shared/auth/IEmailAuthService";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import {
   IEmailService,
@@ -17,7 +17,7 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { OtpRes } from "@/types";
 import { RedisKeys } from "@/constants/shared/redisKeys";
 import { AppError } from "@/errors/app.error";
-import { UserResponseDto } from "@/schema/shared/auth.dto.schema";
+import { UserResponseDto } from "@/schema/shared/auth/auth.dto.schema";
 
 @injectable()
 export class EmailAuthService implements IEmailAuthService {

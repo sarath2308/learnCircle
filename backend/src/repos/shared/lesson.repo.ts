@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { BaseRepo } from "./base";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
-import ILessonRepo from "@/interface/shared/ILessonRepo";
+import ILessonRepo from "@/interface/shared/lesson/ILessonRepo";
 import { ILesson } from "@/model/shared/lesson.model";
 
 @injectable()

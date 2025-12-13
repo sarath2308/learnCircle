@@ -1,4 +1,4 @@
-import { UserResponseDto } from "@/schema/shared/auth.dto.schema";
+import { UserResponseDto } from "@/schema/shared/auth/auth.dto.schema";
 import { ITokens } from "@/utils";
 
 export interface IAuthProviderService {
