@@ -3,7 +3,7 @@ import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
 import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
 import { IChapterService } from "@/interface/shared/chapter/chapter.service.interface";
-import ICourseRepo from "@/interface/shared/course/ICourseRepo";
+import ICourseRepo from "@/interface/shared/course/course.repo.interface";
 import { CreateChapterType } from "@/schema/shared/chapter/chapter.create.schema";
 import { EditChapterType } from "@/schema/shared/chapter/chapter.edit.schema";
 import {

@@ -1,4 +1,4 @@
-import { categoryApi } from "@/api/admin/category.api";
+import { adminCategoryApi } from "@/api/admin/admin.category.api";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 export const useCreateCategory = () => {
   return useMutation({
     mutationKey: ["create-category"],
-    mutationFn: categoryApi.createCategory,
+    mutationFn: adminCategoryApi.createCategory,
     onSuccess: (res) => {
       toast.success(res?.message || "category created");
     },

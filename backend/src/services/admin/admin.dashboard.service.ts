@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { IAdminDashboardService } from "@/interface/admin/IAdminDashboardService";
+import { IAdminDashboardService } from "@/interface/admin/admin.dashboard.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import { AppError } from "@/errors/app.error";

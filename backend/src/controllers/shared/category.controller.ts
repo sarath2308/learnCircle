@@ -1,7 +1,7 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { ICategoryController } from "@/interface/admin/category.controller.interface";
 import { ICategoryService } from "@/interface/admin/category.service.interface";
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Response } from "express";
 import { inject, injectable } from "inversify";
@@ -10,7 +10,7 @@ import { inject, injectable } from "inversify";
 export class CategoryController implements ICategoryController {
   constructor(@inject(TYPES.ICategoryService) private _categoryService: ICategoryService) {}
 
-  async listCategory(req: IAuthRequest, res: Response): Promise<void> {
+  async listCategoryForAdmin(req: IAuthRequest, res: Response): Promise<void> {
     const { page, limit, search, isBlocked, sortBy, sortOrder } = req.query;
 
     const filters = {
@@ -21,7 +21,7 @@ export class CategoryController implements ICategoryController {
       sortBy: sortBy ? String(sortBy) : undefined,
       sortOrder: sortOrder as "asc" | "desc" | undefined,
     };
-    let result = await this._categoryService.listCategories(filters);
+    let result = await this._categoryService.listCategoryForAdmin(filters);
     res
       .status(HttpStatus.OK)
       .json({ success: true, categoryData: result.category, total: result.total });
@@ -48,5 +48,10 @@ export class CategoryController implements ICategoryController {
     let { id } = req.params;
     await this._categoryService.blockCategory(id);
     res.status(HttpStatus.CREATED).json({ success: true });
+  }
+
+  async getCategoryForUser(req: IAuthRequest, res: Response): Promise<void> {
+    const data = await this._categoryService.getCategoryForUser();
+    res.status(HttpStatus.OK).json({ success: true, categoryData: data });
   }
 }

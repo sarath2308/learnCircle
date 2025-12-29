@@ -1,16 +1,16 @@
-import { IProfessionalProfileController } from "@/interface/professional/IProfessionalProfileController";
+import { IProfessionalProfileController } from "@/interface/professional/professional.profile.controller.interface";
 import { ProfessionalDashboardDtoMapper } from "@/schema/professional/dashboard.dtos.mapper";
-import { IProfessionalDashboardController } from "@/interface/professional/IProfessionalDashboardController";
-import { IProfessionalDashboardDtoMap } from "@/interface/professional/IProfessionalDasboardDtoMap";
-import { IProfessionalDashboardService } from "@/interface/professional/IProfessionalDashboard";
+import { IProfessionalDashboardController } from "@/interface/professional/professional.dashboard.controller.interface";
+import { IProfessionalDashboardDtoMap } from "@/interface/professional/professional.dto.mapper.interface";
+import { IProfessionalDashboardService } from "@/interface/professional/professional.dashboard.service.interface";
 import { ProfessionalDashboardService } from "@/services/professional/professional.dashboard.service";
-import { IProfessionalProfileService } from "@/interface/professional/IProfessionalProfileService";
+import { IProfessionalProfileService } from "@/interface/professional/professional.profile.service.interface";
 import { ProfessionalProfileService } from "@/services/professional/profesional.profile.service";
 import { ProfessionalProfileController } from "@/controllers/professional/profesional.profile.controller";
 import ProfessionalProfile, {
   IProfessionalProfile,
 } from "@/model/professional/profesional.profile";
-import { IProfessionalProfileRepo } from "@/interface/professional/IProfessionalProfileRepo";
+import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import { ProfessionalProfileRepo } from "@/repos/professional/professional.profile.repo";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";

@@ -60,9 +60,18 @@ export const Messages = {
   COURSE_NOT_CREATED: "Failed to create course. Please try again later.",
   COURSE_NOT_FOUND: "Course Not found",
   COURSE_DUPLICATE: "A Course with this title already exists.",
+  COURSE_NOT_UPDATED: "Course not Updated",
   //chapter
   CHAPTER_NOT_UPDATED: "Chapter Not Updated",
   CHAPTER_NOT_FOUND: "Chapter not found",
   CHAPTERS_NOT_FOUND: "there are no chapters for this course",
   CHAPTER_DUPLICATE: "Chapter title must be unique within a course.",
+
+  //lesson
+  LESSON_NOT_FOUND: "Lesson not found",
+  LESSON_NOT_UPDATED: "Lesson Not Updated",
+  LESSON_NOT_CREATED: "Lesson Not Created",
+  LESSON_DUPLICATE: "Lesson title must be unique within a chapter.",
+  RESOURCE_FILE_MISSING: "Resource file is missing for the lesson.",
+  THUMBNAIL_FILE_MISSING: "Thumbnail file is missing for the lesson.",
 };

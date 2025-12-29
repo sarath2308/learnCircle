@@ -8,7 +8,7 @@ import {
 import dotenv from "dotenv";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
-import { IS3Service } from "@/interface/shared/IS3Service";
+import { IS3Service } from "@/interface/shared/s3.service.interface";
 import { randomUUID } from "crypto";
 
 dotenv.config();
@@ -48,7 +48,7 @@ export class S3Service implements IS3Service {
   }
 
   /**
-   * Upload file from buffer and return signed URL
+   * Upload file from Stream and return signed URL
    */
   async uploadFileFromStream(
     filePath: string,
@@ -89,5 +89,29 @@ export class S3Service implements IS3Service {
     await s3.send(command);
 
     return { message: "File deleted successfully" };
+  }
+  /**
+   *
+   * @param userId
+   * @param originalName
+   * @param mimeType
+   * @returns
+   * Generating pre-signed url for frontend video upload
+   */
+  async generatePresignedPutUrl(
+    userId: string,
+    originalName: string,
+    mimeType: string,
+  ): Promise<{ uploadUrl: string; key: string }> {
+    const key = await this.generateS3Key(userId, originalName);
+
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      ContentType: mimeType,
+    });
+
+    const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+    return { uploadUrl: url, key };
   }
 }

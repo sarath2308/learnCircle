@@ -1,14 +1,14 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IProfessionalProfileRepo } from "@/interface/professional/IProfessionalProfileRepo";
+import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import { Types } from "mongoose";
 import { IUserRepo } from "@/repos/shared/user.repo";
-import { IProfessionalProfileService } from "@/interface/professional/IProfessionalProfileService";
+import { IProfessionalProfileService } from "@/interface/professional/professional.profile.service.interface";
 import { ProfessionalProfileDTOType } from "@/schema/professional/profile.request.schema";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
-import { IS3Service } from "@/interface/shared/IS3Service";
+import { IS3Service } from "@/interface/shared/s3.service.interface";
 
 export interface UploadFiles {
   avatar?: {

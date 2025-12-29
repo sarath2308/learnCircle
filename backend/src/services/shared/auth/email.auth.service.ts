@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IEmailAuthService } from "@/interface/shared/auth/IEmailAuthService";
+import { IEmailAuthService } from "@/interface/shared/auth/email.auth.interface";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import {
   IEmailService,

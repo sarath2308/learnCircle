@@ -26,7 +26,7 @@ export const busboyUpload = (req: Request, res: Response, next: NextFunction) =>
   req.files = {};
   req.body = {};
 
-  const busboy = new Busboy({ headers: req.headers });
+  const busboy = Busboy({ headers: req.headers });
 
   busboy.on("file", (fieldname, file, info) => {
     const { filename, mimeType } = info;
@@ -67,7 +67,7 @@ export const busboyUpload = (req: Request, res: Response, next: NextFunction) =>
   });
 
   busboy.on("error", (err) => {
-    res.status(400).json({ message: "Failed to parse multipart data", detail: err.message });
+    res.status(400).json({ message: "Failed to parse multipart data", detail: err?.message });
   });
 
   req.pipe(busboy);

@@ -1,20 +1,20 @@
 import { UserDtoMapper } from "@/mapper/shared/user.map";
 import { S3Service } from "@/utils/s3.service";
 import { AuthenticateMiddleware } from "@/middleware";
-import { EmailAuthService } from "@/services/shared/email.auth.service";
+import { EmailAuthService } from "@/services/shared/auth/email.auth.service";
 import redisClient from "@/config/redis/redis";
 import { RedisRepository } from "@/repos/shared/redisRepo";
-import { IS3Service } from "@/interface/shared/IS3Service";
-import { IAuthProviderService } from "@/interface/shared/auth/IAuthProviderService";
-import { GoogleAuthProvider } from "@/services/shared/google.auth.service";
-import { IAuthOrchestrator } from "@/interface/shared/auth/IAuthOrchestrator";
-import { AuthOrchestrator } from "@/services/shared/auth.orchestrator";
-import { IAuthController } from "@/interface/shared/auth/IAuthController";
+import { IS3Service } from "@/interface/shared/s3.service.interface";
+import { IAuthProviderService } from "@/interface/shared/auth/auth.provider.interface";
+import { GoogleAuthProvider } from "@/services/shared/auth/google.auth.service";
+import { IAuthOrchestrator } from "@/interface/shared/auth/auth.orchestrator.interface";
+import { AuthOrchestrator } from "@/services/shared/auth/auth.orchestrator";
+import { IAuthController } from "@/interface/shared/auth/auth.controller.interface";
 import { AuthController } from "@/controllers/shared/auth.controller";
-import { IPasswordResetService } from "@/interface/shared/IPasswordResetService";
-import { PasswordResetService } from "@/services/shared/password.reset.service";
-import { IAuthenticateMiddleware } from "@/interface/shared/auth/IAuthenticateMiddleware";
-import { RefreshTokenService } from "@/services/shared/refreshToken.service";
+import { IPasswordResetService } from "@/interface/shared/password.reset.interface";
+import { PasswordResetService } from "@/services/shared/auth/password.reset.service";
+import { IAuthenticateMiddleware } from "@/interface/shared/auth/authentication.middlware.interface";
+import { RefreshTokenService } from "@/services/shared/auth/refreshToken.service";
 import { RefreshController } from "@/controllers/shared/refreshController";
 import {
   CloudinaryService,
@@ -26,9 +26,9 @@ import {
 
 // Models & Repos (shared)
 import { Course, ICourse } from "@/model/shared/course.model";
-import ICourseRepo from "@/interface/shared/course/ICourseRepo";
+import ICourseRepo from "@/interface/shared/course/course.repo.interface";
 import { ILesson, Lesson } from "@/model/shared/lesson.model";
-import ILessonRepo from "@/interface/shared/lesson/ILessonRepo";
+import ILessonRepo from "@/interface/shared/lesson/lesson.repo.interface";
 import { IUser, User } from "@/model/shared/user.model";
 import { Model } from "mongoose";
 import { IUserRepo, UserRepo } from "@/repos/shared/user.repo";
@@ -36,8 +36,8 @@ import { LessonRepo } from "@/repos/shared/lesson.repo";
 import { CourseRepo } from "@/repos/shared/course.repo";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Container } from "inversify";
-import ICourseService from "@/interface/shared/course/ICourseService";
-import { CourceService } from "@/services/shared/course.service";
+import ICourseService from "@/interface/shared/course/course.service.interface";
+import { CourseService } from "@/services/shared/course/course.service";
 import { ICourseController } from "@/interface/shared/course/course.controller.interface";
 import { CourseController } from "@/controllers/shared/course.controller";
 import { ImageCompressor } from "@/utils/image.compress.service";
@@ -46,7 +46,14 @@ import { Chapter, IChapter } from "@/model/shared/chapter.model";
 import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
 import { ChapterRepo } from "@/repos/shared/chapter.repo";
 import { IChapterService } from "@/interface/shared/chapter/chapter.service.interface";
-import { ChapterService } from "@/services/shared/chapter.service";
+import { ChapterService } from "@/services/shared/course/chapter.service";
+import { IChapterController } from "@/interface/shared/chapter/chapter.controller.interface";
+import { ChapterController } from "@/controllers/shared/chapter.controller";
+import { ISafeDeleteService, SafeDeleteService } from "@/utils/safe.delete.service";
+import ILessonService from "@/interface/shared/lesson/lesson.service.interface";
+import { LessonService } from "@/services/shared/course/lesson.service";
+import { LessonController } from "@/controllers/shared/lesson.controller";
+import { ILessonController } from "@/interface/shared/lesson/lesson.controller.interface";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -71,7 +78,7 @@ export const registerShared = (container: Container): void => {
   container.bind(TYPES.ICloudinaryService).to(CloudinaryService).inSingletonScope();
   container.bind(TYPES.IEmailAuthService).to(EmailAuthService).inSingletonScope();
   container.bind<IPasswordResetService>(TYPES.IPasswordResetService).to(PasswordResetService);
-  container.bind<ICourseService>(TYPES.ICourseService).to(CourceService);
+  container.bind<ICourseService>(TYPES.ICourseService).to(CourseService);
   container.bind(TYPES.ImageCompressService).to(ImageCompressor);
   container.bind(TYPES.VideoCompressService).to(VideoCompressor);
   container.bind(TYPES.IUserDtoMapper).to(UserDtoMapper).inSingletonScope();
@@ -79,10 +86,14 @@ export const registerShared = (container: Container): void => {
   container.bind<IAuthProviderService>(TYPES.IProviderAuth).to(GoogleAuthProvider);
   container.bind<IAuthOrchestrator>(TYPES.IAuthOrchestrator).to(AuthOrchestrator);
   container.bind<IChapterService>(TYPES.IChapterService).to(ChapterService);
+  container.bind<ISafeDeleteService>(TYPES.ISafeDeleteService).to(SafeDeleteService);
+  container.bind<ILessonService>(TYPES.ILessonService).to(LessonService);
 
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
   container.bind<ICourseController>(TYPES.ICourseController).to(CourseController);
+  container.bind<IChapterController>(TYPES.IChapterController).to(ChapterController);
+  container.bind<ILessonController>(TYPES.ILessonController).to(LessonController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);

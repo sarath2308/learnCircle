@@ -12,7 +12,9 @@ export interface ICategoryService {
 
   unblockCategory(id: string): Promise<void>;
 
-  listCategories(
+  listCategoryForAdmin(
     filters?: ListCategoryFilterType,
   ): Promise<{ category: CategoryDto[]; total: number }>;
+
+  getCategoryForUser: () => Promise<CategoryDto[]>;
 }

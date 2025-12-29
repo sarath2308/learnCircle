@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
-import { IAdminUserManagementService } from "@/interface/admin/IAdminUserManagementService";
+import { IAdminUserManagementService } from "@/interface/admin/admin.userManagement.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";
-import { ILearnerProfileRepo } from "@/interface/learner/ILearnerProfileRepo";
-import { IProfessionalProfileRepo } from "@/interface/professional/IProfessionalProfileRepo";
+import { ILearnerProfileRepo } from "@/interface/learner/learner.profile.repo.interface";
+import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import {
   AdminLearnerArraySchema,
   AdminLearnerArrayDTO,
@@ -12,7 +12,7 @@ import {
   AdminProfessionalArrayDTO,
 } from "../../schema/admin/user/admin.professional.schema";
 import { IRedisRepository } from "@/repos/shared/redisRepo";
-import { IS3Service } from "@/interface/shared/IS3Service";
+import { IS3Service } from "@/interface/shared/s3.service.interface";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import { IEmailService } from "@/utils";
 import { AppError } from "@/errors/app.error";

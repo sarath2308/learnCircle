@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { IProfessionalProfileRepo } from "@/interface/professional/IProfessionalProfileRepo";
+import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { IProfessionalProfile } from "@/model/professional/profesional.profile";
 import { Model } from "mongoose";

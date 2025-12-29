@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { categoryApi } from "@/api/admin/category.api";
+import { adminCategoryApi } from "@/api/admin/admin.category.api";
 
 interface ListCategoryParams {
   page?: number;
@@ -20,7 +20,7 @@ interface PaginatedResponse<T> {
 
 export const useListCategory = ({ page = 1, limit = 10, search = "" }: ListCategoryParams) => {
   return useQuery<PaginatedResponse<Category>, Error>({
-    queryKey: ["category", page, limit, search],
-    queryFn: () => categoryApi.listCategory(page, limit, search),
+    queryKey: ["list-category", page, limit, search],
+    queryFn: () => adminCategoryApi.listCategory(page, limit, search),
   });
 };

@@ -76,7 +76,7 @@ export class CategoryService implements ICategoryService {
    * @returns
    */
 
-  async listCategories(
+  async listCategoryForAdmin(
     filters?: ListCategoryFilterType,
   ): Promise<{ category: CategoryDto[]; total: number }> {
     const {
@@ -113,5 +113,18 @@ export class CategoryService implements ICategoryService {
     const formatted = categories.map((c) => CategorySchema.parse({ id: String(c._id), ...c }));
 
     return { category: formatted, total };
+  }
+
+  async getCategoryForUser(): Promise<CategoryDto[]> {
+    const categoryData = await this._categoryRepo.getAll();
+    if (!categoryData) {
+      throw new AppError(Messages.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    let parsedData = categoryData.map((category) => {
+      const obj = category.toObject();
+      return CategorySchema.parse({ ...obj, id: String(obj._id) });
+    });
+
+    return parsedData;
   }
 }

@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
-import { IAdminDashboardController } from "@/interface/admin/IAdminDashboardController";
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import { IAdminDashboardController } from "@/interface/admin/admin.dashboard.controller.interface";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { Response } from "express";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IAdminDashboardService } from "@/interface/admin/IAdminDashboardService";
+import { IAdminDashboardService } from "@/interface/admin/admin.dashboard.service.interface";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";

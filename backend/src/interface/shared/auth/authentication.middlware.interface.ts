@@ -1,4 +1,4 @@
-import { IAuthRequest } from "@/middleware";
+import { IAuthRequest } from "./auth.request.interface";
 import { Response, NextFunction } from "express";
 
 export interface IAuthenticateMiddleware {

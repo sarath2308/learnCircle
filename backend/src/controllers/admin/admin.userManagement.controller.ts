@@ -1,9 +1,9 @@
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { Response } from "express";
-import { IAdminUserManagementController } from "@/interface/admin/IAdminUserManagementController";
+import { IAdminUserManagementController } from "@/interface/admin/admin.userManagement.controller.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IAdminUserManagementService } from "@/interface/admin/IAdminUserManagementService";
+import { IAdminUserManagementService } from "@/interface/admin/admin.userManagement.service.interface";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";

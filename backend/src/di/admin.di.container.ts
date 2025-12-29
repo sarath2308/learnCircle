@@ -1,8 +1,8 @@
-import { IAdminDashboardService } from "@/interface/admin/IAdminDashboardService";
-import { IAdminDashboardController } from "@/interface/admin/IAdminDashboardController";
+import { IAdminDashboardService } from "@/interface/admin/admin.dashboard.service.interface";
+import { IAdminDashboardController } from "@/interface/admin/admin.dashboard.controller.interface";
 import { AdminUserManagementService } from "@/services/admin/admin.userManagement.service";
-import { IAdminUserManagementController } from "@/interface/admin/IAdminUserManagementController";
-import { IAdminUserManagementService } from "@/interface/admin/IAdminUserManagementService";
+import { IAdminUserManagementController } from "@/interface/admin/admin.userManagement.controller.interface";
+import { IAdminUserManagementService } from "@/interface/admin/admin.userManagement.service.interface";
 import { AdminUserManagementController } from "@/controllers/admin/admin.userManagement.controller";
 import { AdminDashboardService } from "@/services/admin/admin.dashboard.service";
 import { AdminDashboardController } from "@/controllers/admin/admin.dashboard.controller";
@@ -15,9 +15,9 @@ import { ISubcategory, Subcategory } from "@/model/admin/SubCategory";
 import { ICategoryRepo } from "@/interface/admin/category.repo.interface";
 import { CategoryRepo } from "@/repos/admin/category.repo";
 import { ICategoryService } from "@/interface/admin/category.service.interface";
-import { CategoryService } from "@/services/admin/admin.category.service";
+import { CategoryService } from "@/services/shared/category.service";
 import { ICategoryController } from "@/interface/admin/category.controller.interface";
-import { CategoryController } from "@/controllers/admin/admin.category.controller";
+import { CategoryController } from "@/controllers/shared/category.controller";
 
 export const registerAdmin = (container: Container): void => {
   /*--------------Models-----------------------*/

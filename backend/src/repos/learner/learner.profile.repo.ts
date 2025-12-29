@@ -1,5 +1,5 @@
 import { BaseRepo } from "../shared/base";
-import { ILearnerProfileRepo } from "@/interface/learner/ILearnerProfileRepo";
+import { ILearnerProfileRepo } from "@/interface/learner/learner.profile.repo.interface";
 import { ILearnerProfile } from "@/model/learner/learner.profile.model";
 import { inject, injectable } from "inversify";
 import { Model } from "mongoose";

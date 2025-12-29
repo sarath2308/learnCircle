@@ -19,8 +19,17 @@ app.use(
   }),
 );
 
-// Middleware
-app.use(json());
+// Middleware - Json
+app.use((req, res, next) => {
+  const contentType = req.headers["content-type"];
+
+  if (contentType?.startsWith("multipart/form-data")) {
+    return next();
+  }
+
+  json()(req, res, next);
+});
+
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 

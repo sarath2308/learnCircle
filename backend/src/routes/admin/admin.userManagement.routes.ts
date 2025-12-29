@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IAdminUserManagementController } from "@/interface/admin/IAdminUserManagementController";
+import { IAdminUserManagementController } from "@/interface/admin/admin.userManagement.controller.interface";
 
 export function userManagementRoutes(controller: IAdminUserManagementController) {
   const router = Router();

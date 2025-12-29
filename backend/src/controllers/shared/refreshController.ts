@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { IRefreshTokenService } from "@/services/shared/refreshToken.service";
+import { IRefreshTokenService } from "@/services/shared/auth/refreshToken.service";
 import { setTokens } from "@/middleware";
 import { AppError } from "@/errors/app.error";
 import { HttpStatus } from "@/constants/shared/httpStatus";

@@ -14,6 +14,8 @@ import {
 import { Button } from "../ui/button";
 import type  { Step1Errors } from "@/types/shared/course.step1.error.type";
 import { Step1Schema } from "@/schema/shared/create.course.step1.schema";
+import { useGetCategory } from "@/hooks/shared/category.get";
+import { useCreateCourse } from "@/hooks/shared/create.course.step1";
 interface CourseDetailsProps
 {
   handleNext:()=> void;
@@ -22,6 +24,9 @@ interface CourseDetailsProps
 const CourseDetails = ({handleNext}: CourseDetailsProps) => {
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+ const { data: categoryData, isLoading, isError } = useGetCategory();
+ const completeStep1 = useCreateCourse()
+const form = new FormData();
 
   const [courseDetails, setCourseDetails] = useState({
       title:'',
@@ -82,13 +87,28 @@ const validation = ()=>
   return true; 
   }
 
-  const handleNextvalidation=()=>
-    {
-       if(validation())
-       {
-        handleNext()
-       }
-    }
+const handleNextvalidation = async () => {
+  if (!validation()) return;
+
+  if (!thumbnailFile) {
+    setErrors((prev) => ({ ...prev, thumbnail: "Thumbnail required" }));
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append("title", courseDetails.title);
+  formData.append("description", courseDetails.description);
+  formData.append("category", courseDetails.category);
+  formData.append("skillLevel", courseDetails.skillLevel);
+  formData.append("thumbnail", thumbnailFile);
+try{
+let courseId = await completeStep1.mutateAsync(formData);
+handleNext()
+}catch(err){
+console.error(err)
+}
+};
 
     useEffect(()=>
     {
@@ -146,18 +166,13 @@ const validation = ()=>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[
-                    "Web Development",
-                    "Data Science",
-                    "Machine Learning",
-                    "Cloud Computing",
-                    "UI/UX Design",
-                  ].map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+  {categoryData?.map((cat) => (
+    <SelectItem className="bg-blue-500" key={cat.id} value={cat.id}>
+      {cat.name}
+    </SelectItem>
+  ))}
+</SelectContent>
+
               </Select>
               {errors.category && (
                 <p className="text-red-500 text-sm mt-1 flex items-center gap-1">

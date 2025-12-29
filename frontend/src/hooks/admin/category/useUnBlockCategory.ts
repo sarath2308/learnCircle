@@ -1,4 +1,4 @@
-import { categoryApi } from "@/api/admin/category.api";
+import { adminCategoryApi } from "@/api/admin/admin.category.api";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 export const useUnBlockCategory = () => {
   return useMutation({
     mutationKey: ["unblock-category"],
-    mutationFn: categoryApi.unblockCategory,
+    mutationFn: adminCategoryApi.unblockCategory,
     onSuccess: (res) => {
       toast.success(res?.message || "category unblocked");
     },

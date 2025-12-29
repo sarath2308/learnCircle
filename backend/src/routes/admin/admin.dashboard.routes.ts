@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IAdminDashboardController } from "@/interface/admin/IAdminDashboardController";
+import { IAdminDashboardController } from "@/interface/admin/admin.dashboard.controller.interface";
 
 export function adminDashboardRoutes(controller: IAdminDashboardController) {
   const router = Router();

@@ -2,8 +2,8 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
 import { ICourseController } from "@/interface/shared/course/course.controller.interface";
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
-import ICourseService from "@/interface/shared/course/ICourseService";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
+import ICourseService from "@/interface/shared/course/course.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Response } from "express";
 import { inject, injectable } from "inversify";
@@ -17,10 +17,13 @@ export class CourseController implements ICourseController {
   service --> compress --> store
   */
   async createCourse(req: IAuthRequest, res: Response): Promise<void> {
-    if (!req.files || !req.files.thumbnail) {
+    console.log("FILES:", req.files);
+
+    if (!req.files || !req.files["thumbnail"]) {
       throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
     }
-    const thumbnail = req.files.thumbnail;
+    req.body.createdBy = req.user?.userId;
+    const thumbnail = req.files["thumbnail"];
     let result = await this._courseService.createCourse(req.body, thumbnail);
     res.status(HttpStatus.CREATED).json({ success: true, courseId: result.courseId });
   }

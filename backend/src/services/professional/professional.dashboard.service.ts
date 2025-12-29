@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IProfessionalProfileRepo } from "@/interface/professional/IProfessionalProfileRepo";
+import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import { ProfessionalDashboardResponseDTO } from "@/schema/professional/dahsboard.dtos.schema";
-import { IProfessionalDashboardDtoMap } from "@/interface/professional/IProfessionalDasboardDtoMap";
-import { IProfessionalDashboardService } from "@/interface/professional/IProfessionalDashboard";
+import { IProfessionalDashboardDtoMap } from "@/interface/professional/professional.dto.mapper.interface";
+import { IProfessionalDashboardService } from "@/interface/professional/professional.dashboard.service.interface";
 import { Types } from "mongoose";
-import { IS3Service } from "@/interface/shared/IS3Service";
+import { IS3Service } from "@/interface/shared/s3.service.interface";
 
 @injectable()
 export class ProfessionalDashboardService implements IProfessionalDashboardService {

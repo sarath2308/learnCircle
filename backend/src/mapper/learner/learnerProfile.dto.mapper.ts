@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { ILearnerProfile } from "../../model/learner/learner.profile.model";
-import { ILearnerProfileMapperService } from "@/interface/learner/ILearnerProfileMapper";
+import { ILearnerProfileMapperService } from "@/interface/learner/learner.profile.mapper.interface";
 import { IUser } from "@/model/shared/user.model";
 import { LearnerProfileDTO, LearnerProfileDTOType } from "@/schema/learner/profile.response.dto";
 

@@ -33,4 +33,10 @@ export interface IS3Service {
    * @param key - S3 key/path
    */
   deleteFile(key: string): Promise<{ message: string }>;
+
+  generatePresignedPutUrl(
+    userId: string,
+    originalName: string,
+    mimeType: string,
+  ): Promise<{ uploadUrl: string; key: string }>;
 }

@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import ICourseRepo from "@/interface/shared/course/ICourseRepo";
+import ICourseRepo from "@/interface/shared/course/course.repo.interface";
 import { ICourse } from "@/model/shared/course.model";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";

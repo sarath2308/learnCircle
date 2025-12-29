@@ -1,6 +1,6 @@
 import api from "../api";
 
-export const categoryApi = {
+export const adminCategoryApi = {
   listCategory: (page: number, limit: number, search: string) =>
     api.get(`/admin/category?page=${page}&limit=${limit}&search=${search}`).then((res) => res.data),
   createCategory: (payload: { name: string }) =>

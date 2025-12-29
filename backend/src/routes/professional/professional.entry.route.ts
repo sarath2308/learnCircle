@@ -3,8 +3,8 @@ import container from "@/di/di.container";
 import { TYPES } from "@/types/shared/inversify/types";
 import { professionalDashboardRoutes } from "./professional.dashboard";
 import { professionalProfileRoutes } from "./professional.profile.routes";
-import { IProfessionalDashboardController } from "@/interface/professional/IProfessionalDashboardController";
-import { IProfessionalProfileController } from "@/interface/professional/IProfessionalProfileController";
+import { IProfessionalDashboardController } from "@/interface/professional/professional.dashboard.controller.interface";
+import { IProfessionalProfileController } from "@/interface/professional/professional.profile.controller.interface";
 import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 
 export function professionalEntryRoute() {

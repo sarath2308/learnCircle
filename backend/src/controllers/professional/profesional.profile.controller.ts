@@ -1,8 +1,8 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Response } from "express";
-import { IProfessionalProfileService } from "@/interface/professional/IProfessionalProfileService";
-import { IProfessionalProfileController } from "@/interface/professional/IProfessionalProfileController";
+import { IProfessionalProfileService } from "@/interface/professional/professional.profile.service.interface";
+import { IProfessionalProfileController } from "@/interface/professional/professional.profile.controller.interface";
 import { AppError } from "@/errors/app.error";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";

@@ -12,4 +12,5 @@ export interface CategoryListArgs {
 export interface ICategoryRepo extends IBaseRepo<ICategory> {
   list: ({ query, limit, skip, sort }: CategoryListArgs) => Promise<Array<FlattenMaps<ICategory>>>;
   count: (query: any) => Promise<number>;
+  getAll: () => Promise<ICategory[]>;
 }

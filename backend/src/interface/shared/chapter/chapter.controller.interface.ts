@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { IAuthRequest } from "../auth/IAuthRequest";
+import { IAuthRequest } from "../auth/auth.request.interface";
 
 export interface IChapterController {
   createChapter: (req: IAuthRequest, res: Response) => Promise<void>;

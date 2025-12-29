@@ -1,4 +1,4 @@
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { NextFunction } from "express";
 import { Response } from "express";
 import { IProfileUploadRequest } from "../shared/profile.upload.request.interface";

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
-import { IAuthController } from "@/interface/shared/auth/IAuthController";
+import { IAuthController } from "@/interface/shared/auth/auth.controller.interface";
 import {
   ForgotPasswordSchema,
   GoogleLoginSchema,

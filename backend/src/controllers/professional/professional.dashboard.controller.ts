@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
-import { IProfessionalDashboardController } from "@/interface/professional/IProfessionalDashboardController";
+import { IProfessionalDashboardController } from "@/interface/professional/professional.dashboard.controller.interface";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IProfessionalDashboardService } from "@/interface/professional/IProfessionalDashboard";
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import { IProfessionalDashboardService } from "@/interface/professional/professional.dashboard.service.interface";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { Response } from "express";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";

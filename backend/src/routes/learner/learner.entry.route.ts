@@ -1,6 +1,6 @@
 import container from "@/di/di.container";
 import { Router } from "express";
-import { ILearnerHomeController } from "@/interface/learner/ILearnerHomeController";
+import { ILearnerHomeController } from "@/interface/learner/learner.home.controller.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { ILearnerProfileController } from "@/interface/learner/ILearnerProfileController";
 import { learnerHomeRoute } from "./learner.home.route.";

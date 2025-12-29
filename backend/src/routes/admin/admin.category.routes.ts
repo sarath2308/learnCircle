@@ -6,9 +6,9 @@ import { CategoryUnBlockSchema } from "@/schema/admin/category/category.unblock.
 import { CategoryUpdateSchema } from "@/schema/admin/category/category.update.schema";
 import { Router } from "express";
 
-export function categoryRoutes(controller: ICategoryController) {
+export function AdminCategoryRoutes(controller: ICategoryController) {
   const router = Router();
-  router.get("/", controller.listCategory.bind(controller));
+  router.get("/", controller.listCategoryForAdmin.bind(controller));
   router.post(
     "/",
     validateRequest(CategoryCreateSchema),

@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
-import { IEmailService, IOtpService, IpasswordService, ITokenService } from "../../utils";
+import { IEmailService, IOtpService, IpasswordService, ITokenService } from "../../../utils";
 import { IRedisRepository } from "@/repos/shared/redisRepo";
 import { OtpRes } from "@/types";
-import { IPasswordResetService } from "@/interface/shared/IPasswordResetService";
+import { IPasswordResetService } from "@/interface/shared/password.reset.interface";
 import { AppError } from "@/errors/app.error";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import { Messages } from "@/constants/shared/messages";

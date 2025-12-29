@@ -21,4 +21,8 @@ export class CategoryRepo extends BaseRepo<ICategory> implements ICategoryRepo {
   async count(query: any): Promise<number> {
     return await this._model.find(query).countDocuments();
   }
+
+  async getAll(): Promise<(ICategory & Document)[]> {
+    return await this._model.find({ isBlocked: false });
+  }
 }

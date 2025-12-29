@@ -1,5 +1,5 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
-import { IAuthRequest } from "@/interface/shared/auth/IAuthRequest";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { IChapterController } from "@/interface/shared/chapter/chapter.controller.interface";
 import { IChapterService } from "@/interface/shared/chapter/chapter.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";

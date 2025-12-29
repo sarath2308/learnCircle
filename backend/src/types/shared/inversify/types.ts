@@ -62,4 +62,7 @@ export const TYPES = {
   IChapterRepo: Symbol.for("IChapterRepo"),
   IChapterService: Symbol.for("IChapterService"),
   IChapterController: Symbol.for("IChapterController"),
+  ISafeDeleteService: Symbol.for("ISafeDeleteService"),
+  ILessonService: Symbol.for("ILessonService"),
+  ILessonController: Symbol.for("ILessonController"),
 };
