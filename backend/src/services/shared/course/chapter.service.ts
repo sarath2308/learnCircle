@@ -29,6 +29,7 @@ export class ChapterService implements IChapterService {
    */
 
   async createChapter(courseId: string, data: CreateChapterType): Promise<ChapterResponseType> {
+    console.log("Creating chapter for courseId:", courseId, "with data:", data);
     const courseObjectId = new mongoose.Types.ObjectId(courseId);
     const courseData = await this._courseRepo.findById(courseId);
 
@@ -44,10 +45,15 @@ export class ChapterService implements IChapterService {
 
     const chapter = await this._chapterRepo.create({ ...data, courseId: courseObjectId });
 
-    const responseObj = {
-      ...chapter,
-      id: chapter._id,
-    };
+     const responseObj = {
+    id: chapter._id.toString(),           
+    title: chapter.title,
+    description: chapter.description,
+    order: chapter.order,
+    courseId: chapter.courseId.toString(),
+    isPublished: chapter.isPublished ?? false,
+  };
+
 
     return chapterResponseSchema.parse(responseObj);
   }

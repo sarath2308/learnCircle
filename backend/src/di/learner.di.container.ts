@@ -1,5 +1,5 @@
-import { ILearnerProfileController } from "@/interface/learner/ILearnerProfileController";
-import { ILearnerHomeService } from "@/interface/learner/ILearnerHomeService";
+import { ILearnerProfileController } from "@/interface/learner/learner.profile.controller.interface";
+import { ILearnerHomeService } from "@/interface/learner/learner.home.service.interface";
 import { ILearnerHomeController } from "@/interface/learner/learner.home.controller.interface";
 import { LearnerProfileMapperService } from "@/mapper/learner/learnerProfile.dto.mapper";
 import { ILearnerProfile, LearnerProfile } from "@/model/learner/learner.profile.model";

@@ -5,4 +5,3 @@ export type Step1Errors = {
   skillLevel: string;
   thumbnail: string;
 };
-

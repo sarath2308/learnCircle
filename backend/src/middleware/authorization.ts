@@ -15,7 +15,7 @@ export class AuthenticateMiddleware implements IAuthenticateMiddleware {
     const token = req.cookies["accessToken"];
 
     if (!token) {
-      res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}:111111111` });
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}` });
       return;
     }
 
@@ -34,11 +34,9 @@ export class AuthenticateMiddleware implements IAuthenticateMiddleware {
 
       if (error.name === "TokenExpiredError") {
         // Token expired → frontend can call refresh
-        res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: `${Messages.UNAUTHORIZED}:2222222222` });
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}` });
       } else {
-        res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}:33333333` });
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}` });
       }
     }
   }

@@ -12,6 +12,7 @@ export class ChapterController implements IChapterController {
 
   async createChapter(req: IAuthRequest, res: Response): Promise<void> {
     const { courseId } = req.params;
+    console.log("Received request to create chapter for courseId:", courseId, "with body:", req.body);
     let result = await this._chapterService.createChapter(courseId, req.body);
     res.status(HttpStatus.OK).json({ success: true, chapterData: result });
   }

@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave:() => void;
+  onSave: () => void;
   children: React.ReactNode;
 }
 
@@ -30,10 +30,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, children }) => {
         onClick={(e) => e.stopPropagation()} // prevent close when clicking inside
       >
         {children}
-                    <Button className="bg-green-600 m-2" onClick={onSave}>Save</Button>
-            <Button className="bg-yellow-600 m-2" onClick={onClose}>close</Button>
+        <Button className="bg-green-600 m-2" onClick={onSave}>
+          Save
+        </Button>
+        <Button className="bg-yellow-600 m-2" onClick={onClose}>
+          close
+        </Button>
       </div>
-
     </div>
   );
 };
