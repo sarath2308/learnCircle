@@ -13,7 +13,6 @@ const signupPersistConfig = {
 
 const persistedSignupReducer = persistReducer(signupPersistConfig, signupReducer);
 
-
 const currentUserPersistConfig = {
   key: "currentUser",
   storage: storageSession,

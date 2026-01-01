@@ -98,7 +98,7 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
     formData.append("skillLevel", courseDetails.skillLevel);
     formData.append("thumbnail", thumbnailFile);
     try {
-      let {courseId} = await completeStep1.mutateAsync(formData);
+      let { courseId } = await completeStep1.mutateAsync(formData);
       dispatch(setCourseDetails({ id: courseId }));
       handleNext();
     } catch (err) {

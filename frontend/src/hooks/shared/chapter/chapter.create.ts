@@ -5,14 +5,14 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
-interface ChapterCreateResponse{
-    success: boolean;
-    chapterData: {
-        id: string;
-        title: string;
-        description: string;
-         order: number;
-    };
+interface ChapterCreateResponse {
+  success: boolean;
+  chapterData: {
+    id: string;
+    title: string;
+    description: string;
+    order: number;
+  };
 }
 
 export const useChapterCreate = () => {
@@ -20,7 +20,12 @@ export const useChapterCreate = () => {
 
   return useMutation({
     mutationKey: ["create-chapter"],
-    mutationFn: ({ courseId, title, description, order }: {
+    mutationFn: ({
+      courseId,
+      title,
+      description,
+      order,
+    }: {
       courseId: string;
       title: string;
       description: string;

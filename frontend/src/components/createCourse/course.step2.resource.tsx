@@ -66,7 +66,12 @@ const Step2Resources = ({ handleNext, handlePrev }: IStep2Props) => {
 
     try {
       toast.success(courseId);
-      await createChapter.mutateAsync({ courseId, title: chapterCreate.title, description: chapterCreate.description, order: chapterData.length + 1 });
+      await createChapter.mutateAsync({
+        courseId,
+        title: chapterCreate.title,
+        description: chapterCreate.description,
+        order: chapterData.length + 1,
+      });
       setCreateChapterModal(false);
     } catch (err) {
       console.error(err);
@@ -121,13 +126,13 @@ const Step2Resources = ({ handleNext, handlePrev }: IStep2Props) => {
         </div>
         <div>
           <Accordion type="single" collapsible>
-          {chapterData.length === 0 ? (
-            <p className="text-center text-gray-500">No chapters added yet.</p>
-          ) : (
-            chapterData.map((chapter, index) => (
-              <ChapterItem key={chapter.id} chapter={chapter}></ChapterItem>
-            ))
-          )}
+            {chapterData.length === 0 ? (
+              <p className="text-center text-gray-500">No chapters added yet.</p>
+            ) : (
+              chapterData.map((chapter, index) => (
+                <ChapterItem key={chapter.id} chapter={chapter}></ChapterItem>
+              ))
+            )}
           </Accordion>
         </div>
         <div className="mt-8 flex justify-between">
