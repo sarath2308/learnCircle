@@ -20,10 +20,11 @@ import type { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setCourseDetails } from "@/redux/slice/courseDetails";
-import toast from "react-hot-toast";
 interface CourseDetailsProps {
   handleNext: () => void;
 }
+
+type SkillLevel = "beginner" | "intermediate" | "advanced";
 
 const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
   const [thumbnailPreview, setThumbnailPreview] = useState("");
@@ -151,9 +152,9 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
                 <SelectTrigger className={errors.category ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-gray-300 p-2 rounded-1xl">
                   {categoryData?.map((cat) => (
-                    <SelectItem className="bg-blue-500" key={cat.id} value={cat.id}>
+                    <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>
                   ))}
@@ -168,11 +169,13 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
 
             <div>
               <Label>Skill Level</Label>
-              <Select onValueChange={(v) => dispatch(setCourseDetails({ skillLevel: v }))}>
+              <Select
+                onValueChange={(v) => dispatch(setCourseDetails({ skillLevel: v as SkillLevel }))}
+              >
                 <SelectTrigger className={errors.skillLevel?.[0] ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select level" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-gray-300 p-2 rounded-1xl">
                   {["Beginner", "Intermediate", "Advanced"].map((level) => (
                     <SelectItem key={level} value={level}>
                       {level}

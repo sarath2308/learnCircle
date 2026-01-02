@@ -100,6 +100,10 @@ export class CourseService implements ICourseService {
         type: data.type,
       });
     }
+    if (data.status === "published") {
+      courseData.status = "published";
+      await courseData.save();
+    }
   }
 
   async getCourseDataForCourseCreation(courseId: string): Promise<courseResponseType> {

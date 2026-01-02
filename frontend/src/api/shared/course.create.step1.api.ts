@@ -5,4 +5,8 @@ export const courseStep1Api = {
   getCourseDetails: (courseId: string) => api.get(`/course/${courseId}`).then((res) => res.data),
   editCourseDetails: (courseId: string, payload: FormData) =>
     api.patch(`/course/${courseId}`, payload).then((res) => res.data),
+  updatePriceDetails: (
+    courseId: string,
+    payload: { type: string; price: number; discount: number; status: string },
+  ) => api.patch(`/course/${courseId}/pricing`, payload).then((res) => res.data),
 };

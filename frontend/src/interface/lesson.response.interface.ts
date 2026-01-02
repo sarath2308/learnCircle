@@ -1,5 +1,6 @@
 export interface ILessons {
   id: string;
+  chapterId: string;
   title: string;
   description: string;
   type: "Video" | "PDF" | "Article" | "YouTube" | "Blog";

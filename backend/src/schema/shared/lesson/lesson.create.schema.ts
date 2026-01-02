@@ -5,7 +5,7 @@ const bodySchema = z.object({
   description: z.string().optional(),
   type: z.enum(["Video", "PDF", "Article", "YouTube", "Blog"]),
   link: z.string().optional(),
-  order: z.number(),
+  order: z.coerce.number(),
 });
 
 const paramsSchema = z.object({

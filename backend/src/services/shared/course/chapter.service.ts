@@ -45,15 +45,14 @@ export class ChapterService implements IChapterService {
 
     const chapter = await this._chapterRepo.create({ ...data, courseId: courseObjectId });
 
-     const responseObj = {
-    id: chapter._id.toString(),           
-    title: chapter.title,
-    description: chapter.description,
-    order: chapter.order,
-    courseId: chapter.courseId.toString(),
-    isPublished: chapter.isPublished ?? false,
-  };
-
+    const responseObj = {
+      id: chapter._id.toString(),
+      title: chapter.title,
+      description: chapter.description,
+      order: chapter.order,
+      courseId: chapter.courseId.toString(),
+      isPublished: chapter.isPublished ?? false,
+    };
 
     return chapterResponseSchema.parse(responseObj);
   }

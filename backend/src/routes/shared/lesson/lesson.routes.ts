@@ -1,4 +1,5 @@
 import { ILessonController } from "@/interface/shared/lesson/lesson.controller.interface";
+import { busboyUpload } from "@/middleware";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { createLessonSchema } from "@/schema/shared/lesson/lesson.create.schema";
 import { createLessonWithVideoSchema } from "@/schema/shared/lesson/lesson.create.video.schema";
@@ -10,32 +11,38 @@ import { Router } from "express";
 export function lessonRoutes(lessonController: ILessonController) {
   const router = Router();
   router.post(
-    ":chapterId/lesson",
+    "/:chapterId/lesson",
+    busboyUpload,
     validateRequest(createLessonSchema),
     lessonController.createLesson.bind(lessonController),
   );
   router.post(
-    ":chapterId/lesson/video",
+    "/:chapterId/lesson/video",
+    busboyUpload,
     validateRequest(createLessonWithVideoSchema),
     lessonController.createLessonWithVideo.bind(lessonController),
   );
   router.get(
-    "lesson/:lessonId",
+    "/lesson/:lessonId",
     validateRequest(GetLessonSchema),
     lessonController.getLessonById.bind(lessonController),
   );
   router.patch(
-    "lesson/:lessonId",
+    "/lesson/:lessonId",
     validateRequest(UpdateLessonSchema),
     lessonController.updateLesson.bind(lessonController),
   );
   router.delete(
-    "lesson/:lessonId",
+    "/lesson/:lessonId",
     validateRequest(deleteLessonSchema),
     lessonController.deleteLesson.bind(lessonController),
   );
   router.patch(
-    "lesson/:lessonId/change-order",
+    "/lesson/:lessonId/finalize",
+    lessonController.finalizeLessonVideo.bind(lessonController),
+  );
+  router.patch(
+    "/lesson/:lessonId/change-order",
     lessonController.changeLessonOrder.bind(lessonController),
   );
 

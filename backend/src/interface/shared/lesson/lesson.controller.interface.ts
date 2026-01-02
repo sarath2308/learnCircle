@@ -8,4 +8,5 @@ export interface ILessonController {
   deleteLesson(req: IAuthRequest, res: Response): Promise<void>;
   changeLessonOrder(req: IAuthRequest, res: Response): Promise<void>;
   createLessonWithVideo(req: IAuthRequest, res: Response): Promise<void>;
+  finalizeLessonVideo(req: IAuthRequest, res: Response): Promise<void>;
 }

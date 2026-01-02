@@ -24,8 +24,11 @@ const courseSlice = createSlice({
   reducers: {
     // -------------------- CHAPTER ACTIONS --------------------
 
-    addChapter: (state, action: PayloadAction<Chapter>) => {
-      state.chapters.push(action.payload);
+    addChapter: (state, action: PayloadAction<Omit<Chapter, "lessons">>) => {
+      state.chapters.push({
+        ...action.payload,
+        lessons: [], // ✅ ALWAYS initialize
+      });
     },
 
     updateChapter: (state, action: PayloadAction<{ id: string; data: Partial<Chapter> }>) => {
@@ -71,12 +74,20 @@ const courseSlice = createSlice({
 
       chapter.lessons = chapter.lessons.filter((l) => l.id !== action.payload.lessonId);
     },
+    resetChapterState: () => initialState,
   },
 });
 
 // export actions
-export const { addChapter, updateChapter, deleteChapter, addLesson, updateLesson, deleteLesson } =
-  courseSlice.actions;
+export const {
+  addChapter,
+  updateChapter,
+  deleteChapter,
+  addLesson,
+  updateLesson,
+  deleteLesson,
+  resetChapterState,
+} = courseSlice.actions;
 
 // export reducer
 export default courseSlice.reducer;

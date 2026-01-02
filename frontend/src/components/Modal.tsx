@@ -22,7 +22,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, children }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 rounded-9xl"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-30 rounded-9xl"
       onClick={onClose} // clicking backdrop closes modal
     >
       <div

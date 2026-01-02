@@ -7,6 +7,7 @@ import ILessonService from "@/interface/shared/lesson/lesson.service.interface";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
+import { LESSON_TYPES } from "@/constants/shared/lessonType";
 
 @injectable()
 export class LessonController implements ILessonController {
@@ -16,9 +17,12 @@ export class LessonController implements ILessonController {
     const { chapterId } = req.params;
     const userId = req.user?.userId!;
     const lessonDto = req.body;
+    const type = req.body.type;
 
-    if (!req.files || !req.files["resource"]) {
-      throw new AppError(Messages.RESOURCE_FILE_MISSING, HttpStatus.BAD_REQUEST);
+    if (type === LESSON_TYPES.PDF) {
+      if (!req.files || !req.files["resource"]) {
+        throw new AppError(Messages.RESOURCE_FILE_MISSING, HttpStatus.BAD_REQUEST);
+      }
     }
 
     if (!req.files || !req.files["thumbnail"]) {
@@ -36,7 +40,7 @@ export class LessonController implements ILessonController {
       thumbnailData,
     );
 
-    res.status(HttpStatus.CREATED).json({ success: true, lesson: lessonResponse });
+    res.status(HttpStatus.CREATED).json({ success: true, lessonData: lessonResponse });
   }
 
   async getLessonById(req: IAuthRequest, res: Response): Promise<void> {
@@ -70,7 +74,19 @@ export class LessonController implements ILessonController {
 
     const thumbnailData = req.files["thumbnail"];
 
-    await this._lessonService.createLessonWithVideo(chapterId, userId, lessonDto, thumbnailData);
+    const { preSignedUrl, lessonId } = await this._lessonService.createLessonWithVideo(
+      chapterId,
+      userId,
+      lessonDto,
+      thumbnailData,
+    );
+    res.status(HttpStatus.CREATED).json({ success: true, preSignedUrl, lessonId });
   }
   async changeLessonOrder(req: IAuthRequest, res: Response): Promise<void> {}
+
+  async finalizeLessonVideo(req: IAuthRequest, res: Response): Promise<void> {
+    const { lessonId } = req.params;
+    const lessonData = await this._lessonService.finalizeLessonVideo(lessonId);
+    res.status(HttpStatus.OK).json({ success: true, lessonData });
+  }
 }

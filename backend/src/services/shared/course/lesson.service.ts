@@ -80,12 +80,22 @@ export class LessonService implements ILessonService {
       lessonData.file_key = file_key;
     }
     await lessonData.save();
+    const lessonObject = lessonData.toObject();
+
     const lessonDataWithUrls = {
-      ...lessonData.toObject(),
-      id: lessonData._id,
+      ...lessonObject,
+
+      // ✅ serialize Mongo fields
+      id: lessonObject._id.toString(),
+      chapterId: lessonObject.chapterId.toString(),
+      createdAt: lessonObject.createdAt.toISOString(),
+      updatedAt: lessonObject.updatedAt.toISOString(),
+
+      // computed fields
       thumbnailUrl,
-      fileUrl: fileUrl ? fileUrl : undefined,
+      fileUrl: fileUrl || undefined,
     };
+
     return LessonResponseSchema.parse(lessonDataWithUrls);
   }
   /**
@@ -110,6 +120,7 @@ export class LessonService implements ILessonService {
       ...lesson.toObject(),
       id: lesson._id,
       thumbnailUrl,
+      chapterId: String(lesson.chapterId),
       fileUrl: fileUrl ? fileUrl : undefined,
     };
 
@@ -144,6 +155,7 @@ export class LessonService implements ILessonService {
       ...updated.toObject(),
       id: updated._id,
       thumbnailUrl,
+      chapterId: String(updated.chapterId),
       fileUrl: fileUrl ? fileUrl : undefined,
     };
     return LessonResponseSchema.parse(lessonDataWithUrls);
@@ -173,7 +185,7 @@ export class LessonService implements ILessonService {
     userId: string,
     lessonDto: CreateLessonWithVideoDto,
     thumbnailData: UploadedFile,
-  ): Promise<{ preSignedUrl: string; lessonData: LessonResponseDto }> {
+  ): Promise<{ preSignedUrl: string; lessonId: string }> {
     const present = await this._lessonRepo.findLessonByTitleAndChapterId(
       lessonDto.title,
       chapterId,
@@ -206,6 +218,7 @@ export class LessonService implements ILessonService {
     );
 
     lessonData.thumbnail_key = thumbnail_key;
+    lessonData.file_key = file_key;
     lessonData.mediaStatus = "pending";
 
     const presignedUrl = await this._s3Service.generatePresignedPutUrl(
@@ -216,16 +229,42 @@ export class LessonService implements ILessonService {
     lessonData.file_key = presignedUrl.key;
 
     await lessonData.save();
-    const lessonDataWithUrls = {
-      ...lessonData.toObject(),
-      id: lessonData._id,
-      thumbnailKey: thumbnail_key,
-      fileKey: file_key,
-    };
-
     return {
       preSignedUrl: presignedUrl.uploadUrl,
-      lessonData: LessonResponseSchema.parse(lessonDataWithUrls),
+      lessonId: String(lessonData._id),
     };
+  }
+  async finalizeLessonVideo(lessonId: string): Promise<LessonResponseDto> {
+    const lesson = await this._lessonRepo.findById(lessonId);
+    if (!lesson) {
+      throw new AppError(Messages.LESSON_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    lesson.mediaStatus = "ready";
+    await lesson.save();
+    let fileUrl = "";
+    let thumbnailUrl = "";
+    if (lesson.file_key) {
+      fileUrl = await this._s3Service.getFileUrl(lesson.file_key, 60);
+    }
+    if (lesson.thumbnail_key) {
+      thumbnailUrl = await this._s3Service.getFileUrl(lesson.thumbnail_key, 60);
+    }
+    const lessonObject = lesson.toObject();
+
+    const lessonDataWithUrls = {
+      ...lessonObject,
+
+      // ✅ serialize Mongo fields
+      id: lessonObject._id.toString(),
+      chapterId: lessonObject.chapterId.toString(),
+      createdAt: lessonObject.createdAt.toISOString(),
+      updatedAt: lessonObject.updatedAt.toISOString(),
+
+      // computed fields
+      thumbnailUrl,
+      fileUrl: fileUrl || undefined,
+    };
+
+    return LessonResponseSchema.parse(lessonDataWithUrls);
   }
 }

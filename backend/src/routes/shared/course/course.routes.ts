@@ -14,7 +14,7 @@ export function courseRoutes(controller: ICourseController) {
     validateRequest(createCourseSchema),
     controller.createCourse.bind(controller),
   );
-  router.post(
+  router.patch(
     "/:id/pricing",
     validateRequest(coursePriceSchema),
     controller.updatePrice.bind(controller),

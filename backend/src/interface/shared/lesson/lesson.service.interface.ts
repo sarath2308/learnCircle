@@ -20,5 +20,6 @@ export default interface ILessonService {
     userId: string,
     lessonDto: CreateLessonWithVideoDto,
     thumbnailData: UploadedFile,
-  ) => Promise<{ preSignedUrl: string; lessonData: LessonResponseDto }>;
+  ) => Promise<{ preSignedUrl: string; lessonId: string }>;
+  finalizeLessonVideo: (lessonId: string) => Promise<LessonResponseDto>;
 }

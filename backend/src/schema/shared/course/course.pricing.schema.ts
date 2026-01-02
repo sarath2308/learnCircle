@@ -4,9 +4,11 @@ const bodySchema = z
   .object({
     type: z.enum(["Free", "Paid"]),
 
-    price: z.string().regex(/^\d+$/, "Price must be a number").optional(),
+    price: z.number(),
 
-    discount: z.string().regex(/^\d+$/, "Discount must be a number").optional(),
+    discount: z.number(),
+
+    status: z.enum(["draft", "published"]),
   })
   .superRefine((data, ctx) => {
     if (data.type === "Paid") {
