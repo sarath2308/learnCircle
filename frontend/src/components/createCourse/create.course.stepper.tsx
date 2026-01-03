@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import Step2Resources from "./course.step2.resource";
 import CourseDetails from "./course.details";

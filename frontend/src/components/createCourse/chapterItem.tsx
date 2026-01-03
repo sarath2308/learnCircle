@@ -9,9 +9,9 @@ import { LESSON_TYPES } from "@/contstant/shared/lesson.type";
 import { useLessonCreateWithVideo } from "@/hooks/shared/lesson/lesson.create.video";
 import { useUploadToS3 } from "@/hooks/shared/upload.s3.hook";
 import { UploadStatus } from "./upload.status.progress";
-import compressInWorker from "@/helper/compress.video";
 import { useLessonFinalize } from "@/hooks/shared/lesson/lesson.finalize";
 import { useLessonCreate } from "@/hooks/shared/lesson/lesson.create";
+import { fa } from "zod/v4/locales";
 
 interface ChapterItemProps {
   chapter: {
@@ -29,6 +29,7 @@ const ChapterItem = ({ chapter }: ChapterItemProps) => {
   const lessonCreate = useLessonCreate();
   const uploadToS3 = useUploadToS3();
   const lessonFinalize = useLessonFinalize();
+  const [lessonSubmiting,setLessonSubmiting] = useState(false)
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState<"idle" | "compress" | "upload" | "finalize">("idle");
 
@@ -41,6 +42,7 @@ const ChapterItem = ({ chapter }: ChapterItemProps) => {
   };
 
   const onAddLesson = async (lesson: FormData) => {
+    setLessonSubmiting(true);
     try {
       const type = lesson.get("type");
       const file = lesson.get("resource") as File | null;
@@ -92,6 +94,7 @@ const ChapterItem = ({ chapter }: ChapterItemProps) => {
       setIsModalOpen(false);
       setStage("idle");
       setProgress(0);
+      setLessonSubmiting(false);
     }
   };
 
@@ -102,8 +105,9 @@ const ChapterItem = ({ chapter }: ChapterItemProps) => {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={onAddLesson}
+        isSubmitting={lessonSubmiting}
       />
-      <AccordionItem value={chapter.id}>
+      <AccordionItem value={chapter.id} className="w-4xl p-3">
         <div className="flex items-center justify-between">
           <AccordionTrigger className="flex-1 text-left py-4 px-2 font-semibold">
             chapter {chapter.order} :{chapter.title}
@@ -130,20 +134,20 @@ const ChapterItem = ({ chapter }: ChapterItemProps) => {
         </div>
 
         <AccordionContent>
-          <div className="flex justify-end">
+          {!chapter.lessons || chapter.lessons.length === 0 ? (
+            <p className="text-gray-500 italic">No lessons added yet.</p>
+          ) : (
+            chapter.lessons.map((lesson) => (
+              <LessonItem key={lesson.id} lesson={lesson} setModalData={() => {}}  />
+            ))
+          )}
+           <div className="flex justify-end">
             <Button className="bg-green-500" onClick={() => setIsModalOpen(true)}>
               {" "}
               +Add Lesson
             </Button>
           </div>
 
-          {!chapter.lessons || chapter.lessons.length === 0 ? (
-            <p className="text-gray-500 italic">No lessons added yet.</p>
-          ) : (
-            chapter.lessons.map((lesson) => (
-              <LessonItem key={lesson.id} lesson={lesson} setModalData={() => {}} />
-            ))
-          )}
         </AccordionContent>
       </AccordionItem>
     </>

@@ -37,7 +37,7 @@ const LessonItem = ({ lesson, setModalData }: ILessonProps) => {
   };
 
   return (
-    <div className="flex items-center justify-between border p-3 rounded-lg">
+    <div className="flex items-center justify-between border p-3 rounded-lg mt-2 w-md">
       {/* Left: Icon + Info */}
       <div className="flex gap-3 items-center">
         <img

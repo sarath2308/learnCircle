@@ -11,20 +11,26 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import Modal from "../Modal";
-import { Label } from "@radix-ui/react-label";
+import { Button } from "@/components/ui/button"; // ← You were missing this import
+import { Modal } from "../Modal";
+import { Label } from "../ui/label";
 import { lessonSchema, type LessonSchema } from "@/schema/shared/lessonSchema";
 import type { LessonType } from "@/types/shared/lesson.types";
 import { useEffect } from "react";
 
-/* ------------------- COMPONENT ------------------- */
 interface Props {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: FormData) => void;
+  isSubmitting?: boolean;
 }
 
-export default function LessonCreateModal({ open, onClose, onSubmit }: Props) {
+export default function LessonCreateModal({
+  open,
+  onClose,
+  onSubmit,
+  isSubmitting = false,
+}: Props) {
   const form = useForm<LessonSchema>({
     resolver: zodResolver(lessonSchema),
     defaultValues: {
@@ -33,8 +39,7 @@ export default function LessonCreateModal({ open, onClose, onSubmit }: Props) {
       type: LESSON_TYPES.VIDEO,
       file: undefined,
       link: "",
-      // eslint-disable-next-line no-undef
-      thumbnail: undefined as File | undefined,
+      thumbnail: undefined,
     },
     mode: "onChange",
   });
@@ -49,14 +54,14 @@ export default function LessonCreateModal({ open, onClose, onSubmit }: Props) {
     formData.append("type", data.type);
 
     if (data.file) formData.append("resource", data.file);
-    formData.append("thumbnail", data.thumbnail); // required
-
     if (data.link) formData.append("link", data.link);
+
+    // thumbnail is required per your schema, so it should always exist if valid
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
 
     onSubmit(formData);
   });
 
-  /* RESET FIELDS WHEN TYPE CHANGES */
   const handleTypeChange = (value: string) => {
     form.setValue("type", value as LessonType, { shouldValidate: true });
     form.setValue("file", undefined, { shouldValidate: true });
@@ -77,107 +82,134 @@ export default function LessonCreateModal({ open, onClose, onSubmit }: Props) {
   }, [open, form]);
 
   return (
-    <Modal isOpen={open} onClose={onClose} onSave={() => handleSubmit()}>
-      <form className="space-y-5">
-        {/* TITLE */}
-        <div>
+    <Modal onClose={onClose} open={open} title="Create Lesson">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title */}
+        <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
-          <div className="space-y-1">
-            <Input id="title" placeholder="Title" {...form.register("title")} />
-            {form.formState.errors.title && (
-              <p className="text-red-500 text-sm">{form.formState.errors.title.message}</p>
-            )}
-          </div>
+          <Input
+            id="title"
+            placeholder="Enter lesson title"
+            {...form.register("title")}
+          />
+          {form.formState.errors.title && (
+            <p className="text-sm text-destructive text-red-500">
+              {form.formState.errors.title.message}
+            </p>
+          )}
         </div>
 
-        {/* DESCRIPTION */}
-        <div>
-          <Label htmlFor="description">Description</Label>
-          <div className="space-y-1">
-            <Textarea
-              id="description"
-              placeholder="Description"
-              {...form.register("description")}
-            />
-            {form.formState.errors.description && (
-              <p className="text-red-500 text-sm">{form.formState.errors.description.message}</p>
-            )}
-          </div>
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Description (optional)</Label>
+          <Textarea
+            id="description"
+            placeholder="Describe the lesson"
+            rows={4}
+            {...form.register("description")}
+          />
+          {form.formState.errors.description && (
+            <p className="text-sm text-destructive text-red-500">
+              {form.formState.errors.description.message}
+            </p>
+          )}
         </div>
 
-        {/* TYPE */}
-        <div>
+        {/* Type */}
+        <div className="space-y-2">
           <Label htmlFor="type">Lesson Type</Label>
-          <div className="space-y-1">
-            <Select value={selectedType} onValueChange={(v) => handleTypeChange(v)}>
-              <SelectTrigger id="type">
-                <SelectValue placeholder="Select lesson type" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(LESSON_TYPES).map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.formState.errors.type && (
-              <p className="text-red-500 text-sm">{form.formState.errors.type.message}</p>
-            )}
-          </div>
+          <Select value={selectedType} onValueChange={handleTypeChange}>
+            <SelectTrigger id="type">
+              <SelectValue placeholder="Select lesson type" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.values(LESSON_TYPES).map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t.charAt(0) + t.slice(1).toLowerCase()}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {form.formState.errors.type && (
+            <p className="text-sm text-destructive text-red-500">
+              {form.formState.errors.type.message}
+            </p>
+          )}
         </div>
 
-        {/* CONDITIONAL FILE INPUT */}
+        {/* File Upload - Video/PDF */}
         {[LESSON_TYPES.VIDEO, LESSON_TYPES.PDF].includes(selectedType) && (
-          <div>
-            <Label htmlFor="file">Upload File</Label>
-            <div className="space-y-1">
-              <Input
-                id="file"
-                type="file"
-                accept="video/*,.pdf"
-                onChange={(e) =>
-                  form.setValue("file", e.target.files?.[0], { shouldValidate: true })
-                }
-              />
-              {form.formState.errors.file?.message && (
-                <p className="text-red-500 text-sm">{form.formState.errors.file?.message}</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* CONDITIONAL LINK INPUT */}
-        {[LESSON_TYPES.YOUTUBE, LESSON_TYPES.BLOG, LESSON_TYPES.ARTICLE].includes(selectedType) && (
-          <div>
-            <Label htmlFor="link">Resource Link</Label>
-            <div className="space-y-1">
-              <Input id="link" placeholder="Resource link" {...form.register("link")} />
-              {form.formState.errors.link && (
-                <p className="text-red-500 text-sm">{form.formState.errors.link.message}</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* THUMBNAIL */}
-        <div>
-          <Label htmlFor="thumbnail">Thumbnail</Label>
-          <div className="space-y-1">
+          <div className="space-y-2">
+            <Label htmlFor="file">
+              Upload {selectedType === LESSON_TYPES.VIDEO ? "Video" : "PDF"}
+            </Label>
             <Input
-              id="thumbnail"
+              id="file"
               type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return; // ❌ block undefined
-                form.setValue("thumbnail", file, { shouldValidate: true }); // ✔ always File
-              }}
+              accept={
+                selectedType === LESSON_TYPES.VIDEO ? "video/mp4,video/webm" : ".pdf"
+              }
+              onChange={(e) =>
+                form.setValue("file", e.target.files?.[0] ?? undefined, {
+                  shouldValidate: true,
+                })
+              }
             />
-            {form.formState.errors.thumbnail?.message && (
-              <p className="text-red-500 text-sm">{form.formState.errors.thumbnail?.message}</p>
+            {form.formState.errors.file && (
+              <p className="text-sm text-destructive text-red-500">
+                {form.formState.errors.file.message}
+              </p>
             )}
           </div>
+        )}
+
+        {/* Link - YouTube/Blog/Article */}
+        {[LESSON_TYPES.YOUTUBE, LESSON_TYPES.BLOG, LESSON_TYPES.ARTICLE].includes(
+          selectedType
+        ) && (
+          <div className="space-y-2">
+            <Label htmlFor="link">Resource Link</Label>
+            <Input
+              id="link"
+              placeholder="https://..."
+              {...form.register("link")}
+            />
+            {form.formState.errors.link && (
+              <p className="text-sm text-destructive text-red-500">
+                {form.formState.errors.link.message}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Thumbnail */}
+        <div className="space-y-2">
+          <Label htmlFor="thumbnail">Thumbnail Image</Label>
+          <Input
+            id="thumbnail"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) =>
+              form.setValue("thumbnail", e.target.files?.[0] as File, {
+                shouldValidate: true,
+              })
+            }
+          />
+          {form.formState.errors.thumbnail && (
+            <p className="text-sm text-destructive text-red-500">
+              {form.formState.errors.thumbnail.message}
+            </p>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-3 pt-4 border-t border-border">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create Lesson"}
+          </Button>
         </div>
       </form>
     </Modal>
