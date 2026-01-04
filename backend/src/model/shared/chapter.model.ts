@@ -1,11 +1,13 @@
 import { model, Schema, Types, Document } from "mongoose";
 
 export interface IChapter extends Document {
+  _id: Types.ObjectId;
   courseId: Types.ObjectId;
   title: string;
   description: string;
   order: number;
   isPublished: boolean;
+  lessonCount: number;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -17,6 +19,7 @@ const ChapterSchema = new Schema<IChapter>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     order: { type: Number, required: true },
+    lessonCount:{type: Number, default:0},
     isPublished: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },

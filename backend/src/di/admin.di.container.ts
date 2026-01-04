@@ -18,6 +18,11 @@ import { ICategoryService } from "@/interface/admin/category.service.interface";
 import { CategoryService } from "@/services/shared/category.service";
 import { ICategoryController } from "@/interface/admin/category.controller.interface";
 import { CategoryController } from "@/controllers/shared/category.controller";
+import { IAdminCourseManagementService } from "@/interface/admin/admin.course.manage.interface";
+import { AdminCourseManagementService } from "@/services/admin/admin.course.manage.service";
+import container from "./di.container";
+import { IAdminCourseManagementController } from "@/interface/admin/admin.course.management.controller";
+import { AdminCourseManagementController } from "@/controllers/admin/admin.course.manage.controller";
 
 export const registerAdmin = (container: Container): void => {
   /*--------------Models-----------------------*/
@@ -33,6 +38,9 @@ export const registerAdmin = (container: Container): void => {
     .to(AdminUserManagementService);
   container.bind<IAdminDashboardService>(TYPES.IAdminDashboardService).to(AdminDashboardService);
   container.bind<ICategoryService>(TYPES.ICategoryService).to(CategoryService);
+  container
+    .bind<IAdminCourseManagementService>(TYPES.IAdminCourseManagementService)
+    .to(AdminCourseManagementService);
   /*--------------Controller-------------*/
   container
     .bind<IAdminUserManagementController>(TYPES.IAdminUserManagementController)
@@ -43,3 +51,5 @@ export const registerAdmin = (container: Container): void => {
     .bind<IAdminDashboardController>(TYPES.IAdminDashboardController)
     .to(AdminDashboardController);
 };
+
+container.bind<IAdminCourseManagementController>(TYPES.IAdminCourseManagementController).to(AdminCourseManagementController);

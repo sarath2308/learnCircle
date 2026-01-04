@@ -43,8 +43,16 @@ export class ChapterService implements IChapterService {
       throw new AppError(Messages.CHAPTER_DUPLICATE, HttpStatus.BAD_REQUEST);
     }
 
-    const chapter = await this._chapterRepo.create({ ...data, courseId: courseObjectId });
+    let chapter = await this._chapterRepo.create({ ...data, courseId: courseObjectId });
 
+    if(!chapter)
+    {
+      throw new AppError(Messages.CHAPTER_NOT_CREATED,HttpStatus.NOT_IMPLEMENTED)
+    }
+
+    await this._courseRepo.increaseChapterCount(String(chapter._id))
+
+    chapter = chapter.toObject();
     const responseObj = {
       id: chapter._id.toString(),
       title: chapter.title,
@@ -86,6 +94,7 @@ export class ChapterService implements IChapterService {
 
   async removeChapter(chapterId: string): Promise<void> {
     await this._chapterRepo.remove(chapterId);
+    await this._courseRepo.decreaseChapterCount(chapterId);
   }
 
   async getChapter(chapterId: string): Promise<ChapterResponseType> {

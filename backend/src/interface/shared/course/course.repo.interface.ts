@@ -9,4 +9,7 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
 
   updateThumbnail: (id: string, key: string) => Promise<void>;
   getCourseWithTitle: (title: string) => Promise<ICourse | null>;
+  increaseChapterCount:(courseId:string) => Promise<ICourse | null>;
+  decreaseChapterCount:(courseId: string) => Promise<ICourse |  null>;
+  getAllCourse: (skip:number,limit:number) => Promise<ICourse[] | null>;
 }

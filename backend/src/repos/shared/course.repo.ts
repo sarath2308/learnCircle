@@ -28,4 +28,26 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
   async getCourseWithTitle(title: string): Promise<ICourse | null> {
     return await this._model.findOne({ title: title, isDeleted: false });
   }
+
+ async increaseChapterCount(courseId: string): Promise<ICourse | null> {
+  return await this._model.findByIdAndUpdate(
+    courseId,
+    { $inc: { chapterCount: 1 } },
+    { new: true } 
+  );
+}
+
+  async decreaseChapterCount(courseId: string): Promise<ICourse | null>
+  {
+      return await this._model.findByIdAndUpdate(
+    courseId,
+    { $inc: { chapterCount: -1 } },
+    { new: true } 
+  );
+  }
+
+  async getAllCourse(skip: number, limit: number): Promise<ICourse[] | null>
+  {
+    return await this._model.find({status:{$ne:"draft"}}).skip(skip).limit(limit).populate("createdBy","category");
+  }
 }

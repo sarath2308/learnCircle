@@ -66,6 +66,7 @@ export const Messages = {
   CHAPTER_NOT_FOUND: "Chapter not found",
   CHAPTERS_NOT_FOUND: "there are no chapters for this course",
   CHAPTER_DUPLICATE: "Chapter title must be unique within a course.",
+  CHAPTER_NOT_CREATED: "Chapter Not Created",
 
   //lesson
   LESSON_NOT_FOUND: "Lesson not found",

@@ -15,12 +15,14 @@ import {
   LessonResponseDto,
   LessonResponseSchema,
 } from "@/schema/shared/lesson/lesson.response.schema";
+import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
 
 @injectable()
 export class LessonService implements ILessonService {
   constructor(
     @inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
+    @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo
   ) {}
   /**
    *
@@ -55,6 +57,8 @@ export class LessonService implements ILessonService {
     if (!lessonData) {
       throw new AppError(Messages.LESSON_NOT_CREATED, HttpStatus.BAD_REQUEST);
     }
+    
+   await this._chapterRepo.increseLessonCount(String(lessonData._id))
 
     const thumbnail_key = await this._s3Service.generateS3Key(userId, thumbnailData.originalName);
 
@@ -167,6 +171,7 @@ export class LessonService implements ILessonService {
       throw new AppError(Messages.LESSON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     await this._lessonRepo.delete(lessonId);
+    await this._chapterRepo.decreaseLessonCount(lessonId);
   }
 
   async changeLessonOrder(chapterId: string, lessonOrderDto: any): Promise<void> {}

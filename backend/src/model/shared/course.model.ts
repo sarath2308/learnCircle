@@ -12,9 +12,11 @@ export interface ICourse extends Document {
   createdBy: Types.ObjectId;
   status: "draft" | "pending" | "approved" | "rejected" | "published";
   rejectReason?: string;
-  lessonCount?: number;
+  chapterCount?: number;
   totalDuration?: number;
   isDeleted: boolean;
+  isBlocked: string;
+  blockedReason: string;
   averageRating?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -41,8 +43,10 @@ const courseSchema = new Schema<ICourse>(
       default: "draft",
     },
     isDeleted: { type: Boolean, default: false },
-    rejectReason: String,
-    lessonCount: { type: Number, default: 0 },
+    rejectReason: { type: String },
+    isBlocked: { type: String },
+    blockedReason: { type: String },
+    chapterCount: { type: Number, default: 0 },
     totalDuration: { type: Number, default: 0 },
     averageRating: { type: Number, default: 0 },
   },

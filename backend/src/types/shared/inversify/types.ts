@@ -65,4 +65,6 @@ export const TYPES = {
   ISafeDeleteService: Symbol.for("ISafeDeleteService"),
   ILessonService: Symbol.for("ILessonService"),
   ILessonController: Symbol.for("ILessonController"),
+  IAdminCourseManagementService: Symbol.for("IAdminCourseManagementService"),
+  IAdminCourseManagementController: Symbol.for("IAdminCourseManagementController"),
 };
