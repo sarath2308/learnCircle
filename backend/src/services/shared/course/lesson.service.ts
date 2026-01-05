@@ -22,7 +22,7 @@ export class LessonService implements ILessonService {
   constructor(
     @inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
-    @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo
+    @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo,
   ) {}
   /**
    *
@@ -57,8 +57,8 @@ export class LessonService implements ILessonService {
     if (!lessonData) {
       throw new AppError(Messages.LESSON_NOT_CREATED, HttpStatus.BAD_REQUEST);
     }
-    
-   await this._chapterRepo.increseLessonCount(String(lessonData._id))
+
+    await this._chapterRepo.increseLessonCount(String(lessonData._id));
 
     const thumbnail_key = await this._s3Service.generateS3Key(userId, thumbnailData.originalName);
 

@@ -15,7 +15,7 @@ export interface ICourse extends Document {
   chapterCount?: number;
   totalDuration?: number;
   isDeleted: boolean;
-  isBlocked: string;
+  isBlocked: boolean;
   blockedReason: string;
   averageRating?: number;
   createdAt: Date;
@@ -44,7 +44,7 @@ const courseSchema = new Schema<ICourse>(
     },
     isDeleted: { type: Boolean, default: false },
     rejectReason: { type: String },
-    isBlocked: { type: String },
+    isBlocked: { type: Boolean },
     blockedReason: { type: String },
     chapterCount: { type: Number, default: 0 },
     totalDuration: { type: Number, default: 0 },

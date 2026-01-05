@@ -19,7 +19,7 @@ const ChapterSchema = new Schema<IChapter>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     order: { type: Number, required: true },
-    lessonCount:{type: Number, default:0},
+    lessonCount: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },

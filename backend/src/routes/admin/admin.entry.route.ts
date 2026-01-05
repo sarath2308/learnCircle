@@ -8,6 +8,8 @@ import { userManagementRoutes } from "./admin.userManagement.routes";
 import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 import { ICategoryController } from "@/interface/admin/category.controller.interface";
 import { AdminCategoryRoutes } from "./admin.category.routes";
+import { IAdminCourseManagementController } from "@/interface/admin/admin.course.management.controller";
+import { adminCourseManagementRoutes } from "./admin.course.manage.routes";
 
 export function adminEntryRoute() {
   const router = Router();
@@ -23,9 +25,14 @@ export function adminEntryRoute() {
     container.get<ICategoryController>(TYPES.ICategoryController),
   );
 
+  const adminCourseManageController = wrapAsyncController(
+    container.get<IAdminCourseManagementController>(TYPES.IAdminCourseManagementController),
+  );
+
   router.use("/dashboard", adminDashboardRoutes(dashboardController));
   router.use("/users", userManagementRoutes(userManagementController));
   router.use("/category", AdminCategoryRoutes(categoryController));
+  router.use("/course", adminCourseManagementRoutes(adminCourseManageController));
 
   return router;
 }

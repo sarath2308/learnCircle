@@ -22,19 +22,19 @@ export class ChapterRepo extends BaseRepo<IChapter> implements IChapterRepo {
     return await this._model.findOne({ title: title, isDeleted: false, courseId: courseId });
   }
 
-  async increseLessonCount(chapterId: string): Promise<IChapter | null>{
-     return await this._model.findByIdAndUpdate(
-    chapterId,
-    { $inc: { lessonCount: 1 } },
-    { new: true } 
-  );
+  async increseLessonCount(chapterId: string): Promise<IChapter | null> {
+    return await this._model.findByIdAndUpdate(
+      chapterId,
+      { $inc: { lessonCount: 1 } },
+      { new: true },
+    );
   }
 
-   async decreaseLessonCount(chapterId: string): Promise<IChapter | null>{
-     return await this._model.findByIdAndUpdate(
-    chapterId,
-    { $inc: { lessonCount: -1 } },
-    { new: true } 
-  );
+  async decreaseLessonCount(chapterId: string): Promise<IChapter | null> {
+    return await this._model.findByIdAndUpdate(
+      chapterId,
+      { $inc: { lessonCount: -1 } },
+      { new: true },
+    );
   }
 }

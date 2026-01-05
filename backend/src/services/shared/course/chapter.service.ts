@@ -45,12 +45,11 @@ export class ChapterService implements IChapterService {
 
     let chapter = await this._chapterRepo.create({ ...data, courseId: courseObjectId });
 
-    if(!chapter)
-    {
-      throw new AppError(Messages.CHAPTER_NOT_CREATED,HttpStatus.NOT_IMPLEMENTED)
+    if (!chapter) {
+      throw new AppError(Messages.CHAPTER_NOT_CREATED, HttpStatus.NOT_IMPLEMENTED);
     }
 
-    await this._courseRepo.increaseChapterCount(String(chapter._id))
+    await this._courseRepo.increaseChapterCount(String(chapter._id));
 
     chapter = chapter.toObject();
     const responseObj = {
