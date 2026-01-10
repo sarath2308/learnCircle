@@ -1,6 +1,9 @@
-import { ICategory } from "@/model/admin/Category";
+import { ICategory } from "@/model/shared/Category";
 import { BaseRepo } from "../shared/base";
-import { CategoryListArgs, ICategoryRepo } from "@/interface/admin/category.repo.interface";
+import {
+  CategoryListArgs,
+  ICategoryRepo,
+} from "@/interface/shared/category/category.repo.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "@/types/shared/inversify/types";
 import { FlattenMaps, Model } from "mongoose";

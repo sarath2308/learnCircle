@@ -55,7 +55,6 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
       .sort({ createdAt: -1 })
       .populate("createdBy")
       .populate("category");
-
   }
   async getTotalCourseCount(): Promise<number> {
     return await this._model.countDocuments({ status: { $ne: "draft" } });

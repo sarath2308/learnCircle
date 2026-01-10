@@ -1,5 +1,5 @@
 import { ISubCategoryRepo } from "@/interface/admin/subCaregory.repo.interface";
-import { ISubCategoryService } from "@/interface/admin/subCategory.service.interface";
+import { ISubCategoryService } from "@/interface/shared/category/subCategory.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 

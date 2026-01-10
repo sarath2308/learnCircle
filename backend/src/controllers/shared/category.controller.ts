@@ -1,6 +1,6 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { ICategoryController } from "@/interface/admin/category.controller.interface";
-import { ICategoryService } from "@/interface/admin/category.service.interface";
+import { ICategoryService } from "@/interface/shared/category/category.service.interface";
 import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Response } from "express";

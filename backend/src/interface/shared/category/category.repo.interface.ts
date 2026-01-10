@@ -1,4 +1,4 @@
-import { ICategory } from "@/model/admin/Category";
+import { ICategory } from "@/model/shared/Category";
 import { IBaseRepo } from "@/repos/shared/base";
 import { FlattenMaps } from "mongoose";
 

@@ -1,9 +1,9 @@
 import { ICategoryController } from "@/interface/admin/category.controller.interface";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
-import { CategoryBlockSchema } from "@/schema/admin/category/category.block.schema";
-import { CategoryCreateSchema } from "@/schema/admin/category/category.create.schema";
-import { CategoryUnBlockSchema } from "@/schema/admin/category/category.unblock.schema";
-import { CategoryUpdateSchema } from "@/schema/admin/category/category.update.schema";
+import { CategoryBlockSchema } from "@/schema/shared/category/category.block.schema";
+import { CategoryCreateSchema } from "@/schema/shared/category/category.create.schema";
+import { CategoryUnBlockSchema } from "@/schema/shared/category/category.unblock.schema";
+import { CategoryUpdateSchema } from "@/schema/shared/category/category.update.schema";
 import { Router } from "express";
 
 export function AdminCategoryRoutes(controller: ICategoryController) {

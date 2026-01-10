@@ -1,12 +1,12 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
-import { ICategoryRepo } from "@/interface/admin/category.repo.interface";
-import { ICategoryService } from "@/interface/admin/category.service.interface";
-import { CategoryCreateDtoType } from "@/schema/admin/category/category.create.schema";
-import { ListCategoryFilterType } from "@/schema/admin/category/category.list.schema";
-import { CategoryDto, CategorySchema } from "@/schema/admin/category/category.response.schema";
-import { CategoryUpdateDtoType } from "@/schema/admin/category/category.update.schema";
+import { ICategoryRepo } from "@/interface/shared/category/category.repo.interface";
+import { ICategoryService } from "@/interface/shared/category/category.service.interface";
+import { CategoryCreateDtoType } from "@/schema/shared/category/category.create.schema";
+import { ListCategoryFilterType } from "@/schema/shared/category/category.list.schema";
+import { CategoryDto, CategorySchema } from "@/schema/shared/category/category.response.schema";
+import { CategoryUpdateDtoType } from "@/schema/shared/category/category.update.schema";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 

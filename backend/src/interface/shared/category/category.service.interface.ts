@@ -1,7 +1,7 @@
-import { CategoryCreateDtoType } from "@/schema/admin/category/category.create.schema";
-import { ListCategoryFilterType } from "@/schema/admin/category/category.list.schema";
-import { CategoryDto } from "@/schema/admin/category/category.response.schema";
-import { CategoryUpdateDtoType } from "@/schema/admin/category/category.update.schema";
+import { CategoryCreateDtoType } from "@/schema/shared/category/category.create.schema";
+import { ListCategoryFilterType } from "@/schema/shared/category/category.list.schema";
+import { CategoryDto } from "@/schema/shared/category/category.response.schema";
+import { CategoryUpdateDtoType } from "@/schema/shared/category/category.update.schema";
 
 export interface ICategoryService {
   createCategory(payload: CategoryCreateDtoType): Promise<CategoryDto>;
