@@ -13,7 +13,6 @@ export class AuthenticateMiddleware implements IAuthenticateMiddleware {
 
   async handle(req: IAuthRequest, res: Response, next: NextFunction): Promise<void> {
     const token = req.cookies["accessToken"];
-
     if (!token) {
       res.status(HttpStatus.UNAUTHORIZED).json({ message: `${Messages.UNAUTHORIZED}` });
       return;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { SidebarLayout } from "@/components/SidebarLayout";
+import { SidebarLayout } from "@/components/admin/SidebarLayout";
 import { IconUser, IconCalendar, IconTrophy, IconSettings } from "@tabler/icons-react";
 
 export default function LearnerProfileLayout() {

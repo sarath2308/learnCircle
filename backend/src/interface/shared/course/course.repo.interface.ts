@@ -7,9 +7,10 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
     payload: { price: number; discount: number; type: "Free" | "Paid" },
   ) => Promise<void>;
 
-  updateThumbnail: (id: string, key: string) => Promise<void>;
+  updateThumbnail: (id: string, key: string) => Promise<boolean>;
   getCourseWithTitle: (title: string) => Promise<ICourse | null>;
   increaseChapterCount: (courseId: string) => Promise<ICourse | null>;
   decreaseChapterCount: (courseId: string) => Promise<ICourse | null>;
   getAllCourse: (skip: number, limit: number) => Promise<ICourse[] | null>;
+  getTotalCourseCount: () => Promise<number>;
 }

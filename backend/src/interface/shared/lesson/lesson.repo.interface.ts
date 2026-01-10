@@ -10,4 +10,5 @@ export default interface ILessonRepo extends IBaseRepo<ILesson> {
   ): Promise<void>;
   updateThumbnailKey(lessonId: string, thumbnailKey: string): Promise<void>;
   findById(id: string): Promise<ILesson | null>;
+  getLessonsByChapterIds: (chapterArray: Array<string>) => Promise<ILesson[]>;
 }

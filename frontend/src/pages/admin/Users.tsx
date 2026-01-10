@@ -8,24 +8,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PaginatedTable } from "@/components/PaginatedTable";
+import DataTable, { type Column } from "@/components/PaginatedTable";
 import { useAdminUsers } from "@/hooks/admin/users/useAdminUsers";
 import { useBlockUser } from "@/hooks/admin/users/useBlockUser";
 import { useUnblockUser } from "@/hooks/admin/users/useUnblock";
 import { useApproveProfessional } from "@/hooks/admin/users/useApproveProfessional";
 import { useRejectProfessional } from "@/hooks/admin/users/useRejectProfessional";
 
+type UserType = {
+  id:string,
+  name: string,
+  email: string,
+  role: string,
+  isBlocked: boolean,
+  status: string,
+  resumeUrl?: string,
+  totalSessions?: number,
+  state?: string,
+
+}
 const Users = () => {
   const [role, setRole] = useState<"learner" | "professional">("learner");
   const [search, setSearch] = useState("");
@@ -68,11 +70,58 @@ const Users = () => {
   const handleViewCV = (url: string) => window.open(url, "_blank");
 
   // Headers
-  const headers =
-    role === "learner"
-      ? ["name", "email", "role", "status"]
-      : ["name", "email", "status", "totalSessions", "role", "state"];
-
+  const columns:Column<UserType>[] = role === "learner"
+      ? [{
+        header: "Name",
+        accessor: "name",
+      }, {
+        header: "Email",
+        accessor: "email",
+      }, {
+      header: "Status",
+      accessor: "isBlocked",
+      cell: (value) => (
+        <span
+          className={`px-2 py-1 rounded text-sm font-medium ${
+            value
+              ? "bg-red-100 text-red-700"
+              : "bg-green-100 text-green-700"
+          }`}
+        >
+          {value ? "Blocked" : "Active"}
+        </span>
+      ),
+    },]
+      : [{
+        header: "Name",
+        accessor: "name",
+      }, {
+        header: "Email",
+        accessor: "email",
+      }, {
+        header: "Status",
+        accessor: "status",
+      }, {
+        header: "Total Sessions",
+        accessor: "totalSessions",
+      }, {
+        header: "Role",
+        accessor: "role",
+      }, {
+        header: "State",
+        accessor: "state",
+          cell: (value) => (
+        <span
+          className={`px-2 py-1 rounded text-sm font-medium ${
+            value === "Blocked"
+              ? "bg-red-100 text-red-700"
+              : "bg-green-100 text-green-700"
+          }`}
+        >
+          {value === "Blocked" ? "Blocked" : "Active"}
+        </span>
+      ),
+      }];
   // Action Renderer
   const renderActions = (user: any) => {
     const isBlocked = user.isBlocked;
@@ -82,7 +131,7 @@ const Users = () => {
     return (
       <div className="flex items-center gap-2">
         {!isBlocked ? (
-          <Button variant="destructive" size="sm" onClick={() => handleBlock(user.userId)}>
+          <Button variant="destructive"  className="bg-red-600" size="sm" onClick={() => handleBlock(user.userId)}>
             Block
           </Button>
         ) : (
@@ -143,9 +192,6 @@ const Users = () => {
     );
   };
 
-  if (isLoading) return <div className="p-6">Loading users...</div>;
-  if (isError) return <div className="p-6 text-red-500">Failed to fetch users.</div>;
-
   return (
     <div className="p-6 space-y-4">
       {/* Search + Role Filter */}
@@ -168,63 +214,18 @@ const Users = () => {
         </Select>
       </div>
 
-      {/* Table + Pagination */}
-      <Card className="p-4">
-        {users.length > 0 ? (
-          <>
-            <PaginatedTable headers={headers} data={users} renderActions={renderActions} />
+            <DataTable 
+            columns={columns}  
+            page={page}
+             total={totalPages}
+              pageSize={10} 
+              rowKey={(value)=> value.id}
+               data={users} 
+               isLoading={isLoading} 
+               emptyState={<p className="text-center py-10">No users found</p>}
+               renderActions={renderActions} 
+               onPageChange={setPage} />
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Pagination className="mt-4">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                      className={page === 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-
-                  {[...Array(totalPages)].map((_, index) => {
-                    const pageNum = index + 1;
-                    if (pageNum === 1 || pageNum === totalPages || Math.abs(pageNum - page) <= 1) {
-                      return (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            onClick={() => setPage(pageNum)}
-                            isActive={page === pageNum}
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    } else if (
-                      (pageNum === page - 2 && page > 3) ||
-                      (pageNum === page + 2 && page < totalPages - 2)
-                    ) {
-                      return (
-                        <PaginationItem key={pageNum}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      );
-                    }
-                    return null;
-                  })}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                      className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-          </>
-        ) : (
-          <p className="text-gray-500 text-sm text-center">No users found.</p>
-        )}
-      </Card>
     </div>
   );
 };

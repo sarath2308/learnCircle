@@ -50,8 +50,8 @@ export const registerAdmin = (container: Container): void => {
   container
     .bind<IAdminDashboardController>(TYPES.IAdminDashboardController)
     .to(AdminDashboardController);
-};
 
-container
-  .bind<IAdminCourseManagementController>(TYPES.IAdminCourseManagementController)
-  .to(AdminCourseManagementController);
+  container
+    .bind<IAdminCourseManagementController>(TYPES.IAdminCourseManagementController)
+    .to(AdminCourseManagementController);
+};

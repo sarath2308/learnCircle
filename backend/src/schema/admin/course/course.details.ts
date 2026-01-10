@@ -4,6 +4,7 @@ export const courseDetailsSchema = z.object({
   id: z.string(),
   title: z.string(),
   status: z.string(),
+  category: z.string(),
   createdAt: z.date(),
   createdBy: z.string(),
   chapterCount: z.number(),

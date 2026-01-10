@@ -53,9 +53,9 @@ export class CourseService implements ICourseService {
       const courseId = String(createdCourse._id);
 
       compressedPath = await this._imageCompressService.compress(thumbnail.path);
-
+      console.log("COMPRESSED PATH:", compressedPath);
       const key = await this._s3Service.generateS3Key(courseId, thumbnail.originalName);
-
+      console.log("GENERATED KEY:", key);
       await this._s3Service.uploadFileFromStream(
         compressedPath,
         key,

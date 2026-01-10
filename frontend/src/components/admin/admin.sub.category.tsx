@@ -41,12 +41,13 @@ import {
 type Category = {
   id: string;
   name: string;
+  categroy: string;
   isBlocked: boolean;
 };
 
 /* ---------------- COMPONENT ---------------- */
 
-const CategoryManagement = () => {
+const AdminSubCategoryManagement = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -94,9 +95,13 @@ const CategoryManagement = () => {
 
   const columns: Column<Category>[] = [
     {
-      header: "Category Name",
+      header: "Sub Category Name",
       accessor: "name",
     },
+    {
+        header:"Category",
+        accessor:"category",
+    }
     {
       header: "Status",
       accessor: "isBlocked",
@@ -315,4 +320,4 @@ const CategoryManagement = () => {
   );
 };
 
-export default CategoryManagement;
+export default AdminSubCategoryManagement;

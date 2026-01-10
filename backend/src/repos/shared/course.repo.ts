@@ -21,8 +21,10 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
     );
   }
 
-  async updateThumbnail(id: string, key: string): Promise<void> {
-    await this._model.updateOne({ id }, { $set: { thumbnail_key: key } });
+  async updateThumbnail(id: string, key: string): Promise<boolean> {
+    const result = await this._model.updateOne({ _id: id }, { $set: { thumbnail_key: key } });
+
+    return result.modifiedCount === 1;
   }
 
   async getCourseWithTitle(title: string): Promise<ICourse | null> {
@@ -50,6 +52,12 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
       .find({ status: { $ne: "draft" } })
       .skip(skip)
       .limit(limit)
-      .populate("createdBy", "category");
+      .sort({ createdAt: -1 })
+      .populate("createdBy")
+      .populate("category");
+
+  }
+  async getTotalCourseCount(): Promise<number> {
+    return await this._model.countDocuments({ status: { $ne: "draft" } });
   }
 }

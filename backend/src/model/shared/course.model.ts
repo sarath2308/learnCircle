@@ -32,7 +32,7 @@ const courseSchema = new Schema<ICourse>(
       enum: ["Beginner", "Intermediate", "Advanced"],
       default: "Beginner",
     },
-    thumbnail_key: String,
+    thumbnail_key: { type: String, default: "" },
     price: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
     type: { type: String, enum: ["Free", "Paid"], default: "Free" },

@@ -28,4 +28,8 @@ export class LessonRepo extends BaseRepo<ILesson> implements ILessonRepo {
   async findById(id: string): Promise<ILesson | null> {
     return this._model.findOne({ _id: id, isDeleted: false }).exec();
   }
+
+  async getLessonsByChapterIds(chapterArray: Array<string>): Promise<ILesson[]> {
+    return await this._model.find({ chapterId: { $in: [...chapterArray] }, isDeleted: false });
+  }
 }
