@@ -35,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import AdminSubCategoryManagement from "@/components/admin/admin.sub.category";
 
 /* ---------------- TYPES ---------------- */
 
@@ -202,116 +203,119 @@ const CategoryManagement = () => {
   /* ---------------- RENDER ---------------- */
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Category Management</h1>
-            <p className="text-gray-500">Manage your product categories</p>
-          </div>
+    // <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    //   <div className="p-6 max-w-6xl mx-auto space-y-6">
+    //     {/* Header */}
+    //     <div className="flex justify-between items-center">
+    //       <div>
+    //         <h1 className="text-3xl font-bold">Category Management</h1>
+    //         <p className="text-gray-500">Manage your product categories</p>
+    //       </div>
 
-          <div className="flex gap-3">
-            <Input
-              placeholder="Search categories..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-sm"
-            />
+    //       <div className="flex gap-3">
+    //         <Input
+    //           placeholder="Search categories..."
+    //           value={search}
+    //           onChange={(e) => setSearch(e.target.value)}
+    //           className="max-w-sm"
+    //         />
 
-            <Dialog
-            open={createOpen} onOpenChange={setCreateOpen}>
-              <DialogTrigger asChild>
-                <Button className="px-2 py-1 rounded text-sm font-medium outline-2 bg-green-600 dark:bg-blue-400 text-white">Create Category</Button>
-              </DialogTrigger>
-              <DialogContent className="bg-white dark:bg-gray-50">
-                <DialogHeader>
-                  <DialogTitle>Create Category</DialogTitle>
-                </DialogHeader>
+    //         <Dialog
+    //         open={createOpen} onOpenChange={setCreateOpen}>
+    //           <DialogTrigger asChild>
+    //             <Button className="px-2 py-1 rounded text-sm font-medium outline-2 bg-green-600 dark:bg-blue-400 text-white">Create Category</Button>
+    //           </DialogTrigger>
+    //           <DialogContent className="bg-white dark:bg-gray-50">
+    //             <DialogHeader>
+    //               <DialogTitle>Create Category</DialogTitle>
+    //             </DialogHeader>
 
-                <Input
-                  placeholder="Category name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+    //             <Input
+    //               placeholder="Category name"
+    //               value={name}
+    //               onChange={(e) => setName(e.target.value)}
+    //             />
 
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setCreateOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleCreate}>
-                    {createCategory.isPending ? "Creating..." : "Create"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
+    //             <DialogFooter>
+    //               <Button variant="outline" onClick={() => setCreateOpen(false)}>
+    //                 Cancel
+    //               </Button>
+    //               <Button onClick={handleCreate}>
+    //                 {createCategory.isPending ? "Creating..." : "Create"}
+    //               </Button>
+    //             </DialogFooter>
+    //           </DialogContent>
+    //         </Dialog>
+    //       </div>
+    //     </div>
 
-        {/* Table */}
+    //     {/* Table */}
         
-          <DataTable<Category>
-            columns={columns}
-            data={items}
-            page={page}
-            pageSize={10}
-            total={totalCount}
-            rowKey={(row) => row.id}
-            onPageChange={setPage}
-            renderActions={renderActions}
-            isLoading={isLoading}
-            emptyState={<p className="text-center py-10">No categories found</p>}
-          />
+    //       <DataTable<Category>
+    //         columns={columns}
+    //         data={items}
+    //         page={page}
+    //         pageSize={10}
+    //         total={totalCount}
+    //         rowKey={(row) => row.id}
+    //         onPageChange={setPage}
+    //         renderActions={renderActions}
+    //         isLoading={isLoading}
+    //         emptyState={<p className="text-center py-10">No categories found</p>}
+    //       />
 
-        {/* Edit Dialog */}
-        <Dialog open={editOpen} onOpenChange={setEditOpen}>
-          <DialogContent className="bg-white dark:bg-gray-50">
-            <DialogHeader>
-              <DialogTitle>Edit Category</DialogTitle>
-            </DialogHeader>
+    //     {/* Edit Dialog */}
+    //     <Dialog open={editOpen} onOpenChange={setEditOpen}>
+    //       <DialogContent className="bg-white dark:bg-gray-50">
+    //         <DialogHeader>
+    //           <DialogTitle>Edit Category</DialogTitle>
+    //         </DialogHeader>
 
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+    //         <Input
+    //           value={name}
+    //           onChange={(e) => setName(e.target.value)}
+    //         />
 
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setEditOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleEdit}>
-                {updateCategory.isPending ? "Saving..." : "Save"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+    //         <DialogFooter>
+    //           <Button variant="outline" onClick={() => setEditOpen(false)}>
+    //             Cancel
+    //           </Button>
+    //           <Button onClick={handleEdit}>
+    //             {updateCategory.isPending ? "Saving..." : "Save"}
+    //           </Button>
+    //         </DialogFooter>
+    //       </DialogContent>
+    //     </Dialog>
 
-        {/* Confirm Dialog */}
-        <AlertDialog
-          open={confirmDialog.open}
-          onOpenChange={(o) => setConfirmDialog((p) => ({ ...p, open: o }))}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {confirmDialog.action === "block" ? "Block" : "Unblock"} Category
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to {confirmDialog.action}{" "}
-                <strong>{confirmDialog.name}</strong>?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
+    //     {/* Confirm Dialog */}
+    //     <AlertDialog
+    //       open={confirmDialog.open}
+    //       onOpenChange={(o) => setConfirmDialog((p) => ({ ...p, open: o }))}
+    //     >
+    //       <AlertDialogContent>
+    //         <AlertDialogHeader>
+    //           <AlertDialogTitle>
+    //             {confirmDialog.action === "block" ? "Block" : "Unblock"} Category
+    //           </AlertDialogTitle>
+    //           <AlertDialogDescription>
+    //             Are you sure you want to {confirmDialog.action}{" "}
+    //             <strong>{confirmDialog.name}</strong>?
+    //           </AlertDialogDescription>
+    //         </AlertDialogHeader>
 
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleBlockUnblock}>
-                Confirm
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </div>
+    //         <AlertDialogFooter>
+    //           <AlertDialogCancel>Cancel</AlertDialogCancel>
+    //           <AlertDialogAction onClick={handleBlockUnblock}>
+    //             Confirm
+    //           </AlertDialogAction>
+    //         </AlertDialogFooter>
+    //       </AlertDialogContent>
+    //     </AlertDialog>
+    //   </div>
+    // </div>
+    <>
+    <AdminSubCategoryManagement />
+    </>
   );
 };
 

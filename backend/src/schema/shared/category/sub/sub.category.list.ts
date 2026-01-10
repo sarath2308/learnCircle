@@ -11,7 +11,7 @@ const ListSubCategoryQuerySchema = z.object({
     .transform(Number)
     .default(10)
     .optional(),
-  category: z.string().optional(),
+  categoryId: z.string().optional(),
 
   isBlocked: z
     .string()

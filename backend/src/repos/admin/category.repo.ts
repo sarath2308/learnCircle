@@ -28,4 +28,8 @@ export class CategoryRepo extends BaseRepo<ICategory> implements ICategoryRepo {
   async getAll(): Promise<(ICategory & Document)[]> {
     return await this._model.find({ isBlocked: false });
   }
+
+  async getCategoryByName(name: string): Promise<ICategory | null> {
+    return await this._model.findOne({ name: name });
+  }
 }

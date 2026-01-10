@@ -55,6 +55,11 @@ export const Messages = {
   //Category
   CATEGORY_NOT_CREATED: "Category Not Created",
   CATEGORY_NOT_FOUND: "Category Not Found",
+  CATEGORY_ALREADY_EXISTS: "Category with this name already exists.",
+  //Sub Category
+  SUBCATEGORY_NOT_CREATED: "Sub Category Not Created",
+  SUBCATEGORY_NOT_FOUND: "Sub Category Not Found",
+  SUBCATEGORY_ALREADY_EXISTS: "Sub Category with this name already exists.",
 
   //course
   COURSE_NOT_CREATED: "Failed to create course. Please try again later.",

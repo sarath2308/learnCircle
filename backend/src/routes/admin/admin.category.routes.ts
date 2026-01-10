@@ -1,4 +1,4 @@
-import { ICategoryController } from "@/interface/admin/category.controller.interface";
+import { ICategoryController } from "@/interface/shared/category/category.controller.interface";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { CategoryBlockSchema } from "@/schema/shared/category/category.block.schema";
 import { CategoryCreateSchema } from "@/schema/shared/category/category.create.schema";

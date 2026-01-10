@@ -11,7 +11,7 @@ export const SubCategoryParamsSchema = z.object({
   id: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid categoryId"),
 });
 
-export const CategoryUpdateSchema = z.object({
+export const SubCategoryUpdateSchema = z.object({
   params: CategoryParamsSchema,
   body: SubCategoryBodySchema,
 });

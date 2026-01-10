@@ -4,17 +4,10 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import DataTable from "@/components/PaginatedTable";
 import type { Column } from "@/components/PaginatedTable";
-
-import { useListCategory } from "@/hooks/admin/category/useListCategory";
-import { useCreateCategory } from "@/hooks/admin/category/useCreateCategory";
-import { useUpdateCategory } from "@/hooks/admin/category/useUpdateCategory";
-import { useBlockCategory } from "@/hooks/admin/category/useBlockCategory";
-import { useUnBlockCategory } from "@/hooks/admin/category/useUnBlockCategory";
 
 import {
   Dialog,
@@ -36,14 +29,34 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import { useListSubCategory } from "@/hooks/admin/category/sub/sub.category.list.hook";
+import { useCreateSubCategory } from "@/hooks/admin/category/sub/sub.category.create.hook";
+import { useUpdateSubCategory } from "@/hooks/admin/category/sub/sub.category.update.hook";
+import { useBlockSubCategory } from "@/hooks/admin/category/sub/sub.category.block.hook";
+import { useUnBlockSubCategory } from "@/hooks/admin/category/sub/sub.category.unblock.hook";
+import { useGetCategory } from "@/hooks/shared/category.get";
+
+/* ---------------- CONSTANTS ---------------- */
+
+const PAGE_SIZE = 10;
+
 /* ---------------- TYPES ---------------- */
+
+type SubCategory = {
+  id: string;
+  name: string;
+  isBlocked: boolean;
+  category: {
+    id: string;
+    name: string;
+  };
+};
 
 type Category = {
   id: string;
-  name: string;
-  categroy: string;
+  name: string; 
   isBlocked: boolean;
-};
+}
 
 /* ---------------- COMPONENT ---------------- */
 
@@ -54,15 +67,22 @@ const AdminSubCategoryManagement = () => {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<Category | null>(null);
+
+  const [editingItem, setEditingItem] = useState<SubCategory | null>(null);
   const [name, setName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
 
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     action: "block" | "unblock";
     id: string;
     name: string;
-  }>({ open: false, action: "block", id: "", name: "" });
+  }>({
+    open: false,
+    action: "block",
+    id: "",
+    name: "",
+  });
 
   /* ---------------- DEBOUNCE SEARCH ---------------- */
 
@@ -77,31 +97,47 @@ const AdminSubCategoryManagement = () => {
 
   /* ---------------- API HOOKS ---------------- */
 
-  const { data, isLoading, refetch } = useListCategory({
+  const { data, isLoading, refetch } = useListSubCategory({
     page,
-    limit: 10,
+    limit: PAGE_SIZE,
     search: debouncedSearch,
   });
 
-  const createCategory = useCreateCategory();
-  const updateCategory = useUpdateCategory();
-  const blockCategory = useBlockCategory();
-  const unblockCategory = useUnBlockCategory();
+ const { data: categories, isLoading: categoriesLoading } = useGetCategory();
 
-  const items: Category[] = data?.categoryData ?? [];
+  const createSubCategory = useCreateSubCategory();
+  const updateSubCategory = useUpdateSubCategory();
+  const blockSubCategory = useBlockSubCategory();
+  const unblockSubCategory = useUnBlockSubCategory();
+
+  const items: SubCategory[] = data?.subCategoryData ?? [];
   const totalCount = data?.total ?? 0;
+
+  /* ---------------- RESET ---------------- */
+
+  const resetForm = () => {
+    setName("");
+    setCategoryId("");
+  };
+
+  useEffect(() => {
+    if (!createOpen && !editOpen) {
+      resetForm();
+      setEditingItem(null);
+    }
+  }, [createOpen, editOpen]);
 
   /* ---------------- COLUMNS ---------------- */
 
-  const columns: Column<Category>[] = [
+  const columns: Column<SubCategory>[] = [
     {
-      header: "Sub Category Name",
+      header: "Sub Category",
       accessor: "name",
     },
     {
-        header:"Category",
-        accessor:"category",
-    }
+      header: "Category",
+      accessor: "category.name",
+    },
     {
       header: "Status",
       accessor: "isBlocked",
@@ -121,16 +157,16 @@ const AdminSubCategoryManagement = () => {
 
   /* ---------------- ACTIONS ---------------- */
 
-  const renderActions = (item: Category) => (
+  const renderActions = (item: SubCategory) => (
     <div className="flex gap-2">
       <Button
         size="sm"
-      className={`font-semibold ${
-    item.isBlocked
-      ? "text-green-600"
-      : "bg-red-600"
-  }`}
         variant={item.isBlocked ? "outline" : "destructive"}
+        disabled={
+          item.isBlocked
+            ? unblockSubCategory.isPending
+            : blockSubCategory.isPending
+        }
         onClick={() =>
           setConfirmDialog({
             open: true,
@@ -139,12 +175,20 @@ const AdminSubCategoryManagement = () => {
             name: item.name,
           })
         }
-        disabled={blockCategory.isPending || unblockCategory.isPending}
       >
         {item.isBlocked ? "Unblock" : "Block"}
       </Button>
 
-      <Button className="bg-yellow-300" size="sm" onClick={() => openEditDialog(item)}>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={() => {
+          setEditingItem(item);
+          setName(item.name);
+          setCategoryId(item.category.id);
+          setEditOpen(true);
+        }}
+      >
         Edit
       </Button>
     </div>
@@ -152,56 +196,52 @@ const AdminSubCategoryManagement = () => {
 
   /* ---------------- HANDLERS ---------------- */
 
-  const resetForm = () => setName("");
-
   const handleCreate = async () => {
-    if (!name.trim()) {
-      toast.error("Category name is required");
+    if (!name.trim() || !categoryId) {
+      toast.error("Subcategory name and category are required");
       return;
     }
 
-    await createCategory.mutateAsync({ name: name.trim() });
-    refetch();
+    await createSubCategory.mutateAsync({
+      name: name.trim(),
+      categoryId,
+    });
+
+    toast.success("Subcategory created");
     setCreateOpen(false);
-    resetForm();
+    refetch();
   };
 
   const handleEdit = async () => {
-    if (!editingItem || !name.trim()) {
-      toast.error("Category name is required");
+    if (!editingItem || !name.trim() || !categoryId) {
+      toast.error("All fields are required");
       return;
     }
 
-    await updateCategory.mutateAsync({
+    await updateSubCategory.mutateAsync({
       id: editingItem.id,
-      payload: { name: name.trim() },
+      payload: {
+        name: name.trim(),
+        categoryId,
+      },
     });
 
-    refetch();
+    toast.success("Subcategory updated");
     setEditOpen(false);
-    setEditingItem(null);
-    resetForm();
+    refetch();
   };
 
   const handleBlockUnblock = async () => {
-    try {
-      if (confirmDialog.action === "block") {
-        await blockCategory.mutateAsync({ id: confirmDialog.id });
-        toast.success(`${confirmDialog.name} blocked`);
-      } else {
-        await unblockCategory.mutateAsync({ id: confirmDialog.id });
-        toast.success(`${confirmDialog.name} unblocked`);
-      }
-      refetch();
-    } finally {
-      setConfirmDialog((p) => ({ ...p, open: false }));
+    if (confirmDialog.action === "block") {
+      await blockSubCategory.mutateAsync({ id: confirmDialog.id });
+      toast.success("Subcategory blocked");
+    } else {
+      await unblockSubCategory.mutateAsync({ id: confirmDialog.id });
+      toast.success("Subcategory unblocked");
     }
-  };
 
-  const openEditDialog = (item: Category) => {
-    setEditingItem(item);
-    setName(item.name);
-    setEditOpen(true);
+    setConfirmDialog((p) => ({ ...p, open: false }));
+    refetch();
   };
 
   /* ---------------- RENDER ---------------- */
@@ -209,43 +249,57 @@ const AdminSubCategoryManagement = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="p-6 max-w-6xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Category Management</h1>
-            <p className="text-gray-500">Manage your product categories</p>
+            <h1 className="text-3xl font-bold">Sub Category Management</h1>
+            <p className="text-gray-500">
+              Manage subcategories and their parent categories
+            </p>
           </div>
 
           <div className="flex gap-3">
             <Input
-              placeholder="Search categories..."
+              placeholder="Search subcategories..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-sm"
             />
 
-            <Dialog
-            open={createOpen} onOpenChange={setCreateOpen}>
+            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
-                <Button className="px-2 py-1 rounded text-sm font-medium outline-2 bg-green-600 dark:bg-blue-400 text-white">Create Category</Button>
+                <Button>Create Sub Category</Button>
               </DialogTrigger>
-              <DialogContent className="bg-white dark:bg-gray-50">
+
+              <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create Category</DialogTitle>
+                  <DialogTitle>Create Sub Category</DialogTitle>
                 </DialogHeader>
 
                 <Input
-                  placeholder="Category name"
+                  placeholder="Subcategory name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+
+                <select
+                  className="border rounded px-3 py-2"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                >
+                  <option value="">Select Category</option>
+                  {categories && categories.map((c: any) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
 
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setCreateOpen(false)}>
                     Cancel
                   </Button>
                   <Button onClick={handleCreate}>
-                    {createCategory.isPending ? "Creating..." : "Create"}
+                    {createSubCategory.isPending ? "Creating..." : "Create"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -253,53 +307,64 @@ const AdminSubCategoryManagement = () => {
           </div>
         </div>
 
-        {/* Table */}
-        
-          <DataTable<Category>
-            columns={columns}
-            data={items}
-            page={page}
-            pageSize={10}
-            total={totalCount}
-            rowKey={(row) => row.id}
-            onPageChange={setPage}
-            renderActions={renderActions}
-            isLoading={isLoading}
-            emptyState={<p className="text-center py-10">No categories found</p>}
-          />
+        <DataTable<SubCategory>
+          columns={columns}
+          data={items}
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={totalCount}
+          rowKey={(row) => row.id}
+          onPageChange={setPage}
+          renderActions={renderActions}
+          isLoading={isLoading}
+          emptyState={
+            <p className="text-center py-10">No subcategories found</p>
+          }
+        />
 
-        {/* Edit Dialog */}
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
-          <DialogContent className="bg-white dark:bg-gray-50">
+          <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Category</DialogTitle>
+              <DialogTitle>Edit Sub Category</DialogTitle>
             </DialogHeader>
 
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+
+            <select
+              className="border rounded px-3 py-2"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              <option value="">Select Category</option>
+              {categories && categories.map((c: any) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
 
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleEdit}>
-                {updateCategory.isPending ? "Saving..." : "Save"}
+                {updateSubCategory.isPending ? "Saving..." : "Save"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        {/* Confirm Dialog */}
         <AlertDialog
           open={confirmDialog.open}
-          onOpenChange={(o) => setConfirmDialog((p) => ({ ...p, open: o }))}
+          onOpenChange={(o) =>
+            setConfirmDialog((p) => ({ ...p, open: o }))
+          }
         >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {confirmDialog.action === "block" ? "Block" : "Unblock"} Category
+                {confirmDialog.action === "block" ? "Block" : "Unblock"} Sub
+                Category
               </AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to {confirmDialog.action}{" "}

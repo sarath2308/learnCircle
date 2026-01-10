@@ -19,6 +19,10 @@ export class CategoryService implements ICategoryService {
    * @returns
    */
   async createCategory(payload: CategoryCreateDtoType): Promise<CategoryDto> {
+    const present = await this._categoryRepo.getCategoryByName(payload.name);
+    if (present) {
+      throw new AppError(Messages.CATEGORY_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+    }
     const newCategory = await this._categoryRepo.create(payload);
     if (!newCategory) {
       throw new AppError(Messages.CATEGORY_NOT_CREATED);

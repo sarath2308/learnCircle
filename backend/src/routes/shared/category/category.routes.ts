@@ -1,4 +1,4 @@
-import { ICategoryController } from "@/interface/admin/category.controller.interface";
+import { ICategoryController } from "@/interface/shared/category/category.controller.interface";
 import { Router } from "express";
 
 export default function categoyRoutes(controller: ICategoryController) {

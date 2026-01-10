@@ -11,12 +11,18 @@ import { Router } from "express";
 import { ROLE } from "@/constants/shared/Role";
 import categoyRoutes from "./shared/category/category.routes";
 import { wrapAsyncController } from "@/utils/wrapAsyncClass";
-import { ICategoryController } from "@/interface/admin/category.controller.interface";
+import { ISubCategoryController } from "@/interface/shared/category/subCat/sub.category.controller.interface";
+import subCategoryAdminRoutes from "./admin/admin.sub.category";
+import { ICategoryController } from "@/interface/shared/category/category.controller.interface";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
   const categoryController = wrapAsyncController(
     container.get<ICategoryController>(TYPES.ICategoryController),
+  );
+
+  const subCategoryController = wrapAsyncController(
+    container.get<ISubCategoryController>(TYPES.ISubCategoryController),
   );
 
   const router = Router();
@@ -56,6 +62,12 @@ export function entryRoute() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL, ROLE.LEARNER),
     categoyRoutes(categoryController),
+  );
+
+  router.use(
+    "/category/sub-category",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL, ROLE.LEARNER),
   );
   return router;
 }

@@ -1,7 +1,7 @@
 import { IBaseRepo } from "@/repos/shared/base";
 import { FlattenMaps } from "mongoose";
-import { CategoryListArgs } from "./category.repo.interface";
 import { ISubcategory } from "@/model/shared/SubCategory";
+import { CategoryListArgs } from "../category.repo.interface";
 
 export interface ISubCategoryRepo extends IBaseRepo<ISubcategory> {
   list: ({
@@ -11,4 +11,6 @@ export interface ISubCategoryRepo extends IBaseRepo<ISubcategory> {
     sort,
   }: CategoryListArgs) => Promise<Array<FlattenMaps<ISubcategory>>>;
   count: (query: any) => Promise<number>;
+
+  getSubCategoryByName: (name: string) => Promise<ISubcategory | null>;
 }

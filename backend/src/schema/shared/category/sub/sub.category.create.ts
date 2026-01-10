@@ -6,7 +6,7 @@ export const SubCategoryBodySchema = z.object({
   isBlocked: z.boolean().default(false),
 });
 
-export const CategoryCreateSchema = z.object({
+export const SubCategoryCreateSchema = z.object({
   body: SubCategoryBodySchema,
 });
 
