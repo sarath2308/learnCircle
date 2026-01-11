@@ -6,6 +6,7 @@ export interface CourseDetailsState {
   title: string;
   description: string;
   category: string;
+  subCategory?: string;
   skillLevel: "beginner" | "intermediate" | "advanced" | "";
 }
 
@@ -14,6 +15,7 @@ const initialState: CourseDetailsState = {
   title: "",
   description: "",
   category: "",
+  subCategory: "",
   skillLevel: "", // force user to pick a valid level
 };
 

@@ -12,8 +12,8 @@ import { ROLE } from "@/constants/shared/Role";
 import categoyRoutes from "./shared/category/category.routes";
 import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 import { ISubCategoryController } from "@/interface/shared/category/subCat/sub.category.controller.interface";
-import subCategoryAdminRoutes from "./admin/admin.sub.category";
 import { ICategoryController } from "@/interface/shared/category/category.controller.interface";
+import subCategoryRoutes from "./shared/category/sub.category.routes";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -65,9 +65,10 @@ export function entryRoute() {
   );
 
   router.use(
-    "/category/sub-category",
+    "/category",
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL, ROLE.LEARNER),
+    subCategoryRoutes(subCategoryController),
   );
   return router;
 }

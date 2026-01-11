@@ -4,6 +4,10 @@ const bodySchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
   description: z.string().min(5, "Description must be at least 5 characters"),
   category: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid categoryId"),
+  subCategory: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, "Invalid subCategoryId")
+    .optional(),
   skillLevel: z.enum(["Beginner", "Intermediate", "Advanced"]),
 });
 

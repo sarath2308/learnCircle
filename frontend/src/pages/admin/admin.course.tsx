@@ -1,4 +1,5 @@
 
+import CreateCourseStepper from "@/components/createCourse/create.course.stepper";
 import DataTable, { type Column } from "@/components/PaginatedTable";
 import { Input } from "@/components/ui/input";
 import { useGetCourses } from "@/hooks/admin/course/courses.get";
@@ -109,6 +110,7 @@ const categoryData = useGetCategory();
            total={totalCount}
             rowKey={(value)=> value.id}
             onPageChange={setPage}/>
+            <CreateCourseStepper />
     </div>
   );
 };

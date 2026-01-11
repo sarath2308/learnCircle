@@ -13,4 +13,6 @@ export interface ISubCategoryRepo extends IBaseRepo<ISubcategory> {
   count: (query: any) => Promise<number>;
 
   getSubCategoryByName: (name: string) => Promise<ISubcategory | null>;
+
+  getSubCategoriesByCategoryId: (categoryId: string) => Promise<Array<FlattenMaps<ISubcategory>>>;
 }

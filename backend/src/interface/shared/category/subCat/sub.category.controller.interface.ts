@@ -7,5 +7,5 @@ export interface ISubCategoryController {
   blockSubCategory: (req: IAuthRequest, res: Response) => Promise<void>;
   unblockSubCategory: (req: IAuthRequest, res: Response) => Promise<void>;
   listSubCategoryForAdmin: (req: IAuthRequest, res: Response) => Promise<void>;
-  getSubCategoryForUser: (req: IAuthRequest, res: Response) => Promise<void>;
+  getSubCategoryByCategoryId: (req: IAuthRequest, res: Response) => Promise<void>;
 }

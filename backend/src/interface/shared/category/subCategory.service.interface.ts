@@ -2,11 +2,12 @@ import { SubCategoryCreateDtoType } from "@/schema/shared/category/sub/sub.categ
 import { ListSubCategoryFilterType } from "@/schema/shared/category/sub/sub.category.list";
 import { SubCategoryDto } from "@/schema/shared/category/sub/sub.category.response";
 import { SubCategoryUpdateDtoType } from "@/schema/shared/category/sub/sub.category.update";
+import { SubCategoryUserResponseType } from "@/schema/shared/category/sub/sub.category.user.response";
 
 export interface ISubCategoryService {
-  createCategory(payload: SubCategoryCreateDtoType): Promise<SubCategoryDto>;
+  createCategory(payload: SubCategoryCreateDtoType): Promise<void>;
 
-  updateCategory(id: string, payload: SubCategoryUpdateDtoType): Promise<SubCategoryDto>;
+  updateCategory(id: string, payload: SubCategoryUpdateDtoType): Promise<void>;
 
   blockCategory(id: string): Promise<void>;
 
@@ -16,5 +17,5 @@ export interface ISubCategoryService {
     filters?: ListSubCategoryFilterType,
   ): Promise<{ category: SubCategoryDto[]; total: number }>;
 
-  getCategoryForUser: () => Promise<SubCategoryDto[]>;
+  getSubCategoriesByCategoryId(categoryId: string): Promise<SubCategoryUserResponseType[] | []>;
 }

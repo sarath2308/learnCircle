@@ -19,6 +19,7 @@ import { useCreateCourse } from "@/hooks/shared/create.course.step1";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { setCourseDetails } from "@/redux/slice/courseDetails";
+import { useGetSubCategories } from "@/hooks/shared/sub.category.get";
 
 interface CourseDetailsProps {
   handleNext: () => void;
@@ -40,10 +41,14 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
   const courseDetails = useSelector((state: RootState) => state.courseDetails);
   const dispatch = useDispatch();
 
+    const {data: subCategoryData, isLoading: subcategoriesLoading} = useGetSubCategories(courseDetails.category);
+   const subCategories = subCategoryData?.subCategories ?? [];
+
   const [errors, setErrors] = useState<Step1Errors>({
     title: "",
     description: "",
     category: "",
+    subCategory:"",
     skillLevel: "",
     thumbnail: "",
   });
@@ -70,6 +75,10 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
 
   const validate = () => {
     const result = Step1Schema.safeParse(courseDetails);
+    if(subCategories.length > 0 && !courseDetails.subCategory){
+      setErrors((prev) => ({ ...prev, subCategory: "Sub Category is required" }));
+      return false;
+    }
     if (!result.success) {
       const flat = result.error.flatten().fieldErrors;
       setErrors({
@@ -85,6 +94,7 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
       title: "",
       description: "",
       category: "",
+      subCategory: "",
       skillLevel: "",
       thumbnail: "",
     });
@@ -101,6 +111,7 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
     formData.append("title", courseDetails.title);
     formData.append("description", courseDetails.description);
     formData.append("category", courseDetails.category);
+    formData.append("subCategory", courseDetails.subCategory? courseDetails.subCategory : "");
     formData.append("skillLevel", courseDetails.skillLevel);
     formData.append("thumbnail", thumbnailFile);
 
@@ -197,6 +208,39 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
               {errors.category && (
                 <p className="text-red-500 dark:text-red-400 text-sm flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4" /> {errors.category}
+                </p>
+              )}
+            </div>
+
+              <div className="space-y-2">
+              <Label className="text-base font-semibold text-gray-700 dark:text-gray-300">Sub Category</Label>
+              {categoriesLoading ? (
+                <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />
+              ) : (
+                <Select value={courseDetails.subCategory} onValueChange={(v) => dispatch(setCourseDetails({ subCategory: v }))}>
+                  <SelectTrigger className="h-12 border-gray-300 dark:border-gray-700 dark:bg-gray-900/50 data-[state=open]:ring-2 data-[state=open]:ring-blue-500 dark:data-[state=open]:ring-blue-400  dark:text-white">
+                    <SelectValue placeholder="Select a sub category" className="text-gray-600   dark:text-white" />
+                  </SelectTrigger>
+                  <SelectContent
+                    className="min-w-[var(--radix-select-trigger-width)] bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 shadow-2xl rounded-lg z-50 dark:text-white"
+                    position="popper"
+                    sideOffset={8}
+                  >
+                    {subCategories.map((cat) => (
+                      <SelectItem
+                        key={cat.id}
+                        value={cat.id}
+                        className="py-3 px-4 text-base cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800"
+                      >
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {errors.subCategory && (
+                <p className="text-red-500 dark:text-red-400 text-sm flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4" /> {errors.subCategory}
                 </p>
               )}
             </div>

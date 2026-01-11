@@ -64,6 +64,7 @@ const AdminSubCategoryManagement = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [filterCategoryId, setFilterCategoryId] = useState("");
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -101,6 +102,7 @@ const AdminSubCategoryManagement = () => {
     page,
     limit: PAGE_SIZE,
     search: debouncedSearch,
+    categoryId: filterCategoryId,
   });
 
  const { data: categories, isLoading: categoriesLoading } = useGetCategory();
@@ -136,7 +138,8 @@ const AdminSubCategoryManagement = () => {
     },
     {
       header: "Category",
-      accessor: "category.name",
+      accessor: "category",
+      cell: (_, row) => row.category.name,
     },
     {
       header: "Status",
@@ -160,6 +163,7 @@ const AdminSubCategoryManagement = () => {
   const renderActions = (item: SubCategory) => (
     <div className="flex gap-2">
       <Button
+      className={item.isBlocked ? "bg-yellow-400" : "bg-red-600"}
         size="sm"
         variant={item.isBlocked ? "outline" : "destructive"}
         disabled={
@@ -182,6 +186,7 @@ const AdminSubCategoryManagement = () => {
       <Button
         size="sm"
         variant="secondary"
+        className="bg-yellow-300"
         onClick={() => {
           setEditingItem(item);
           setName(item.name);
@@ -207,7 +212,6 @@ const AdminSubCategoryManagement = () => {
       categoryId,
     });
 
-    toast.success("Subcategory created");
     setCreateOpen(false);
     refetch();
   };
@@ -251,7 +255,7 @@ const AdminSubCategoryManagement = () => {
       <div className="p-6 max-w-6xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Sub Category Management</h1>
+            <h1 className="text-3xl font-bold dark:text-white">Sub Category Management</h1>
             <p className="text-gray-500">
               Manage subcategories and their parent categories
             </p>
@@ -264,13 +268,25 @@ const AdminSubCategoryManagement = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-sm"
             />
+               <select
+              className="border rounded px-3 py-2"
+              value={filterCategoryId}
+              onChange={(e) => setFilterCategoryId(e.target.value)}
+            >
+              <option value="">Select Category</option>
+              {categories && categories.map((c: any) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
 
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
-                <Button>Create Sub Category</Button>
+                <Button className="bg-green-500  dark:text-white dark:bg-blue-500">Create Sub Category</Button>
               </DialogTrigger>
 
-              <DialogContent>
+              <DialogContent className="bg-white dark:bg-blue-50">
                 <DialogHeader>
                   <DialogTitle>Create Sub Category</DialogTitle>
                 </DialogHeader>

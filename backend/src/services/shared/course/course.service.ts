@@ -38,12 +38,16 @@ export class CourseService implements ICourseService {
       if (present) {
         throw new AppError(Messages.COURSE_DUPLICATE, HttpStatus.BAD_REQUEST);
       }
-
+      let subCategoryId: mongoose.Types.ObjectId | undefined = undefined;
+      if (data.subCategory) {
+        subCategoryId = new mongoose.Types.ObjectId(data.subCategory);
+      }
       const categoryObjectId = new mongoose.Types.ObjectId(data.category);
 
       const createdCourse = await this._courseRepo.create({
         ...data,
         category: categoryObjectId,
+        subCategory: subCategoryId,
       });
 
       if (!createdCourse) {
@@ -76,9 +80,14 @@ export class CourseService implements ICourseService {
 
   async editCourse(courseId: string, payload: Partial<createCourseDtoType>): Promise<void> {
     const categoryObjectId = new mongoose.Types.ObjectId(payload.category);
+    let subCategoryId: mongoose.Types.ObjectId | undefined = undefined;
+    if (payload.subCategory) {
+      subCategoryId = new mongoose.Types.ObjectId(payload.subCategory);
+    }
     let updated = await this._courseRepo.update(courseId, {
       ...payload,
       category: categoryObjectId,
+      subCategory: subCategoryId,
     });
     if (!updated) {
       throw new AppError(Messages.COURSE_NOT_UPDATED, HttpStatus.NOT_MODIFIED);

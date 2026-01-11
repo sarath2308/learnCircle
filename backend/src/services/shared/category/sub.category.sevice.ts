@@ -9,24 +9,35 @@ import {
   SubCategoryDto,
   SubCategorySchema,
 } from "@/schema/shared/category/sub/sub.category.response";
+import {
+  SubCategoryUserResponseSchema,
+  SubCategoryUserResponseType,
+} from "@/schema/shared/category/sub/sub.category.user.response";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
+
+type CategoryPopulated = {
+  _id: Types.ObjectId;
+  name: string;
+};
 
 @injectable()
 export class SubCategoryService implements ISubCategoryService {
   constructor(@inject(TYPES.ISubCategoryRepo) private _subCategoryRepo: ISubCategoryRepo) {}
 
-  async createCategory(payload: SubCategoryCreateDtoType): Promise<SubCategoryDto> {
+  async createCategory(payload: SubCategoryCreateDtoType): Promise<void> {
     const present = await this._subCategoryRepo.getSubCategoryByName(payload.name);
 
     if (present) throw new AppError(Messages.SUBCATEGORY_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
     const categoryId = new mongoose.Types.ObjectId(payload.categoryId);
     const newSubCategory = await this._subCategoryRepo.create({ ...payload, categoryId });
-    return SubCategorySchema.parse(newSubCategory);
+    if (!newSubCategory) {
+      throw new AppError(Messages.SUBCATEGORY_CREATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  async updateCategory(id: string, payload: Partial<SubCategoryCreateDtoType>): Promise<any> {
+  async updateCategory(id: string, payload: Partial<SubCategoryCreateDtoType>): Promise<void> {
     let categoryId: mongoose.Types.ObjectId;
     const subcategory = await this._subCategoryRepo.findById(id);
     if (!subcategory) {
@@ -37,7 +48,6 @@ export class SubCategoryService implements ISubCategoryService {
     subcategory.name = payload.name || subcategory.name;
     subcategory.categoryId = categoryId || subcategory.categoryId;
     await subcategory.save();
-    return SubCategorySchema.parse(subcategory);
   }
   async blockCategory(id: string): Promise<void> {
     let subcategory = await this._subCategoryRepo.findById(id);
@@ -81,7 +91,7 @@ export class SubCategoryService implements ISubCategoryService {
     }
 
     if (categoryId) {
-      query.categoryId = categoryId;
+      query.categoryId = new mongoose.Types.ObjectId(categoryId);
     }
 
     const skip = (page - 1) * limit;
@@ -96,18 +106,38 @@ export class SubCategoryService implements ISubCategoryService {
     ]);
 
     // Inject id and validate with Zod
-    const formatted = categories.map((c) =>
-      SubCategorySchema.parse({
+    const formatted = categories.map((c) => {
+      let category = c.categoryId as unknown as CategoryPopulated;
+      return SubCategorySchema.parse({
         id: String(c._id),
-        category: { id: String(c.categoryId._id), name: c.categoryId.name },
+        category: {
+          id: String(category._id),
+          name: category.name ? category.name : "",
+        },
         ...c,
-      }),
-    );
+      });
+    });
 
     return { category: formatted, total };
   }
 
-  async getCategoryForUser(): Promise<any[]> {
-    throw new Error("Method not implemented.");
+  async getSubCategoriesByCategoryId(
+    categoryId: string,
+  ): Promise<SubCategoryUserResponseType[] | []> {
+    const subcategories = await this._subCategoryRepo.getSubCategoriesByCategoryId(categoryId);
+    if (subcategories.length === 0) {
+      return [];
+    }
+
+    const formatted = subcategories.map((c) => {
+      const { categoryId, ...rest } = c;
+      return SubCategoryUserResponseSchema.parse({
+        id: String(c._id),
+        categoryId: String(categoryId),
+        ...rest,
+      });
+    });
+
+    return formatted;
   }
 }

@@ -11,6 +11,10 @@ export class SubCategoryRepo extends BaseRepo<ISubcategory> implements ISubCateg
   constructor(@inject(TYPES.ISubCategoryModel) private _model: Model<ISubcategory>) {
     super(_model);
   }
+  async create(payload: Partial<ISubcategory>): Promise<ISubcategory> {
+    const newSubCategory = new this._model(payload);
+    return await newSubCategory.save();
+  }
   async list({
     query,
     limit,
@@ -31,5 +35,13 @@ export class SubCategoryRepo extends BaseRepo<ISubcategory> implements ISubCateg
 
   async getSubCategoryByName(name: string): Promise<ISubcategory | null> {
     return await this._model.findOne({ name: name });
+  }
+  async getSubCategoriesByCategoryId(
+    categoryId: string,
+  ): Promise<Array<FlattenMaps<ISubcategory>>> {
+    return await this._model
+      .find({ categoryId: categoryId, isBlocked: false })
+      .populate("categoryId")
+      .lean();
   }
 }

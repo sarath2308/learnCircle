@@ -36,7 +36,7 @@ export class SubCategoryController implements ISubCategoryController {
   }
 
   async listSubCategoryForAdmin(req: IAuthRequest, res: Response): Promise<void> {
-    const { page, limit, search, isBlocked, sortBy, sortOrder } = req.query;
+    const { page, limit, search, isBlocked, sortBy, sortOrder, categoryId } = req.query;
 
     const filters = {
       page: page ? Number(page) : undefined,
@@ -44,6 +44,7 @@ export class SubCategoryController implements ISubCategoryController {
       search: search ? String(search) : undefined,
       isBlocked: isBlocked === "true" ? true : isBlocked === "false" ? false : undefined,
       sortBy: sortBy ? String(sortBy) : undefined,
+      categoryId: categoryId ? String(categoryId) : undefined,
       sortOrder: sortOrder as "asc" | "desc" | undefined,
     };
     let result = await this._subCategoryService.listCategoryForAdmin(filters);
@@ -52,8 +53,9 @@ export class SubCategoryController implements ISubCategoryController {
       .json({ success: true, subCategoryData: result.category, total: result.total });
   }
 
-  async getSubCategoryForUser(req: IAuthRequest, res: Response): Promise<void> {
-    const data = await this._subCategoryService.getCategoryForUser();
-    res.status(HttpStatus.OK).json({ success: true, subCategoryData: data });
+  async getSubCategoryByCategoryId(req: IAuthRequest, res: Response): Promise<void> {
+    const { categoryId } = req.params;
+    const result = await this._subCategoryService.getSubCategoriesByCategoryId(categoryId);
+    res.status(HttpStatus.OK).json({ success: true, subCategories: result });
   }
 }

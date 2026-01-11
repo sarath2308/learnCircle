@@ -200,7 +200,7 @@ const Users = () => {
           placeholder="Search users..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1"
+          className="flex-1 max-w-md"
         />
 
         <Select value={role} onValueChange={(val) => setRole(val as "learner" | "professional")}>

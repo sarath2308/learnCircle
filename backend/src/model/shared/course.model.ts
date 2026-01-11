@@ -4,6 +4,7 @@ export interface ICourse extends Document {
   title: string;
   description: string;
   category: Types.ObjectId;
+  subCategory?: Types.ObjectId;
   skillLevel: "Beginner" | "Intermediate" | "Advanced";
   thumbnail_key: string;
   price?: number;
@@ -27,6 +28,7 @@ const courseSchema = new Schema<ICourse>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+    subCategory: { type: Schema.Types.ObjectId, ref: "SubCategory" },
     skillLevel: {
       type: String,
       enum: ["Beginner", "Intermediate", "Advanced"],
