@@ -14,7 +14,10 @@ export interface AdminCourseDetailsResponse {
   title: string;
   description?: string;
   status: string;
-  createdBy: string;
+  createdBy: {
+    name?: string;
+    role?: string;
+  };
   createdAt: Date | string;
 
   thumbnailUrl: string | null;

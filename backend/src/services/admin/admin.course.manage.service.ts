@@ -16,6 +16,18 @@ import { adminLessonResponseSchema } from "@/schema/admin/course/lesson.response
 import { AdminCourseDetailsResponse } from "@/types/admin/course/admin.course.manage.type";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
+import { Types } from "mongoose";
+
+type CreatedByPopulated = {
+  _id: Types.ObjectId;
+  name: string;
+  role: string;
+};
+
+type CourseObjType = {
+  _id: Types.ObjectId;
+  name: string;
+};
 
 @injectable()
 export class AdminCourseManagementService implements IAdminCourseManagementService {
@@ -51,13 +63,22 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
         const thumbnailUrl = courseObj.thumbnail_key
           ? await this._s3Service.getFileUrl(courseObj.thumbnail_key)
           : undefined;
-
+          const category = courseObj.category as unknown as CourseObjType;
+          const createdBy = courseObj.createdBy as unknown as CreatedByPopulated;
         const shapedObj = {
           id: String(courseObj._id),
           title: courseObj.title,
           status: courseObj.status,
-          category: courseObj.category.name ?? "",
-          createdBy: courseObj.createdBy?.name ?? "",
+          category: category.name,
+          skillLevel: courseObj.skillLevel,
+          price: courseObj.price,
+          type: courseObj.type,
+          description: courseObj.description,
+          createdBy: {
+            id: createdBy?._id ? String(createdBy._id) : "",
+            name: createdBy?.name ?? "",
+            role: createdBy?.role ?? "",
+          },
           createdAt: courseObj.createdAt,
           chapterCount: courseObj.chapterCount,
           thumbnailUrl: thumbnailUrl ?? "",
@@ -88,10 +109,16 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
     if (courseData.thumbnail_key) {
       thumbnailUrl = await this._s3Service.getFileUrl(courseData.thumbnail_key);
     }
-
+    const createdBy = courseData.createdBy as unknown as CreatedByPopulated;
+    const category = courseData.category as unknown as CourseObjType;
     const courseObj = {
       ...courseData.toObject(),
-      id: courseData._id,
+      id: String(courseData._id),
+      category: category.name,
+      createdBy: {
+        name: createdBy?.name,
+        role: createdBy?.role,
+      },
       thumbnailUrl,
     };
 

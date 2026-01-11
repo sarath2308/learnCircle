@@ -59,4 +59,9 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
   async getTotalCourseCount(): Promise<number> {
     return await this._model.countDocuments({ status: { $ne: "draft" } });
   }
+
+  async findById(id: string): Promise<ICourse | null> {
+    return await this._model.findById(id).populate("category").populate("createdBy");
+}
+
 }

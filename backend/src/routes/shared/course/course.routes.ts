@@ -7,7 +7,6 @@ import { Router } from "express";
 
 export function courseRoutes(controller: ICourseController) {
   const router = Router();
-
   router.post(
     "/",
     busboyUpload,

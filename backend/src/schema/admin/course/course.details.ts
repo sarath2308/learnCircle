@@ -1,3 +1,4 @@
+
 import z from "zod";
 
 export const courseDetailsSchema = z.object({
@@ -5,8 +6,16 @@ export const courseDetailsSchema = z.object({
   title: z.string(),
   status: z.string(),
   category: z.string(),
+  skillLevel: z.string(),
+  price: z.number().optional(),
+  type: z.string(),
+  description: z.string().optional(),
   createdAt: z.date(),
-  createdBy: z.string(),
+  createdBy: z.object({
+    name: z.string().optional(),
+    role: z.string().optional(),
+  }),
+  isBlocked: z.boolean().optional(),
   chapterCount: z.number(),
   thumbnailUrl: z.string(),
 });

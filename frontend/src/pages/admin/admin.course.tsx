@@ -2,9 +2,11 @@
 import CreateCourseStepper from "@/components/createCourse/create.course.stepper";
 import DataTable, { type Column } from "@/components/PaginatedTable";
 import { Input } from "@/components/ui/input";
-import { useGetCourses } from "@/hooks/admin/course/courses.get";
+import { useGetAllCourses } from "@/hooks/admin/course/courses.get";
 import { useGetCategory } from "@/hooks/shared/category.get";
 import { useState } from "react";
+import AdminCourseViewPage from "./admin.course.view";
+import { Link } from "react-router-dom";
 type CourseType = {
  id: string,
   title: string,
@@ -27,7 +29,7 @@ const statusStyles: Record<string, string> = {
  
 const AdminCourse = () => {
   const [page,setPage] = useState(1);
- const { data , isLoading } = useGetCourses({
+ const { data , isLoading } = useGetAllCourses({
   page,
   limit: 10,
 });
@@ -87,7 +89,12 @@ const categoryData = useGetCategory();
   const renderActions = (course:CourseType) => {
     return (
       <div>
-        <button className="text-blue-600 hover:underline mr-2">View</button>
+          <Link
+    to={`/admin/courses/${course.id}`}
+    className="text-blue-600 hover:underline mr-2"
+  >
+    View
+  </Link>
       </div>
     );
   }
@@ -110,7 +117,6 @@ const categoryData = useGetCategory();
            total={totalCount}
             rowKey={(value)=> value.id}
             onPageChange={setPage}/>
-            <CreateCourseStepper />
     </div>
   );
 };

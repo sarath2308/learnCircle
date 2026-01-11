@@ -1,7 +1,7 @@
-import { adminCourseManagement } from "@/api/admin/admon.course.manage";
+import { adminCourseManagement } from "@/api/admin/admin.course.manage";
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetCourses = ({page,limit}:{page: number, limit: number})=>
+export const useGetAllCourses = ({page,limit}:{page: number, limit: number})=>
 {
     return useQuery({
         queryKey:["get-courses",page,limit],
