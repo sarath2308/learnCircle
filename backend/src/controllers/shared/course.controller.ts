@@ -34,4 +34,16 @@ export class CourseController implements ICourseController {
     await this._courseService.updatePriceDetails(id, req.body);
     res.status(HttpStatus.OK).json({ success: true });
   }
+
+  async getCouseDataForCourseManagement(req: IAuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const courseData = await this._courseService.getCouseDataForCourseManagement(userId);
+    res.status(HttpStatus.OK).json({ success: true, courseData });
+  }
+
+  async getCourseById(req: IAuthRequest, res: Response): Promise<void> {
+    const { id } = req.params;
+    const courseData = await this._courseService.getCourseById(id);
+    res.status(HttpStatus.OK).json({ success: true, courseData });
+  }
 }

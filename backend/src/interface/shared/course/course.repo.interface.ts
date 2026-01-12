@@ -14,4 +14,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   getAllCourse: (skip: number, limit: number) => Promise<ICourse[] | null>;
   getTotalCourseCount: () => Promise<number>;
   findById: (id: string) => Promise<ICourse | null>;
+  getCourseDataFromUserId: (userId: string) => Promise<ICourse[]>;
 }

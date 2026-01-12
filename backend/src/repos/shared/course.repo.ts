@@ -62,6 +62,9 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
 
   async findById(id: string): Promise<ICourse | null> {
     return await this._model.findById(id).populate("category").populate("createdBy");
-}
+  }
 
+  async getCourseDataFromUserId(userId: string): Promise<ICourse[]> {
+    return await this._model.find({ createdBy: userId, isDeleted: false }).populate("category");
+  }
 }

@@ -10,6 +10,8 @@ import {
   IconCreditCard,
   IconMessageCircle,
   IconAnalyze,
+  IconActivity,
+  IconAdjustmentsPin,
 } from "@tabler/icons-react";
 import { Outlet } from "react-router-dom";
 
@@ -24,6 +26,7 @@ export default function AdminLayoutWrapper() {
     { label: "Payments", path: "/admin/payments", icon: <IconCreditCard className="h-5 w-5" /> },
     { label: "Reviews", path: "/admin/reviews", icon: <IconMessageCircle className="h-5 w-5" /> },
     { label: "Category", path: "/admin/category", icon: <IconAnalyze className="h-5 w-5" /> },
+    { label: "My Courses", path: "/admin/my-courses", icon: <IconAdjustmentsPin className="h-5 w-5" /> },
   ];
 
   const logout = () => {

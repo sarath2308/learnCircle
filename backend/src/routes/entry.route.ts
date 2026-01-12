@@ -14,6 +14,7 @@ import { wrapAsyncController } from "@/utils/wrapAsyncClass";
 import { ISubCategoryController } from "@/interface/shared/category/subCat/sub.category.controller.interface";
 import { ICategoryController } from "@/interface/shared/category/category.controller.interface";
 import subCategoryRoutes from "./shared/category/sub.category.routes";
+import { creatorEntryRoutes } from "./shared/course-creator/creator.entry";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -69,6 +70,13 @@ export function entryRoute() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL, ROLE.LEARNER),
     subCategoryRoutes(subCategoryController),
+  );
+
+  router.use(
+    "/creator",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.PROFESSIONAL, ROLE.ADMIN),
+    creatorEntryRoutes(),
   );
   return router;
 }

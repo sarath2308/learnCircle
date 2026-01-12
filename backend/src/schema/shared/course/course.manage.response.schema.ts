@@ -1,10 +1,10 @@
 import z from "zod";
 
-export const courseResponseSchema = z.object({
+export const courseManageResponseSchema = z.object({
   id: z.string(),
   title: z.string(),
-  description: z.string(),
   category: z.string(),
+  thumbnail: z.string(),
   skillLevel: z.string(),
   price: z.number().optional(),
   discount: z.number().optional(),
@@ -12,4 +12,4 @@ export const courseResponseSchema = z.object({
   status: z.string(),
 });
 
-export type courseResponseType = z.infer<typeof courseResponseSchema>;
+export type courseManageResponseType = z.infer<typeof courseManageResponseSchema>;

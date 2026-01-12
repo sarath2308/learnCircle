@@ -54,7 +54,7 @@ export function SidebarLayout({
   return (
     <div
       className={cn(
-        "fixed inset-0 flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 overflow-hidden",
+        "fixed inset-0 flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 overflow-hidden mt-5",
       )}
     >
       {/* SIDEBAR */}

@@ -8,6 +8,7 @@ const Users = lazy(() => import("@/pages/admin/Users"));
 const AdminCourse = lazy(() => import("@/pages/admin/admin.course"));
 const AdminCategory = lazy(() => import("@/pages/admin/admin.category"));
 const AdminCourseView = lazy(()=> import("@/pages/admin/admin.course.view"));
+const AdminMyCourse = lazy(()=> import("@/components/shared/MyCourse"));
 import ProtectedAdminRoute from "./protected/protected.admin.routes";
 
 const AdminRoutes: RouteObject[] = [
@@ -30,6 +31,7 @@ const AdminRoutes: RouteObject[] = [
           { path: "courses", element: <AdminCourse /> },
           { path: "category", element: <AdminCategory /> },
           { path: "courses/:id", element: <AdminCourseView /> },
+          { path: "my-courses", element: <AdminMyCourse/> },
         ],
       },
     ],

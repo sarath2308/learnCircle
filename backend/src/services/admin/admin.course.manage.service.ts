@@ -24,7 +24,7 @@ type CreatedByPopulated = {
   role: string;
 };
 
-type CourseObjType = {
+export type CategoryObjType = {
   _id: Types.ObjectId;
   name: string;
 };
@@ -63,8 +63,8 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
         const thumbnailUrl = courseObj.thumbnail_key
           ? await this._s3Service.getFileUrl(courseObj.thumbnail_key)
           : undefined;
-          const category = courseObj.category as unknown as CourseObjType;
-          const createdBy = courseObj.createdBy as unknown as CreatedByPopulated;
+        const category = courseObj.category as unknown as CategoryObjType;
+        const createdBy = courseObj.createdBy as unknown as CreatedByPopulated;
         const shapedObj = {
           id: String(courseObj._id),
           title: courseObj.title,
@@ -110,7 +110,7 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
       thumbnailUrl = await this._s3Service.getFileUrl(courseData.thumbnail_key);
     }
     const createdBy = courseData.createdBy as unknown as CreatedByPopulated;
-    const category = courseData.category as unknown as CourseObjType;
+    const category = courseData.category as unknown as CategoryObjType;
     const courseObj = {
       ...courseData.toObject(),
       id: String(courseData._id),

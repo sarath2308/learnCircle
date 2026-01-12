@@ -16,6 +16,11 @@ import {
   courseResponseType,
 } from "@/schema/shared/course/course.response.schema";
 import { ISafeDeleteService } from "@/utils/safe.delete.service";
+import {
+  courseManageResponseSchema,
+  courseManageResponseType,
+} from "@/schema/shared/course/course.manage.response.schema";
+import { CategoryObjType } from "@/services/admin/admin.course.manage.service";
 
 @injectable()
 export class CourseService implements ICourseService {
@@ -133,5 +138,49 @@ export class CourseService implements ICourseService {
   }
 
   async getCourseDataForUserHome(): Promise<void> {}
-  async getCouseDataForCourseManagement(): Promise<void> {}
+
+  async getCouseDataForCourseManagement(userId: string): Promise<courseManageResponseType[]> {
+    const courseData = await this._courseRepo.getCourseDataFromUserId(userId);
+    if (courseData.length === 0) {
+      throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return Promise.all(
+      courseData.map(async (course) => {
+        let thumbnailUrl = null;
+        if (course.thumbnail_key) {
+          thumbnailUrl = await this._s3Service.getFileUrl(
+            course.thumbnail_key,
+            Number(process.env.S3_URL_EXPIRES_IN),
+          );
+        }
+
+        const category = course.category as unknown as CategoryObjType;
+        const responseObject = {
+          ...course,
+          id: String(course._id),
+          title: course.title,
+          status: course.status,
+          type: course.type,
+          thumbnail: thumbnailUrl ?? "",
+          category: category.name,
+          price: course.type === "Free" ? 0 : course.price,
+          discount: course.type === "Free" ? 0 : course.discount,
+          skillLevel: course.skillLevel,
+        };
+        return courseManageResponseSchema.parse(responseObject);
+      }),
+    );
+  }
+  async getCourseById(courseId: string): Promise<courseResponseType> {
+    const courseData = await this._courseRepo.findById(courseId);
+
+    if (!courseData) {
+      throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const responseObject = {
+      ...courseData,
+      id: courseData._id,
+    };
+    return courseResponseSchema.parse(responseObject);
+  }
 }
