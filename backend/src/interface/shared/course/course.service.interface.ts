@@ -3,6 +3,7 @@ import { CoursePriceDtoType } from "@/schema/shared/course/course.pricing.schema
 import { UploadedFile } from "../uploadFile.interface";
 import { courseResponseType } from "@/schema/shared/course/course.response.schema";
 import { courseManageResponseType } from "@/schema/shared/course/course.manage.response.schema";
+import { CourseStatus } from "./course.repo.interface";
 
 export default interface ICourseService {
   createCourse: (
@@ -14,6 +15,9 @@ export default interface ICourseService {
   getAllCourse: () => Promise<any>;
   updatePriceDetails: (id: string, data: CoursePriceDtoType) => Promise<void>;
   getCourseDataForUserHome: () => Promise<void>;
-  getCouseDataForCourseManagement: (userId: string) => Promise<courseManageResponseType[]>;
+  getCouseDataForCourseManagement: (
+    userId: string,
+    status?: CourseStatus,
+  ) => Promise<courseManageResponseType[]>;
   getCourseById: (courseId: string) => Promise<courseResponseType>;
 }

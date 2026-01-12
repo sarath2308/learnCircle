@@ -7,6 +7,7 @@ import ICourseService from "@/interface/shared/course/course.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Response } from "express";
 import { inject, injectable } from "inversify";
+import { CourseStatus } from "@/interface/shared/course/course.repo.interface";
 
 @injectable()
 export class CourseController implements ICourseController {
@@ -37,7 +38,10 @@ export class CourseController implements ICourseController {
 
   async getCouseDataForCourseManagement(req: IAuthRequest, res: Response): Promise<void> {
     const userId = req.user?.userId as string;
-    const courseData = await this._courseService.getCouseDataForCourseManagement(userId);
+    // ?status=draft | ?status=published | no param
+    const status = req.query.status as CourseStatus | undefined;
+
+    const courseData = await this._courseService.getCouseDataForCourseManagement(userId, status);
     res.status(HttpStatus.OK).json({ success: true, courseData });
   }
 

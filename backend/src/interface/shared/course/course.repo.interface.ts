@@ -1,6 +1,8 @@
 import { ICourse } from "@/model/shared/course.model";
 import { IBaseRepo } from "@/repos/shared/base";
 
+export type CourseStatus = "draft" | "published";
+
 export default interface ICourseRepo extends IBaseRepo<ICourse> {
   updatePrice: (
     id: string,
@@ -14,5 +16,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   getAllCourse: (skip: number, limit: number) => Promise<ICourse[] | null>;
   getTotalCourseCount: () => Promise<number>;
   findById: (id: string) => Promise<ICourse | null>;
-  getCourseDataFromUserId: (userId: string) => Promise<ICourse[]>;
+  getCourseDataFromUserId: (userId: string, query: { status?: CourseStatus }) => Promise<ICourse[]>;
 }

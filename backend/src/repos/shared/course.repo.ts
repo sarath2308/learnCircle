@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import ICourseRepo from "@/interface/shared/course/course.repo.interface";
+import ICourseRepo, { CourseStatus } from "@/interface/shared/course/course.repo.interface";
 import { ICourse } from "@/model/shared/course.model";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
@@ -64,7 +64,14 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
     return await this._model.findById(id).populate("category").populate("createdBy");
   }
 
-  async getCourseDataFromUserId(userId: string): Promise<ICourse[]> {
-    return await this._model.find({ createdBy: userId, isDeleted: false }).populate("category");
+  async getCourseDataFromUserId(
+    userId: string,
+    query: { status?: CourseStatus },
+  ): Promise<ICourse[]> {
+    const filter: Record<string, any> = { createdBy: userId, isDeleted: false };
+    if (query.status) {
+      filter.status = query.status;
+    }
+    return await this._model.find(filter).populate("category");
   }
 }

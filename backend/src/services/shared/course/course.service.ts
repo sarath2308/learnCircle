@@ -2,7 +2,7 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
 import { ICompressor } from "@/interface/shared/compressor.interface";
-import ICourseRepo from "@/interface/shared/course/course.repo.interface";
+import ICourseRepo, { CourseStatus } from "@/interface/shared/course/course.repo.interface";
 import ICourseService from "@/interface/shared/course/course.service.interface";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
 import { UploadedFile } from "@/interface/shared/uploadFile.interface";
@@ -139,10 +139,13 @@ export class CourseService implements ICourseService {
 
   async getCourseDataForUserHome(): Promise<void> {}
 
-  async getCouseDataForCourseManagement(userId: string): Promise<courseManageResponseType[]> {
-    const courseData = await this._courseRepo.getCourseDataFromUserId(userId);
+  async getCouseDataForCourseManagement(
+    userId: string,
+    status?: CourseStatus,
+  ): Promise<courseManageResponseType[]> {
+    const courseData = await this._courseRepo.getCourseDataFromUserId(userId, { status });
     if (courseData.length === 0) {
-      throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
+      return [];
     }
     return Promise.all(
       courseData.map(async (course) => {
