@@ -19,11 +19,15 @@ import { useApproveCourse } from "@/hooks/admin/course/course.approve"
 import { useUnblockCourse } from "@/hooks/admin/course/course.unblock"
 import { useRejectCourse } from "@/hooks/admin/course/course.reject"
 import { useState } from "react"
-import { Modal } from "@/components/Modal"
-import { set } from "zod"
 import { AdminActionModal } from "@/components/admin/admin.action.modal"
 
 type AdminAction = "block" | "reject" | "approve" | "unblock" | null
+const statusStyles: Record<string, string> = {
+  pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
+  approved: "bg-green-100 text-green-800 hover:bg-green-100",
+  rejected: "bg-red-100 text-red-800 hover:bg-red-100",
+};
+
 
 export default function AdminCourseViewPage() {
       const { id } = useParams<{ id: string }>();
@@ -119,9 +123,18 @@ if (isError || !data?.courseData) {
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <div>
               <span className="font-medium">Status:</span>{" "}
-              <Badge variant="outline" className="ml-1 bg-amber-100 text-amber-800 hover:bg-amber-100">
-                {courseData?.status}
-              </Badge>
+            
+              <Badge
+  variant="outline"
+  className={`ml-1 ${
+    statusStyles[courseData?.verificationStatus ?? "pending"]
+  }`}
+>
+  {courseData?.verificationStatus}
+</Badge>
+
+               
+
             </div>
             <div>
   Created on:{" "}
@@ -191,10 +204,15 @@ if (isError || !data?.courseData) {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4">Admin Actions</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button variant="default" className="bg-green-600 hover:bg-green-700" onClick={()=> setAction("approve")}>
+                  {courseData.verificationStatus == "pending" && 
+                  <div className="flex justify-between items-start">
+                     <Button variant="default" className="bg-green-600 hover:bg-green-700" onClick={()=> setAction("approve")}>
                     Approve
                   </Button>
                   <Button  className="bg-red-500" variant="destructive" onClick={()=> setAction("reject")}>Reject</Button>
+                    </div>
+                 
+                     }
                   {courseData?.isBlocked ? (
                     <Button variant="outline" className="col-span-2 bg-blue-600 text-white hover:bg-green-400" onClick={()=> setAction("unblock")}>Unblock</Button>
                    

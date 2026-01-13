@@ -172,7 +172,7 @@ const Step2Resources = ({ handleNext, handlePrev }: IStep2Props) => {
               <p className="text-center text-gray-500">No chapters added yet.</p>
             ) : (
               chapterData.map((chapter, index) => (
-                <ChapterItem key={chapter.id} chapter={chapter}></ChapterItem>
+                <ChapterItem key={chapter.id} chapter={chapter} variant="creator"></ChapterItem>
               ))
             )}
           </Accordion>

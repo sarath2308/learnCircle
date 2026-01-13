@@ -11,6 +11,7 @@ type CourseType = {
  id: string,
   title: string,
   status: string,
+  verificationStatus: string,
   category: string,
   createdAt: Date,
   createdBy: string,
@@ -53,8 +54,8 @@ const categoryData = useGetCategory();
       accessor: "category",
     },
     {
-      header: "Status",
-      accessor: "status",
+      header: "Verification",
+      accessor: "verificationStatus",
         cell: (value: string) => (
   <span
     className={`px-2 py-1 rounded text-sm font-medium ${

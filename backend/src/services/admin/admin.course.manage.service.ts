@@ -17,7 +17,6 @@ import { AdminCourseDetailsResponse } from "@/types/admin/course/admin.course.ma
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 import { Types } from "mongoose";
-import { title } from "process";
 
 type CreatedByPopulated = {
   _id: Types.ObjectId;
@@ -70,6 +69,7 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
           id: String(courseObj._id),
           title: courseObj.title,
           status: courseObj.status,
+          verificationStatus: courseObj.verificationStatus,
           category: category.name,
           skillLevel: courseObj.skillLevel,
           price: courseObj.price,
@@ -221,7 +221,7 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
       throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    courseData.status = "approved";
+    courseData.verificationStatus = "approved";
     await courseData.save();
   }
 
@@ -238,7 +238,7 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
       throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    courseData.status = "rejected";
+    courseData.verificationStatus = "rejected";
     courseData.rejectReason = reason;
     await courseData.save();
   }

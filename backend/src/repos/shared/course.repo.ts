@@ -15,9 +15,11 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
     id: string,
     payload: { price: number; discount: number; type: "Free" | "Paid" },
   ): Promise<void> {
+    const { price, discount, type } = payload;
     await this._model.updateOne(
-      { id },
-      { $set: { price: payload.price, discount: payload.discount, type: payload.type } },
+      { _id: id },
+      { $set: { price, discount, type } },
+      { runValidators: true },
     );
   }
 

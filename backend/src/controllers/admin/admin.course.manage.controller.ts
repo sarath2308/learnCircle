@@ -37,13 +37,13 @@ export class AdminCourseManagementController implements IAdminCourseManagementCo
 
   async rejectCourse(req: IAuthRequest, res: Response): Promise<void> {
     const courseId = req.params.courseId;
-    await this._courseManagementService.rejectCourse(courseId, req.body);
+    await this._courseManagementService.rejectCourse(courseId, req.body?.reason);
     res.status(HttpStatus.OK).json({ success: true });
   }
 
   async blockCourse(req: IAuthRequest, res: Response): Promise<void> {
     const courseId = req.params.courseId;
-    await this._courseManagementService.blockCourse(courseId, req.body);
+    await this._courseManagementService.blockCourse(courseId, req.body?.reason);
     res.status(HttpStatus.OK).json({ success: true });
   }
 

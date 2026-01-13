@@ -4,6 +4,7 @@ export const courseDetailsSchema = z.object({
   id: z.string(),
   title: z.string(),
   status: z.string(),
+  verificationStatus: z.string(),
   category: z.string(),
   skillLevel: z.string(),
   price: z.number().optional(),

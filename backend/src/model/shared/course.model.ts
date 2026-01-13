@@ -11,7 +11,8 @@ export interface ICourse extends Document {
   discount?: number;
   type: "Free" | "Paid";
   createdBy: Types.ObjectId;
-  status: "draft" | "pending" | "approved" | "rejected" | "published";
+  status: "draft" | "published";
+  verificationStatus: "pending" | "rejected" | "approved";
   rejectReason?: string;
   chapterCount?: number;
   totalDuration?: number;
@@ -41,8 +42,13 @@ const courseSchema = new Schema<ICourse>(
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     status: {
       type: String,
-      enum: ["draft", "pending", "approved", "rejected", "published"],
+      enum: ["draft", "published"],
       default: "draft",
+    },
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "rejected", "approved"],
+      default: "pending",
     },
     isDeleted: { type: Boolean, default: false },
     rejectReason: { type: String },

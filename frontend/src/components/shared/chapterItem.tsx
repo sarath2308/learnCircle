@@ -151,7 +151,7 @@ const [modalData, setModalData] = useState<{
             <p className="text-gray-500 italic">No lessons added yet.</p>
           ) : (
             chapter.lessons.map((lesson) => (
-              <LessonItem key={lesson.id} lesson={lesson} setModalData={(data:{type: string; url?: string}) => setModalData(data)} />
+              <LessonItem key={lesson.id} lesson={lesson} setModalData={(data:{type: string; url?: string}) => setModalData(data)} variant="creator" />
             ))
           )}
            <div className="flex justify-end">

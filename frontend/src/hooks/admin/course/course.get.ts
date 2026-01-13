@@ -30,6 +30,7 @@ export interface AdminCourseDetailsResponse {
   title: string;
   description: string;
   status: string;
+  verificationStatus: string;
   createdBy: {
     name?: string;
     role?: string;
