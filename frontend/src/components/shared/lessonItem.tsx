@@ -5,9 +5,10 @@ import { Pencil, Trash2 } from "lucide-react";
 interface ILessonProps {
   lesson: ILessons;
   setModalData: (data: { type: string; url?: string }) => void;
+  variant?: "creator" | "admin" | "user";
 }
 
-const LessonItem = ({ lesson, setModalData }: ILessonProps) => {
+const LessonItem = ({ lesson, setModalData, variant }: ILessonProps) => {
   const editLesson = (lessonData: ILessons) => {
     console.log("Edit lesson:", lessonData);
   };
@@ -53,6 +54,7 @@ const LessonItem = ({ lesson, setModalData }: ILessonProps) => {
       </div>
 
       {/* Right: Status + Actions */}
+      {variant === "creator" && 
       <div className="flex items-center gap-3">
         <button onClick={() => editLesson(lesson)}>
           <Pencil className="w-4 h-4" />
@@ -61,6 +63,7 @@ const LessonItem = ({ lesson, setModalData }: ILessonProps) => {
           <Trash2 className="w-4 h-4 text-red-500" />
         </button>
       </div>
+}
     </div>
   );
 };

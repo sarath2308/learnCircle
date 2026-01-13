@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
+import ProtectedAdminRoute from "./protected/protected.admin.routes";
 
 const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout"));
 const AdminSign = lazy(() => import("@/pages/admin/AdminSign"));
@@ -8,8 +9,9 @@ const Users = lazy(() => import("@/pages/admin/Users"));
 const AdminCourse = lazy(() => import("@/pages/admin/admin.course"));
 const AdminCategory = lazy(() => import("@/pages/admin/admin.category"));
 const AdminCourseView = lazy(()=> import("@/pages/admin/admin.course.view"));
-const AdminMyCourse = lazy(()=> import("@/components/shared/MyCourse"));
-import ProtectedAdminRoute from "./protected/protected.admin.routes";
+const AdminMyCourse = lazy(()=> import("@/pages/admin/admin.mycourse"));
+const AdminCourseCreatePage = lazy(() => import("@/pages/admin/admin.course.create"));
+
 
 const AdminRoutes: RouteObject[] = [
   // PUBLIC: Admin Login
@@ -32,6 +34,7 @@ const AdminRoutes: RouteObject[] = [
           { path: "category", element: <AdminCategory /> },
           { path: "courses/:id", element: <AdminCourseView /> },
           { path: "my-courses", element: <AdminMyCourse/> },
+          { path: "create-course", element: <AdminCourseCreatePage /> },
         ],
       },
     ],

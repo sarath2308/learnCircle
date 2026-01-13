@@ -1,9 +1,6 @@
 // app/admin/courses/[id]/page.tsx
 import { 
-  ChevronLeft, 
-  CheckCircle2, 
-  XCircle, 
-  Ban, 
+  ChevronLeft,  
   PlayCircle, 
   FileText, 
   HelpCircle 
@@ -15,15 +12,35 @@ import { Separator } from "@/components/ui/separator"
 import { useGetCourse } from "@/hooks/admin/course/course.get"
 import { useNavigate, useParams } from "react-router-dom"
 import type { AdminCourseDetailsResponse } from "@/hooks/admin/course/course.get"
+import ChapterItem from "@/components/shared/chapterItem"
+import { Accordion } from "@/components/ui/accordion"
+import { useBlockCourse } from "@/hooks/admin/course/course.block"
+import { useApproveCourse } from "@/hooks/admin/course/course.approve"
+import { useUnblockCourse } from "@/hooks/admin/course/course.unblock"
+import { useRejectCourse } from "@/hooks/admin/course/course.reject"
+import { useState } from "react"
+import { Modal } from "@/components/Modal"
+import { set } from "zod"
+import { AdminActionModal } from "@/components/admin/admin.action.modal"
+
+type AdminAction = "block" | "reject" | "approve" | "unblock" | null
+
 export default function AdminCourseViewPage() {
       const { id } = useParams<{ id: string }>();
       const navigate = useNavigate();
+      const blockCourse = useBlockCourse();
+      const approveCourse = useApproveCourse();
+      const unblockCourse = useUnblockCourse();
+      const rejectCourse = useRejectCourse();
+        const [action, setAction] = useState<AdminAction>(null)
+        const [reason, setReason] = useState("")
+
 
 if (!id) {
   throw new Error("Course ID missing from route");
 }
 
-    const { data, isLoading, isError } = useGetCourse(id);
+    const { data, isLoading, isError, refetch } = useGetCourse(id);
     if (isLoading) {
   return <div className="p-6">Loading course…</div>;
 }
@@ -36,7 +53,28 @@ if (isError || !data?.courseData) {
     const courseData:AdminCourseDetailsResponse = data?.courseData;
   // You can later replace this with real data from props or API
 
- 
+  const handleConfirmAction = async () => {
+    switch (action) {
+      case "approve":
+        await approveCourse.mutateAsync(id)
+        break
+      case "block":
+        await blockCourse.mutateAsync({ courseId: id, reason })
+        break
+      case "reject":
+        await rejectCourse.mutateAsync({ courseId: id, reason })
+        break
+      case "unblock":
+        await unblockCourse.mutateAsync(id)
+        break
+    }
+
+    setAction(null)
+    setReason("")
+    refetch()
+  }
+
+
 
   const getLessonIcon = (type: string) => {
     switch (type) {
@@ -49,6 +87,18 @@ if (isError || !data?.courseData) {
 
   return (
     <div className="min-h-screen bg-slate-50/50">
+       <AdminActionModal
+        open={!!action}
+        action={action}
+        reason={reason}
+        loading = {isLoading}
+        setReason={setReason}
+        onClose={() => {
+          setAction(null)
+          setReason("")
+        }}
+        onConfirm={handleConfirmAction}
+      />
       <div className="container max-w-6xl mx-auto py-8 px-4">
         {/* Back button + Title */}
         <div className="mb-6">
@@ -100,29 +150,9 @@ if (isError || !data?.courseData) {
 }
                 
             {courseData?.chapters.map((chapter, idx) => (
-              <Card key={idx}>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold text-lg mb-4">
-                    {chapter.title} ({chapter.lessonCount} lessons)
-                  </h3>
-                  <div className="space-y-3">
-                    {chapter.lessons.map((lesson, lessonIdx) => (
-                      <div 
-                        key={lessonIdx}
-                        className="flex items-center justify-between py-2 border-b last:border-0"
-                      >
-                        <div className="flex items-center gap-3 cursor-pointer [&_*]:cursor-pointer">
-                          {getLessonIcon(lesson.type)}
-                          <span className="font-medium">{lesson.title}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm">
-                          <Button className="bg-yellow-400">View</Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+               <Accordion type="single" collapsible>
+            <ChapterItem key={chapter.id} chapter={chapter} variant="admin" />
+            </Accordion>
             ))}
           </div>
 
@@ -161,15 +191,15 @@ if (isError || !data?.courseData) {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4">Admin Actions</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button variant="default" className="bg-green-600 hover:bg-green-700">
+                  <Button variant="default" className="bg-green-600 hover:bg-green-700" onClick={()=> setAction("approve")}>
                     Approve
                   </Button>
-                  <Button  className="bg-red-500" variant="destructive">Reject</Button>
+                  <Button  className="bg-red-500" variant="destructive" onClick={()=> setAction("reject")}>Reject</Button>
                   {courseData?.isBlocked ? (
-                    <Button variant="outline" className="col-span-2 bg-blue-600 text-white hover:bg-green-400">Unblock</Button>
+                    <Button variant="outline" className="col-span-2 bg-blue-600 text-white hover:bg-green-400" onClick={()=> setAction("unblock")}>Unblock</Button>
                    
                   ) : (
-                     <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50 col-span-2">
+                     <Button variant="outline" onClick={()=>setAction("block")} className="border-red-600 text-red-600 hover:bg-red-50 col-span-2">
                       Block
                     </Button>
                   )}

@@ -15,6 +15,7 @@ interface Course {
   type?: "Free" | "Paid";
   status?: CourseStatus;
   progress?: number;
+  createdAt: string;
   duration?: string;      // optional - "12h 30m"
   level?: string;         // optional - "Beginner" | "Intermediate"
   lessonsCount?: number;
@@ -64,7 +65,7 @@ export default function CourseCard({
     <p className="text-xs text-slate-500">
       {course.status === "draft"
         ? "Draft"
-        : `Published on `}
+        : `Published on ${new Date(course?.createdAt).toLocaleDateString()}`}
     </p>
   </div>
 </div>

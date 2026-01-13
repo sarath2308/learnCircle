@@ -8,7 +8,7 @@ import { ChapterSchema } from "@/schema/shared/create.course.chapter.schema";
 import { AlertCircle } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
-import ChapterItem from "./chapterItem";
+import ChapterItem from "../shared/chapterItem";
 import { useChapterCreate } from "@/hooks/shared/chapter/chapter.create";
 import toast from "react-hot-toast";
 import { Accordion } from "@radix-ui/react-accordion";

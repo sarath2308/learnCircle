@@ -19,7 +19,7 @@ export type AdminLessonResponseType = {
 export interface AdminChapterResponse {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   order: number;
   lessons: AdminLessonResponseType[];
   lessonCount: number;
@@ -28,7 +28,7 @@ export interface AdminChapterResponse {
 export interface AdminCourseDetailsResponse {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   status: string;
   createdBy: {
     name?: string;

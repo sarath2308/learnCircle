@@ -165,6 +165,7 @@ export class CourseService implements ICourseService {
           status: course.status,
           type: course.type,
           thumbnail: thumbnailUrl ?? "",
+          createdAt: String(course.createdAt),
           category: category.name,
           price: course.type === "Free" ? 0 : course.price,
           discount: course.type === "Free" ? 0 : course.discount,

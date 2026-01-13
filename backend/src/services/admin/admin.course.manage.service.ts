@@ -17,6 +17,7 @@ import { AdminCourseDetailsResponse } from "@/types/admin/course/admin.course.ma
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 import { Types } from "mongoose";
+import { title } from "process";
 
 type CreatedByPopulated = {
   _id: Types.ObjectId;
@@ -154,8 +155,11 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
         const chapterLessons = lessonsByChapter.get(chapterKey) ?? [];
 
         const chapterObj = {
-          ...chapter.toObject(),
-          id: chapter._id,
+          id: String(chapter._id),
+          title: chapter.title,
+          description: chapter.description,
+          order: chapter.order,
+          lessonCount: chapterLessons.length,
         };
 
         const lessonResponses = await Promise.all(
@@ -177,8 +181,9 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
 
             const lessonObj = {
               ...lesson.toObject(),
-              id: lesson._id,
-              fileUrl: contentUrl,
+              id: String(lesson._id),
+              chapterId: String(lesson.chapterId),
+              fileUrl: contentUrl ?? "",
               thumbnailUrl: lessonThumbnailUrl,
             };
 
