@@ -1,5 +1,6 @@
 
 import { adminCourseManagement } from "@/api/admin/admin.course.manage";
+import { creatorCourseManageApi } from "@/api/creator/creator.course.manage";
 import { useQuery } from "@tanstack/react-query"
 
 
@@ -52,6 +53,6 @@ export interface AdminCourseDetailsResponse {
 export const useGetCourse = (courseId: string) =>{
     return useQuery({
         queryKey: ['get-course'],
-        queryFn: () => adminCourseManagement.getCourse(courseId),
+        queryFn: () => creatorCourseManageApi.getCourseDetails(courseId),
     })
 }

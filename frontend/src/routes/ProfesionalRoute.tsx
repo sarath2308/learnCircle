@@ -6,7 +6,9 @@ import ProtectedProfessionalRoute from "./protected/protected.professional.route
 
 const ProfessionalDashboard = lazy(() => import("@/pages/Profesional/profesionalDashboard"));
 const ProfessionalLayout = lazy(() => import("@/pages/Profesional/ProfesionalLayout"));
-
+const ProfessionalMyCourse = lazy(()=> import("@/pages/Profesional/professional.course"));
+const ProfessionalCreateCourse = lazy(()=> import("@/pages/Profesional/professional.create.course"))
+const ProfessionalViewCourse = lazy(()=> import("@/pages/Profesional/professional.view.course")) 
 const professionalRoutes: RouteObject[] = [
   {
     element: <ProtectedProfessionalRoute />,
@@ -30,6 +32,18 @@ const professionalRoutes: RouteObject[] = [
           {
             path: "verification",
             element: <Verification />,
+          },
+           {
+            path: "my-courses",
+            element: <ProfessionalMyCourse />,
+          },
+           {
+            path: "my-courses/:id",
+            element: <ProfessionalViewCourse />,
+          },
+           {
+            path: "create-course",
+            element: <ProfessionalCreateCourse />,
           },
         ],
       },

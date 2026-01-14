@@ -8,7 +8,7 @@ const ProfesionalDashboard = () => {
   if (isLoading) return <div>Loading..</div>;
   if (userData?.status === "pending") return <Verification />;
   if (userData?.status === "processing") return <Processing />;
-  if (userData?.status === "rejected") return <Rejected />;
+  if (userData?.status === "rejected") return <Rejected reason=""/>;
 
   return (
     <>

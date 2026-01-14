@@ -1,175 +1,147 @@
-import { useState, useEffect } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
+"use client";
 
-import { React } from "react";
-import {
-  Home,
+import { useState, useEffect } from "react";
+import { NavLink, useNavigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { 
+  Search, 
+  ShoppingBag, 
+  Bell, 
+  Menu, 
+  X, 
   BookOpen,
-  Users,
-  Calendar,
-  Bell,
-  MessageSquare,
-  Video,
-  User,
-  Moon,
   Sun,
-  Menu,
-  X,
+  Moon,
+  Command
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useTheme } from "next-themes";
 
-const navigationItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: BookOpen, label: "Courses", path: "/courses" },
-  { icon: Users, label: "Professionals", path: "/professionals" },
-  { icon: Calendar, label: "Calendar", path: "/calendar" },
-  { icon: Bell, label: "Notifications", path: "/notifications", badge: 3 },
-  { icon: MessageSquare, label: "Messages", path: "/messages", badge: 2 },
-  { icon: Video, label: "Video Call", path: "/video-call" },
-];
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import type { RootState } from "@/redux/store";
 
 export default function LearnerHomeLayout() {
-  const [activeItem, setActiveItem] = useState("/");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
-
-  //user data from redux
+  const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.currentUser.currentUser);
 
+  // Sync scroll for the glass effect
   useEffect(() => {
-    setActiveItem(location.pathname);
-  }, [location]);
-
-  const handleNavigation = (path: string) => {
-    setActiveItem(path);
-    navigate(path);
-    setMenuOpen(false); // close menu after navigation
-  };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/95 shadow-sm">
-        <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
+    <div className="min-h-screen bg-white dark:bg-[#020817] flex flex-col">
+      {/* --- PREMIUM NAVBAR --- */}
+      <nav className={`fixed top-0 w-full z-[100] transition-all duration-300 ${
+        isScrolled 
+          ? "h-16 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b shadow-sm" 
+          : "h-20 bg-transparent"
+      }`}>
+        <div className="container mx-auto h-full px-6 flex items-center justify-between">
+          
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <span className="text-xl font-bold bg-gradient-to-r from-black bg-clip-text text-transparent">
-              LearnCircle
+          <div 
+            className="flex items-center gap-2 cursor-pointer transition-transform active:scale-95"
+            onClick={() => navigate("/")}
+          >
+            <div className="h-9 w-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+              <BookOpen size={20} strokeWidth={2.5} />
+            </div>
+            <span className="text-xl font-black tracking-tighter hidden sm:block">
+              learn<span className="text-blue-600">Circle</span>
             </span>
           </div>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeItem === item.path;
-
-              return (
-                <div key={item.path} className="relative">
-                  <Button
-                    variant={isActive ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => handleNavigation(item.path)}
-                    className="flex items-center gap-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Button>
-
-                  {item.badge && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs flex items-center justify-center">
-                      {item.badge}
-                    </Badge>
-                  )}
-                </div>
-              );
-            })}
-          </nav>
+          {/* Center Search (Desktop) */}
+          <div className="hidden md:flex items-center flex-1 max-w-md mx-8 relative group">
+            <Search className="absolute left-3 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={18} />
+            <input 
+              type="text"
+              placeholder="Search for anything..."
+              className="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-900 border-none rounded-full text-sm font-medium focus:ring-2 focus:ring-blue-600/20 outline-none transition-all"
+            />
+            <div className="absolute right-3 hidden lg:flex items-center gap-1 opacity-50">
+              <Command size={12} />
+              <span className="text-[10px] font-bold">K</span>
+            </div>
+          </div>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-2">
-            {/* Theme Toggle */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <nav className="hidden lg:flex items-center gap-6 mr-4">
+              {["Courses", "Mentors", "Enterprise"].map((item) => (
+                <NavLink 
+                  key={item}
+                  to={`/${item.toLowerCase()}`}
+                  className={({ isActive }) => `text-sm font-bold tracking-tight transition-colors ${
+                    isActive ? "text-blue-600" : "text-slate-500 hover:text-blue-600"
+                  }`}
+                >
+                  {item}
+                </NavLink>
+              ))}
+            </nav>
+
+            <Button variant="ghost" size="icon" className="relative rounded-full">
+              <ShoppingBag size={20} />
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center bg-blue-600">3</Badge>
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"
+              className="rounded-full hidden sm:flex"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </Button>
 
-            {/* Profile */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2"
-              onClick={() => navigate("/learner/profile")}
-            >
-              <Avatar className="h-8 w-8">
-                {currentUser?.profileImg ? (
-                  <img src={currentUser.profileImg} alt={currentUser.name} />
-                ) : (
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                )}
-              </Avatar>
+            <Avatar className="h-9 w-9 cursor-pointer ring-offset-2 hover:ring-2 ring-blue-600 transition-all">
+              <AvatarImage src={currentUser?.profileImg} />
+              <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">
+                {currentUser?.name?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
 
-              <span className="hidden sm:block">Profile</span>
-            </Button>
-
-            {/* Mobile Hamburger */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMenuOpen(!menuOpen)}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* Mobile Drawer */}
-      {menuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-sm">
-          <div className="p-4 flex flex-col space-y-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeItem === item.path;
-
-              return (
-                <Button
-                  key={item.path}
-                  variant={isActive ? "secondary" : "ghost"}
-                  className="flex items-center justify-start gap-2"
-                  onClick={() => handleNavigation(item.path)}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <Badge className="ml-auto h-5 w-5 p-0 text-xs flex items-center justify-center">
-                      {item.badge}
-                    </Badge>
-                  )}
-                </Button>
-              );
-            })}
-          </div>
+      {/* --- DYNAMIC CONTENT --- */}
+      <main className="flex-1 flex flex-col">
+        {/* pt-20 matches the navbar height to prevent overlap */}
+        <div className="container mx-auto px-6 pt-24 pb-12 lg:pt-32">
+          <Outlet /> 
         </div>
-      )}
-
-      {/* Main Content */}
-      <main className="container flex-1 py-6 px-4 sm:px-6">
-        <Outlet />
       </main>
+
+      {/* --- FOOTER --- */}
+      <footer className="border-t py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <span className="text-lg font-black tracking-tighter">learnCircle</span>
+          <div className="flex gap-8 text-sm font-bold text-slate-500">
+            <a href="#" className="hover:text-blue-600">About</a>
+            <a href="#" className="hover:text-blue-600">Privacy</a>
+            <a href="#" className="hover:text-blue-600">Terms</a>
+            <a href="#" className="hover:text-blue-600">Help</a>
+          </div>
+          <p className="text-xs text-slate-400 font-medium">© 2026 learnCircle. Built for the future of learning.</p>
+        </div>
+      </footer>
     </div>
   );
 }

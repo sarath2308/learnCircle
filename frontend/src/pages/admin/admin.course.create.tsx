@@ -1,4 +1,5 @@
 import CreateCourseStepper from "@/components/createCourse/create.course.stepper";
+import CourseReviewPage from "@/components/shared/course.review";
 import { Button } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
 
@@ -9,6 +10,7 @@ export default function AdminCourseCreatePage() {
     </div>
      <div>
       <CreateCourseStepper />
+      
      </div>
     </div>;
 }

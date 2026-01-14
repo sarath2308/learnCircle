@@ -38,7 +38,7 @@ export class GoogleAuthProvider implements IAuthProviderService {
       throw new AppError("Google account not verified", HttpStatus.NOT_FOUND);
     }
 
-    let user = await this._userRepo.findWithEmailAndRole(email, role);
+    let user = await this._userRepo.findByEmail(email);
 
     if (!user) {
       user = await this._userRepo.create({

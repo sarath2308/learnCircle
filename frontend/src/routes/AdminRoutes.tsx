@@ -11,7 +11,7 @@ const AdminCategory = lazy(() => import("@/pages/admin/admin.category"));
 const AdminCourseView = lazy(()=> import("@/pages/admin/admin.course.view"));
 const AdminMyCourse = lazy(()=> import("@/pages/admin/admin.mycourse"));
 const AdminCourseCreatePage = lazy(() => import("@/pages/admin/admin.course.create"));
-
+const AdminCourseQuickView = lazy(()=> import("@/pages/admin/admin.course.quick.view"))
 
 const AdminRoutes: RouteObject[] = [
   // PUBLIC: Admin Login
@@ -34,6 +34,7 @@ const AdminRoutes: RouteObject[] = [
           { path: "category", element: <AdminCategory /> },
           { path: "courses/:id", element: <AdminCourseView /> },
           { path: "my-courses", element: <AdminMyCourse/> },
+          { path: "my-courses/:id", element: <AdminCourseQuickView/> },
           { path: "create-course", element: <AdminCourseCreatePage /> },
         ],
       },

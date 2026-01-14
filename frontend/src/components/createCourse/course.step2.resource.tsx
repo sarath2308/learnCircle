@@ -1,192 +1,180 @@
+"use client";
+
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
+import { 
+  Plus, 
+  ChevronLeft, 
+  ChevronRight, 
+  BookOpen, 
+  Sparkles,
+  Loader2
+} from "lucide-react";
+
 import { Button } from "../ui/button";
 import { Modal } from "../Modal";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { ChapterSchema } from "@/schema/shared/create.course.chapter.schema";
-import { AlertCircle } from "lucide-react";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
+import { Accordion } from "@/components/ui/accordion";
 import ChapterItem from "../shared/chapterItem";
+
+import { ChapterSchema, type ChapterSchemaType } from "@/schema/shared/create.course.chapter.schema";
 import { useChapterCreate } from "@/hooks/shared/chapter/chapter.create";
-import toast from "react-hot-toast";
-import { Accordion } from "@radix-ui/react-accordion";
+import type { RootState } from "@/redux/store";
 
 interface IStep2Props {
   handleNext: () => void;
   handlePrev: () => void;
 }
+
 const Step2Resources = ({ handleNext, handlePrev }: IStep2Props) => {
+  const [createChapterModal, setCreateChapterModal] = useState(false);
+  
   const chapterData = useSelector((state: RootState) => state.chapter.chapters);
   const courseId = useSelector((state: RootState) => state.courseDetails.id);
   const createChapter = useChapterCreate();
 
-  const [createChapterModal, setCreateChapterModal] = useState(false);
-  const [chapterCreate, setChapterCreate] = useState({
-    title: "",
-    description: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ChapterSchemaType>({
+    resolver: zodResolver(ChapterSchema),
+    defaultValues: { title: "", description: "" }
   });
-  const [chapterError, setChapterErrors] = useState({
-    title: "",
-    description: "",
-  });
-  const createChapterValidation = () => {
-    const result = ChapterSchema.safeParse(chapterCreate);
 
-    if (!result.success) {
-      const flat = result.error.flatten().fieldErrors;
-
-      setChapterErrors({
-        title: flat.title?.[0] || "",
-        description: flat.description?.[0] || "",
-      });
-
-      return false;
-    }
-
-    setChapterErrors({
-      title: "",
-      description: "",
-    });
-
-    return true;
-  };
-
-  const handleCreateChapter = async () => {
+  const onSubmit = async (data: ChapterSchemaType) => {
     if (!courseId) {
-      toast.error("course ID is missing | course not created yet");
+      toast.error("Course ID missing. Please go back to Step 1.");
       return;
     }
-    if (!createChapterValidation()) return;
-    const formData = new FormData();
-    formData.append("title", chapterCreate.title);
-    formData.append("description", chapterCreate.description);
-    formData.append("order", (chapterData.length + 1).toString());
 
     try {
-      toast.success(courseId);
       await createChapter.mutateAsync({
         courseId,
-        title: chapterCreate.title,
-        description: chapterCreate.description,
+        title: data.title,
+        description: data.description,
         order: chapterData.length + 1,
       });
+      
+      toast.success("Chapter added successfully");
       setCreateChapterModal(false);
+      reset(); // Clear form
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to create chapter");
     }
-  };
-  const handleNextValidate = () => {
-    handleNext();
   };
 
   return (
-    <>
-      <div>
-        <div className="flex justify-end">
-          <Button className="bg-blue-500" onClick={() => setCreateChapterModal(true)}>
-            + Create Chapter
-          </Button>
-        </div>
-
-        <div className="p-4">
-         <Modal
-  title="Create Chapter"
-  open={createChapterModal}
-  onClose={() => setCreateChapterModal(false)}
->
-  <form
-    onSubmit={(e) => {
-      e.preventDefault();
-      handleCreateChapter();
-    }}
-    className="space-y-6"
-  >
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="chapter-title" className="dark:text-white">Title</Label>
-        <Input
-          id="chapter-title"
-          autoFocus
-          placeholder="Enter a title..."
-          value={chapterCreate.title}
-          className="focus-visible:ring-blue-500 focus-visible:ring-4 dark:text-white"
-          onChange={(e) =>
-            setChapterCreate((prev) => ({ ...prev, title: e.target.value }))
-          }
-        />
-        {chapterError.title && (
-          <p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
-            <AlertCircle className="w-4 h-4" />
-            {chapterError.title}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="chapter-description" className="dark:text-white">Description</Label>
-        <Textarea
-          id="chapter-description"
-          rows={6}
-          placeholder="Enter a description..."
-          className="focus-visible:ring-blue-500 focus-visible:ring-4 dark:text-white"
-          value={chapterCreate.description}
-          onChange={(e) =>
-            setChapterCreate((prev) => ({ ...prev, description: e.target.value }))
-          }
-        />
-        {chapterError.description && (
-          <p className="text-sm text-destructive mt-1.5 flex items-center gap-1">
-            <AlertCircle className="w-4 h-4" />
-            {chapterError.description}
-          </p>
-        )}
-      </div>
-    </div>
-
-    <div className="flex justify-end gap-3 pt-4">
-      <Button
-        type="button"
-        variant="outline"
-        className="bg-red-400 dark:text-white"
-        onClick={() => setCreateChapterModal(false)}
-      >
-        Cancel
-      </Button>
-      <Button
-        type="submit"
-        variant="default"
-        className="bg-blue-500 dark:text-white"
-        disabled={createChapter.isPending} // add a state for this
-      >
-        {createChapter.isPending ? "Creating..." : "Create Chapter"}
-      </Button>
-    </div>
-  </form>
-</Modal>
-        </div>
+    <div className="max-w-5xl mx-auto space-y-8">
+      {/* Header Actions */}
+      <div className="flex items-center justify-between border-b pb-6 dark:border-slate-800">
         <div>
-          <Accordion type="single" collapsible>
-            {chapterData.length === 0 ? (
-              <p className="text-center text-gray-500">No chapters added yet.</p>
-            ) : (
-              chapterData.map((chapter, index) => (
-                <ChapterItem key={chapter.id} chapter={chapter} variant="creator"></ChapterItem>
-              ))
-            )}
-          </Accordion>
+          <h2 className="text-2xl font-black tracking-tight">Curriculum Builder</h2>
+          <p className="text-sm text-slate-500 font-medium">Plan your course structure and add lessons</p>
         </div>
-        <div className="mt-8 flex justify-between">
-          <Button className="bg-blue-500" onClick={handlePrev}>
-            Prev
-          </Button>
-          <Button className="bg-green-500 " onClick={handleNext}>
-            Next
-          </Button>
-        </div>
+        <Button 
+          onClick={() => setCreateChapterModal(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl px-6 gap-2 shadow-lg shadow-blue-500/20"
+        >
+          <Plus size={18} strokeWidth={3} />
+          New Chapter
+        </Button>
       </div>
-    </>
+
+      {/* Chapters List */}
+      <div className="min-h-[300px]">
+        {chapterData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-3xl border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20">
+            <div className="h-16 w-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 mb-4">
+              <BookOpen size={32} />
+            </div>
+            <h3 className="text-lg font-bold">No chapters yet</h3>
+            <p className="text-slate-500 text-sm mb-6 text-center max-w-xs">
+              Every great course starts with a structure. Create your first chapter to begin.
+            </p>
+            <Button variant="outline" onClick={() => setCreateChapterModal(true)} className="rounded-xl border-2 font-bold">
+              Add First Chapter
+            </Button>
+          </div>
+        ) : (
+          <Accordion type="multiple" className="space-y-4">
+            {chapterData.map((chapter) => (
+              <ChapterItem key={chapter.id} chapter={chapter} variant="creator" />
+            ))}
+          </Accordion>
+        )}
+      </div>
+
+      {/* Navigation Footer */}
+      <div className="flex items-center justify-between pt-10 border-t dark:border-slate-800">
+        <Button 
+          variant="ghost" 
+          onClick={handlePrev}
+          className="font-bold gap-2 text-slate-500 hover:text-slate-900"
+        >
+          <ChevronLeft size={18} /> Back
+        </Button>
+        <Button 
+          onClick={handleNext}
+          disabled={chapterData.length === 0}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-10 rounded-xl gap-2 transition-all"
+        >
+          Continue to Pricing <ChevronRight size={18} />
+        </Button>
+      </div>
+
+      {/* Create Modal */}
+      <Modal 
+        title="Add New Chapter" 
+        open={createChapterModal} 
+        onClose={() => setCreateChapterModal(false)}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-2">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="font-bold">Chapter Title</Label>
+              <Input 
+                {...register("title")}
+                placeholder="e.g. Getting Started with React" 
+                className="h-12 rounded-xl focus:ring-blue-500"
+              />
+              {errors.title && <p className="text-xs font-bold text-red-500">{errors.title.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-bold">Learning Objectives</Label>
+              <Textarea 
+                {...register("description")}
+                placeholder="What will students learn in this chapter?" 
+                rows={4}
+                className="rounded-xl resize-none"
+              />
+              {errors.description && <p className="text-xs font-bold text-red-500">{errors.description.message}</p>}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t dark:border-slate-800">
+            <Button type="button" variant="ghost" onClick={() => setCreateChapterModal(false)} className="font-bold">
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 rounded-xl"
+            >
+              {isSubmitting ? <Loader2 className="animate-spin mr-2" size={18} /> : <Sparkles className="mr-2" size={18} />}
+              Build Chapter
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </div>
   );
 };
 
