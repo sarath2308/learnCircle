@@ -4,6 +4,8 @@ import { UploadedFile } from "../uploadFile.interface";
 import { courseResponseType } from "@/schema/shared/course/course.response.schema";
 import { courseManageResponseType } from "@/schema/shared/course/course.manage.response.schema";
 import { CourseStatus } from "./course.repo.interface";
+import { CreatorCourseViewResponse } from "@/types/admin/course/admin.course.manage.type";
+import { userCourseCardResponseType } from "@/schema/learner/course/course.home.response";
 
 export default interface ICourseService {
   createCourse: (
@@ -11,13 +13,15 @@ export default interface ICourseService {
     thumbnail: UploadedFile,
   ) => Promise<{ courseId: string }>;
   editCourse: (courseId: string, payload: Partial<createCourseDtoType>) => Promise<void>;
+  publishCourse: (courseId: string) => Promise<void>;
   getCourseDataForCourseCreation: (courseId: string) => Promise<courseResponseType>;
   getAllCourse: () => Promise<any>;
   updatePriceDetails: (id: string, data: CoursePriceDtoType) => Promise<void>;
-  getCourseDataForUserHome: () => Promise<void>;
+  getCourseDataForUserHome: () => Promise<userCourseCardResponseType[]>;
   getCouseDataForCourseManagement: (
     userId: string,
     status?: CourseStatus,
   ) => Promise<courseManageResponseType[]>;
   getCourseById: (courseId: string) => Promise<courseResponseType>;
+  getCourseDataForCreatorView: (courseId: string) => Promise<CreatorCourseViewResponse>;
 }

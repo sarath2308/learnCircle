@@ -24,6 +24,7 @@ interface Course {
   progress?: number;
   createdAt: string;
   duration?: string;
+  skillLevel: string;
   level?: string;
   lessonsCount?: number;
 }

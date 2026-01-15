@@ -7,6 +7,7 @@ export const courseManageResponseSchema = z.object({
   thumbnail: z.string(),
   skillLevel: z.string(),
   createdAt: z.string(),
+  verificationStatus: z.string(),
   price: z.number().optional(),
   discount: z.number().optional(),
   type: z.string(),

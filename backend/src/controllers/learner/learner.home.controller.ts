@@ -9,9 +9,13 @@ import { Response } from "express";
 
 @injectable()
 export class LearnerHomeController implements ILearnerHomeController {
-  constructor(@inject(TYPES.ILearnerHomeService) private _service: ILearnerHomeService) {}
+  constructor(@inject(TYPES.ILearnerHomeService) private _lernerHomeService: ILearnerHomeService) {}
 
   async getHome(req: IAuthRequest, res: Response) {
-    res.status(HttpStatus.OK).json({ success: true, message: Messages.HOME_RENDERED });
+    const userId = req.user?.userId!;
+    const { categoryData, courseCardData } = await this._lernerHomeService.getHome(userId);
+    res
+      .status(HttpStatus.OK)
+      .json({ success: true, message: Messages.HOME_RENDERED, categoryData, courseCardData });
   }
 }

@@ -1,5 +1,6 @@
 import { ICourse } from "@/model/shared/course.model";
 import { IBaseRepo } from "@/repos/shared/base";
+import { CoursePopulated } from "@/types/learner/course/course.home.card.type";
 
 export type CourseStatus = "draft" | "published";
 
@@ -17,4 +18,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   getTotalCourseCount: () => Promise<number>;
   findById: (id: string) => Promise<ICourse | null>;
   getCourseDataFromUserId: (userId: string, query: { status?: CourseStatus }) => Promise<ICourse[]>;
+  getAllCourseForUserHome: () => Promise<CoursePopulated[]>;
 }

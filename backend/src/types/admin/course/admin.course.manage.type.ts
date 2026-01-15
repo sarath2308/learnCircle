@@ -9,7 +9,7 @@ export interface AdminChapterResponse {
   lessonCount: number;
 }
 
-export interface AdminCourseDetailsResponse {
+export interface CreatorCourseViewResponse {
   id: string;
   title: string;
   description?: string;

@@ -102,7 +102,7 @@ export default function LearnerHomeLayout() {
               {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </Button>
 
-            <Avatar className="h-9 w-9 cursor-pointer ring-offset-2 hover:ring-2 ring-blue-600 transition-all">
+            <Avatar className="h-9 w-9 cursor-pointer ring-offset-2 hover:ring-2 ring-blue-600 transition-all" onClick={()=> navigate("/learner/profile")}>
               <AvatarImage src={currentUser?.profileImg} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">
                 {currentUser?.name?.charAt(0) || "U"}

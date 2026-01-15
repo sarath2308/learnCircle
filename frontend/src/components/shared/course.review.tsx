@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import { 
-  ChevronLeft, PlayCircle, FileText, HelpCircle, 
-  CheckCircle, Clock, Layers, Edit3, Save, Eye, Trash2, PlusCircle 
+  ChevronLeft, PlayCircle, HelpCircle, 
+  Edit3, Save, Trash2, PlusCircle, AlertCircle, CheckCircle2, XCircle,
+  Layers, FileText
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -12,8 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { Accordion } from "@/components/ui/accordion";
 import { AdminActionModal } from "@/components/admin/admin.action.modal";
 
-// Hooks & Logic
-import { useGetCourse } from "@/hooks/shared/chapter/course.get";
+// Hooks
+import { useGetCourse } from "@/hooks/shared/course-creator/course.get";
 import { useBlockCourse } from "@/hooks/admin/course/course.block";
 import { useApproveCourse } from "@/hooks/admin/course/course.approve";
 import { useUnblockCourse } from "@/hooks/admin/course/course.unblock";
@@ -22,43 +25,33 @@ import ChapterItem from "@/components/shared/chapterItem";
 
 type AdminAction = "block" | "reject" | "approve" | "unblock" | null;
 
-interface CourseReviewProps {
-  variant: 'admin' | 'creator';
-}
-
-export default function CourseReviewPage({ variant }: CourseReviewProps) {
+export default function CourseReviewPage({ variant }: { variant: 'admin' | 'creator' }) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
-  // State for Admin Actions
   const [action, setAction] = useState<AdminAction>(null);
   const [reason, setReason] = useState("");
   const [previewLesson, setPreviewLesson] = useState<any | null>(null);
-
-  // State for Creator Editing
   const [isEditing, setIsEditing] = useState(false);
 
-  // Mutations
   const blockCourse = useBlockCourse();
   const approveCourse = useApproveCourse();
   const unblockCourse = useUnblockCourse();
   const rejectCourse = useRejectCourse();
 
-  if (!id) throw new Error("Course ID missing");
-
-  const { data, isLoading, isError, refetch } = useGetCourse(id);
+  const { data, isLoading, isError, refetch } = useGetCourse(id!);
 
   if (isLoading) return <div className="p-10 text-center animate-pulse font-bold text-slate-400">Loading comprehensive course data...</div>;
-  if (isError || !data?.courseData) return <div className="p-10 text-center text-red-500">Failed to load course details.</div>;
+  if (isError || !data?.courseData) return <div className="p-10 text-center text-red-500 font-bold">Failed to load course details.</div>;
 
   const courseData = data.courseData;
 
   const handleConfirmAction = async () => {
     switch (action) {
-      case "approve": await approveCourse.mutateAsync(id); break;
-      case "block": await blockCourse.mutateAsync({ courseId: id, reason }); break;
-      case "reject": await rejectCourse.mutateAsync({ courseId: id, reason }); break;
-      case "unblock": await unblockCourse.mutateAsync(id); break;
+      case "approve": await approveCourse.mutateAsync(id!); break;
+      case "block": await blockCourse.mutateAsync({ courseId: id!, reason }); break;
+      case "reject": await rejectCourse.mutateAsync({ courseId: id!, reason }); break;
+      case "unblock": await unblockCourse.mutateAsync(id!); break;
     }
     setAction(null);
     setReason("");
@@ -89,7 +82,7 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
             <ChevronLeft className="h-4 w-4" /> Back to List
           </Button>
           <h1 className="text-3xl font-bold tracking-tight">Course Submission Review</h1>
-          <p className="text-slate-500">Reviewing: <span className="text-blue-600 font-medium">#{id.slice(-6)}</span></p>
+          <p className="text-slate-500">Reviewing: <span className="text-blue-600 font-medium">#{id?.slice(-6)}</span></p>
         </div>
 
         {variant === 'creator' && (
@@ -104,7 +97,36 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
         )}
       </header>
 
-      {/* 2. Full Width Thumbnail */}
+      {/* 2. STATUS BANNER SECTION */}
+      {courseData.verificationStatus === 'rejected' && (
+        <div className="mb-8 border-l-4 border-red-500 bg-red-50 p-6 rounded-r-2xl flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-top-2">
+          <XCircle className="text-red-500 mt-1 flex-shrink-0" size={24} />
+          <div className="space-y-1">
+            <p className="font-bold text-red-800 text-lg">Submission Rejected</p>
+            <p className="text-red-700 leading-relaxed">
+              <span className="font-bold uppercase text-xs tracking-wider">Reviewer Feedback:</span> {courseData.rejectReason || "No specific feedback provided. Please ensure all content meets our quality guidelines."}
+            </p>
+            {variant === 'creator' && (
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-red-600 font-bold hover:text-red-800 underline" 
+                onClick={() => setIsEditing(true)}
+              >
+                Click here to start fixing these issues.
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {courseData.verificationStatus === 'approved' && (
+        <div className="mb-8 border-l-4 border-green-500 bg-green-50 p-5 rounded-r-2xl flex items-center gap-3 shadow-sm">
+          <CheckCircle2 className="text-green-600 flex-shrink-0" size={24} />
+          <p className="font-bold text-green-800">This course has been verified and is now visible to learners.</p>
+        </div>
+      )}
+
+      {/* 3. Full Width Thumbnail (Original Style) */}
       <div className="w-full h-80 rounded-3xl overflow-hidden shadow-lg mb-8 border border-gray-200 relative group">
         <img 
           src={courseData.thumbnailUrl || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200"} 
@@ -113,15 +135,15 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
         />
         {isEditing && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="secondary" size="sm">Update Cover Image</Button>
+            <Button variant="secondary" size="sm" className="font-bold">Update Cover Image</Button>
           </div>
         )}
       </div>
 
-      {/* 3. Main Content Grid */}
+      {/* 4. Main Content Grid (Original Layout) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left/Middle: Details & Curriculum */}
+        {/* Left Column: Details & Curriculum */}
         <div className="lg:col-span-2 space-y-8">
           
           <section className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
@@ -129,7 +151,7 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
               <div className="flex-1">
                 {isEditing ? (
                   <input 
-                    className="text-2xl font-bold w-full border-b-2 border-blue-500 outline-none mb-2"
+                    className="text-2xl font-bold w-full border-b-2 border-blue-500 outline-none mb-2 bg-slate-50 px-2"
                     defaultValue={courseData.title}
                   />
                 ) : (
@@ -138,15 +160,19 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
                 
                 {isEditing ? (
                   <textarea 
-                    className="w-full text-slate-600 border rounded-lg p-3 outline-none"
+                    className="w-full text-slate-600 border rounded-lg p-3 outline-none bg-slate-50 mt-2"
                     defaultValue={courseData.description}
-                    rows={3}
+                    rows={4}
                   />
                 ) : (
                   <p className="text-slate-600 leading-relaxed">{courseData.description}</p>
                 )}
               </div>
-              <Badge className={`ml-4 capitalize ${courseData.verificationStatus === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+              <Badge className={`ml-4 capitalize px-3 py-1 rounded-full text-[10px] font-black tracking-widest ${
+                courseData.verificationStatus === 'approved' ? 'bg-green-100 text-green-700' : 
+                courseData.verificationStatus === 'rejected' ? 'bg-red-100 text-red-700' : 
+                'bg-amber-100 text-amber-700'
+              }`}>
                 {courseData.verificationStatus}
               </Badge>
             </div>
@@ -158,39 +184,38 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Skill Level</p>
-                <Badge variant="secondary" className="bg-purple-50 text-purple-700 hover:bg-purple-50">{courseData.skillLevel}</Badge>
+                <Badge variant="secondary" className="bg-purple-50 text-purple-700 hover:bg-purple-50 border-none font-bold">{courseData.skillLevel}</Badge>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Price</p>
-                <p className="font-bold text-sm text-green-600">{courseData.price || "Free"}</p>
+                <p className="font-bold text-sm text-green-600">{courseData.price ? `$${courseData.price}` : "Free"}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Curriculum</p>
-                <p className="font-semibold text-sm">{courseData.chapterCount} Chapters</p>
+                <p className="font-semibold text-sm">{courseData.chapterCount || 0} Chapters</p>
               </div>
             </div>
           </section>
 
-          {/* Chapters & Lessons */}
+          {/* Curriculum Accordions */}
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Course Curriculum</h3>
+              <h3 className="text-xl font-bold text-slate-800">Course Curriculum</h3>
               {isEditing && <Button variant="link" className="text-blue-600 gap-1 p-0 h-auto font-bold"><PlusCircle size={16}/> Add Chapter</Button>}
             </div>
             
             {!courseData.chapters || courseData.chapters.length === 0 ? (
-              <div className="bg-white p-10 rounded-2xl border-2 border-dashed border-gray-200 text-center text-slate-400 font-medium">
-                No curriculum uploaded yet.
+              <div className="bg-white p-10 rounded-2xl border-2 border-dashed border-gray-200 text-center text-slate-400 font-medium italic">
+                No curriculum content has been uploaded yet.
               </div>
             ) : (
               <div className="space-y-4">
                 {courseData.chapters.map((chapter: any) => (
                   <Accordion key={chapter.id} type="single" collapsible className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                    {/* ChapterItem logic is maintained inside your component */}
                     <ChapterItem 
-                       chapter={chapter} 
-                       variant={variant} 
-                       onPreviewLesson={(lesson: any) => setPreviewLesson(lesson)} // Passing handler for Admin Modal
+                      chapter={chapter} 
+                      variant={variant} 
+                      onPreviewLesson={(lesson: any) => setPreviewLesson(lesson)} 
                     />
                   </Accordion>
                 ))}
@@ -199,32 +224,32 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
           </section>
         </div>
 
-        {/* Right Sidebar: Admin Actions */}
+        {/* Right Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-6 space-y-6">
             <section className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold mb-4 flex items-center gap-2"><Layers size={18} className="text-blue-600"/> Instructor Info</h3>
+              <h3 className="font-bold mb-4 flex items-center gap-2 text-slate-800"><Layers size={18} className="text-blue-600"/> Instructor Info</h3>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-black text-blue-600">
                   {courseData.createdBy?.name?.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-bold text-sm">{courseData.createdBy?.name}</p>
+                  <p className="font-bold text-sm text-slate-900">{courseData.createdBy?.name}</p>
                   <p className="text-xs text-slate-400">{courseData.createdBy?.email}</p>
                 </div>
               </div>
               <Separator className="my-4" />
               <div className="space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-400 font-medium">Created On</span>
-                  <span className="font-bold">{courseData.createdAt ? new Date(courseData.createdAt).toLocaleDateString() : 'N/A'}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 font-medium uppercase tracking-tight">Created On</span>
+                  <span className="font-bold text-slate-700">{courseData.createdAt ? new Date(courseData.createdAt).toLocaleDateString() : 'N/A'}</span>
                 </div>
               </div>
             </section>
 
             {variant === 'admin' && (
               <section className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3">
-                <h3 className="font-bold mb-2">Review Actions</h3>
+                <h3 className="font-bold mb-2 text-slate-800">Review Actions</h3>
                 
                 {courseData.verificationStatus === "pending" && (
                   <div className="grid grid-cols-1 gap-2">
@@ -246,7 +271,7 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
 
                 {courseData.isBlocked ? (
                   <Button 
-                    className="w-full bg-blue-600 text-white hover:bg-blue-700 font-bold" 
+                    className="w-full bg-blue-600 text-white hover:bg-blue-700 font-bold py-6 rounded-xl" 
                     onClick={() => setAction("unblock")}
                   >
                     Unblock Course
@@ -254,7 +279,7 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
                 ) : (
                   <Button 
                     variant="outline" 
-                    className="w-full border-red-600 text-red-600 hover:bg-red-50 font-bold"
+                    className="w-full border-red-600 text-red-600 hover:bg-red-50 font-bold py-6 rounded-xl"
                     onClick={() => setAction("block")}
                   >
                     Block Course
@@ -266,23 +291,25 @@ export default function CourseReviewPage({ variant }: CourseReviewProps) {
         </div>
       </div>
 
-      {/* 4. Lesson Preview Modal (New Feature) */}
+      {/* 5. Lesson Preview Modal (Standard Style) */}
       {previewLesson && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col">
             <div className="p-6 border-b flex justify-between items-center bg-gray-50">
-              <h3 className="text-xl font-bold">{previewLesson.title}</h3>
-              <Button variant="ghost" size="icon" onClick={() => setPreviewLesson(null)}><Trash2/></Button>
+              <h3 className="text-xl font-bold text-slate-800">{previewLesson.title}</h3>
+              <Button variant="ghost" size="icon" onClick={() => setPreviewLesson(null)} className="rounded-full hover:bg-red-50 hover:text-red-500">
+                <XCircle size={20}/>
+              </Button>
             </div>
             <div className="p-8 text-center bg-slate-50 min-h-[300px] flex flex-col items-center justify-center">
-              <PlayCircle size={64} className="text-slate-300 mb-4"/>
-              <p className="text-xl font-bold text-slate-800">Demo Content Area</p>
-              <p className="text-slate-500 italic max-w-sm mx-auto mt-2">
-                This is a secure preview mode for administrators to verify resource quality.
+              <PlayCircle size={64} className="text-slate-300 mb-4 animate-pulse"/>
+              <p className="text-xl font-bold text-slate-800 uppercase tracking-tighter italic">Secure Content Preview</p>
+              <p className="text-slate-500 italic max-w-sm mx-auto mt-2 text-sm leading-relaxed">
+                This is a secure playback environment for administrators to verify the technical and educational quality of resources.
               </p>
             </div>
-            <div className="p-4 flex justify-end">
-              <Button onClick={() => setPreviewLesson(null)} className="px-10 bg-slate-900">Close</Button>
+            <div className="p-4 flex justify-end bg-gray-50 border-t">
+              <Button onClick={() => setPreviewLesson(null)} className="px-10 bg-slate-900 font-bold rounded-xl">Close Preview</Button>
             </div>
           </div>
         </div>

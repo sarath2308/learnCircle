@@ -4,6 +4,7 @@ import { ICourse } from "@/model/shared/course.model";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
 import { BaseRepo } from "./base";
+import { CoursePopulated } from "@/types/learner/course/course.home.card.type";
 
 @injectable()
 export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
@@ -63,7 +64,10 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
   }
 
   async findById(id: string): Promise<ICourse | null> {
-    return await this._model.findById(id).populate("category").populate("createdBy");
+    return await this._model
+      .findOne({ _id: id, isDeleted: false })
+      .populate("category")
+      .populate("createdBy");
   }
 
   async getCourseDataFromUserId(
@@ -75,5 +79,19 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
       filter.status = query.status;
     }
     return await this._model.find(filter).populate("category");
+  }
+
+  async getAllCourseForUserHome(): Promise<CoursePopulated[]> {
+    return await this._model
+      .find({
+        isDeleted: false,
+        status: "published",
+        verificationStatus: "approved",
+        isBlocked: false,
+      })
+      .populate("category", "name")
+      .populate("subCategory", "name")
+      .populate("createdBy", "name role")
+      .lean<CoursePopulated[]>();
   }
 }

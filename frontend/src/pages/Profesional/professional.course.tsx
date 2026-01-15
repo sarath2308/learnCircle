@@ -1,9 +1,11 @@
 import MyCourse from "@/components/shared/MyCourse";
+import { usePublishCourse } from "@/hooks/shared/course-creator/course.publish.hook";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfessionalCourseManage()
 {
     const navigate = useNavigate();
+    const publishCourse = usePublishCourse();
 
     const handleEdit = (id: string)=>
     {
@@ -14,9 +16,9 @@ export default function ProfessionalCourseManage()
       navigate(`/professional/my-courses/${id}`)
     }
 
-    const handlePublish=(id:string)=>
+     const handlePublish = async(id: string)=>
     {
-
+           await publishCourse.mutateAsync(id);
     }
      const handleCreate = () =>
     {
