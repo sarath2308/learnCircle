@@ -7,3 +7,5 @@ export const ChapterSchema = z.object({
     .nonempty("Description is required")
     .min(10, "Description must be at least 10 characters"),
 });
+
+export type ChapterSchemaType = z.infer<typeof ChapterSchema>;

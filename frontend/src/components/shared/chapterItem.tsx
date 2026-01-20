@@ -5,8 +5,7 @@ import {
   Pencil, 
   Trash2, 
   Plus, 
-  LayoutList, 
-  AlertCircle 
+  LayoutList 
 } from "lucide-react";
 
 import { 
@@ -15,7 +14,6 @@ import {
   AccordionContent 
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 import LessonItem from "./lessonItem";
 import LessonCreateModal from "../createCourse/lessonCreateModal";
@@ -37,10 +35,12 @@ interface ChapterItemProps {
     order: number;
     lessons: ILessons[];
   };
+  onEdit?: () => void;
+  onRemove?: () => void; // Renamed to match the prop passed from parent
   variant: "creator" | "admin" | "user";
 }
 
-const ChapterItem = ({ chapter, variant }: ChapterItemProps) => {
+const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [lessonSubmitting, setLessonSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -82,7 +82,6 @@ const ChapterItem = ({ chapter, variant }: ChapterItemProps) => {
         setStage("finalize");
         await lessonFinalize.mutateAsync({ lessonId });
       } else {
-        // ✅ ADDED ELSE BLOCK: Prevents double creation for videos
         await lessonCreate.mutateAsync({
           chapterId: chapter.id,
           payload: lesson,
@@ -91,7 +90,6 @@ const ChapterItem = ({ chapter, variant }: ChapterItemProps) => {
       
       setIsModalOpen(false);
     } catch (err) {
-      alert("Failed to create lesson. Check console."); // Replace with a proper toast later
       console.error("Lesson creation failed:", err);
     } finally {
       setStage("idle");
@@ -139,13 +137,17 @@ const ChapterItem = ({ chapter, variant }: ChapterItemProps) => {
             </div>
           </AccordionTrigger>
 
+          {/* ACTIONS FOR CREATOR */}
           {variant === "creator" && (
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pr-2">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-400 hover:text-blue-600"
-                onClick={(e) => { e.stopPropagation(); /* onEdit */ }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  onEdit?.(); 
+                }}
               >
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -153,7 +155,10 @@ const ChapterItem = ({ chapter, variant }: ChapterItemProps) => {
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600"
-                onClick={(e) => { e.stopPropagation(); /* onDelete */ }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  onRemove?.(); 
+                }}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

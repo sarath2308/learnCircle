@@ -13,12 +13,12 @@ export function chapterRoutes(controller: IChapterController) {
     controller.createChapter.bind(controller),
   );
   router.patch(
-    "chapter/:chapterId",
+    "/chapter/:chapterId",
     validateRequest(chapterEditSchema),
     controller.editChapter.bind(controller),
   );
   router.delete(
-    "chapter/:chapterId/remove",
+    "/chapter/:chapterId/remove",
     validateRequest(chapterRemoveSchema),
     controller.removeChapter.bind(controller),
   );

@@ -85,7 +85,11 @@ export class ChapterService implements IChapterService {
 
     const responseObj = {
       ...updatedData,
-      id: updatedData._id,
+      id: String(updatedData._id),
+      title: updatedData.title,
+      description: updatedData.description,
+      order: updatedData.order,
+      courseId: String(updatedData.courseId),
     };
 
     return chapterResponseSchema.parse(responseObj);

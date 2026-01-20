@@ -1,10 +1,10 @@
-import { chapterApi } from "@/api/shared/chapterApi";
-import { useMutation } from "@tanstack/react-query";
+import { chapterApi } from "@/api/shared/chapterApi"
+import { useMutation } from "@tanstack/react-query"
 
-export const useChapterUpdate = () => {
-  return useMutation({
-    mutationKey: ["update-chapter"],
-    mutationFn: ({ chapterId, payload }: { chapterId: string; payload: FormData }) =>
-      chapterApi.updateChapter(chapterId, payload),
-  });
-};
+export const useChapterUpdate = () =>
+{
+    return useMutation({
+        mutationKey:["update-chapter"],
+        mutationFn:({chapterId,title,description}:{chapterId: string,title: string, description: string}) =>chapterApi.updateChapter(chapterId,{title,description})
+    })
+}

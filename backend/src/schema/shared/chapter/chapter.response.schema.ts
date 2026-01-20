@@ -6,7 +6,6 @@ export const chapterResponseSchema = z.object({
   title: z.string(),
   description: z.string(),
   order: z.number(),
-  isPublished: z.boolean(),
 });
 
 export type ChapterResponseType = z.infer<typeof chapterResponseSchema>;
