@@ -29,10 +29,22 @@ export class CourseController implements ICourseController {
     res.status(HttpStatus.CREATED).json({ success: true, courseId: result.courseId });
   }
 
+  async editCourse(req: IAuthRequest, res: Response): Promise<void> {
+    let thumbnail = null;
+    const { courseId } = req.params;
+    if (req.files && req.files["thumbnail"]) {
+      thumbnail = req.files["thumbnail"];
+    }
+
+    req.body.createdBy = req.user?.userId;
+
+    await this._courseService.editCourse(courseId, req.body, thumbnail ?? undefined);
+    res.status(HttpStatus.OK).json({ success: true });
+  }
   //update price details
   async updatePrice(req: IAuthRequest, res: Response): Promise<void> {
-    const { id } = req.params;
-    await this._courseService.updatePriceDetails(id, req.body);
+    const { courseId } = req.params;
+    await this._courseService.updatePriceDetails(courseId, req.body);
     res.status(HttpStatus.OK).json({ success: true });
   }
 

@@ -11,4 +11,11 @@ export default interface ILessonRepo extends IBaseRepo<ILesson> {
   updateThumbnailKey(lessonId: string, thumbnailKey: string): Promise<void>;
   findById(id: string): Promise<ILesson | null>;
   getLessonsByChapterIds: (chapterArray: Array<string>) => Promise<ILesson[]>;
+  findDuplicateWithSameTitle: (
+    lessonId: string,
+    chapterId: string,
+    title: string,
+  ) => Promise<ILesson | null>;
+
+  removeLesson: (lessonId: string) => Promise<void>;
 }

@@ -1,5 +1,5 @@
 import { chapterApi } from "@/api/shared/chapterApi";
-import { addChapter } from "@/redux/slice/chapterSlice";
+import { addChapter } from "@/redux/slice/course/chapterSlice";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";

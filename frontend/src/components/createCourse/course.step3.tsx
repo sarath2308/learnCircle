@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { pricingSchema, type PricingFormData } from "@/schema/course.price.schema";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
-import { useCourseUpdatePrice } from "@/hooks/shared/course.update.price";
+import { useCourseUpdatePrice } from "@/hooks/shared/course/course.update.price";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

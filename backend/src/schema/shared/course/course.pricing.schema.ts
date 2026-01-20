@@ -43,7 +43,7 @@ const bodySchema = z
   });
 
 export const courseParams = z.object({
-  id: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid categoryId"),
+  courseId: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid categoryId"),
 });
 
 export const coursePriceSchema = z.object({

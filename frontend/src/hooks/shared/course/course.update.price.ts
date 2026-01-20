@@ -1,6 +1,6 @@
 import { courseStep1Api } from "@/api/shared/course.create.step1.api";
-import { resetChapterState } from "@/redux/slice/chapterSlice";
-import { resetCourseDetails } from "@/redux/slice/courseDetails";
+import { resetChapterState } from "@/redux/slice/course/chapterSlice";
+import { resetCourseDetails } from "@/redux/slice/course/courseDetails";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";

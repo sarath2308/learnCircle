@@ -15,7 +15,7 @@ declare global {
 }
 
 export const busboyUpload = (req: Request, res: Response, next: NextFunction) => {
-  if (req.method !== "POST") return next();
+  if (!["POST", "PATCH", "PUT"].includes(req.method)) return next();
 
   // Ensure tmp/uploads exists
   const uploadDir = path.join(process.cwd(), "tmp", "uploads");

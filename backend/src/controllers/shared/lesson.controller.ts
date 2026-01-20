@@ -53,8 +53,24 @@ export class LessonController implements ILessonController {
   async updateLesson(req: IAuthRequest, res: Response): Promise<void> {
     const { lessonId } = req.params;
     const lessonDto = req.body;
-    await this._lessonService.updateLesson(lessonId, lessonDto);
-    res.status(HttpStatus.OK).json({ success: true });
+    let resourceFile = null;
+    let thumbnailFile = null;
+
+    if (req.files && req?.files["thumbnail"]) {
+      thumbnailFile = req.files["thumbnail"];
+    }
+    if (req.files && req.files["resource"]) {
+      resourceFile = req.files["resource"];
+    }
+
+    const lessonResponse = await this._lessonService.updateLesson(
+      lessonId,
+      lessonDto,
+      resourceFile || undefined,
+      thumbnailFile || undefined,
+    );
+
+    res.status(HttpStatus.CREATED).json({ success: true, lessonData: lessonResponse });
   }
 
   async deleteLesson(req: IAuthRequest, res: Response): Promise<void> {

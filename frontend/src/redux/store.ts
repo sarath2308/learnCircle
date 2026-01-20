@@ -3,8 +3,9 @@ import currentUserReducer from "./slice/currentUserSlice";
 import signupReducer from "./slice/signupSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storageSession from "redux-persist/lib/storage/session"; // sessionStorage
-import chapterReducer from "./slice/chapterSlice";
-import courseDetailsReducer from "./slice/courseDetails";
+import chapterReducer from "./slice/course/chapterSlice";
+import courseDetailsReducer from "./slice/course/courseDetails";
+import priceDetailsReducer from "@/redux/slice/course/priceDetailsSlice";
 
 const signupPersistConfig = {
   key: "signup",
@@ -26,6 +27,7 @@ export const store = configureStore({
     currentUser: persistedCurrentUserReducer,
     chapter: chapterReducer,
     courseDetails: courseDetailsReducer,
+    priceDetails: priceDetailsReducer
   },
 });
 

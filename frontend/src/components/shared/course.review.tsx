@@ -1,10 +1,7 @@
 "use client";
-
-import React, { useState } from "react";
+import  { useState, useMemo, useEffect } from "react";
 import { 
-  ChevronLeft, PlayCircle, HelpCircle, 
-  Edit3, Save, Trash2, PlusCircle, AlertCircle, CheckCircle2, XCircle,
-  Layers, FileText
+  ChevronLeft, Edit3, Save, Layers, Upload, Loader2, ShieldAlert
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -14,6 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Accordion } from "@/components/ui/accordion";
 import { AdminActionModal } from "@/components/admin/admin.action.modal";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Hooks
 import { useGetCourse } from "@/hooks/shared/course-creator/course.get";
@@ -21,6 +22,10 @@ import { useBlockCourse } from "@/hooks/admin/course/course.block";
 import { useApproveCourse } from "@/hooks/admin/course/course.approve";
 import { useUnblockCourse } from "@/hooks/admin/course/course.unblock";
 import { useRejectCourse } from "@/hooks/admin/course/course.reject";
+import { useCourseDetailsUpdate } from "@/hooks/shared/course/course.details.update";
+import { useGetCategory } from "@/hooks/shared/category.get";
+import { useGetSubCategories } from "@/hooks/shared/sub.category.get";
+
 import ChapterItem from "@/components/shared/chapterItem";
 
 type AdminAction = "block" | "reject" | "approve" | "unblock" | null;
@@ -31,22 +36,59 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
   
   const [action, setAction] = useState<AdminAction>(null);
   const [reason, setReason] = useState("");
-  const [previewLesson, setPreviewLesson] = useState<any | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  // --- Form State ---
+  const [editForm, setEditForm] = useState<any>({
+    title: "", description: "", category: "", subCategory: "", skillLevel: "", price: 0, discount: 0
+  });
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbPreview, setThumbPreview] = useState<string>("");
+
+  // --- Queries & Mutations ---
+  const { data, isLoading, isError, refetch } = useGetCourse(id!);
+  const { data: categoryList } = useGetCategory();
+  
+  // FIX: Passing editForm.category instead of hardcoded ID
+  const { data: subCatData, isLoading: subLoading } = useGetSubCategories(editForm.category.id);
+  
+  const updateMutation = useCourseDetailsUpdate();
   const blockCourse = useBlockCourse();
   const approveCourse = useApproveCourse();
   const unblockCourse = useUnblockCourse();
   const rejectCourse = useRejectCourse();
 
-  const { data, isLoading, isError, refetch } = useGetCourse(id!);
+  const subCategories = useMemo(() => subCatData?.subCategories ?? [], [subCatData]);
 
-  if (isLoading) return <div className="p-10 text-center animate-pulse font-bold text-slate-400">Loading comprehensive course data...</div>;
-  if (isError || !data?.courseData) return <div className="p-10 text-center text-red-500 font-bold">Failed to load course details.</div>;
+  useEffect(() => {
+    if (data?.courseData) {
+      const c = data.courseData;
+      setEditForm({
+        title: c.title,
+        description: c.description,
+        category: c.category?._id || c.category,
+        subCategory: c.subCategory?._id || c.subCategory,
+        skillLevel: c.skillLevel,
+        price: c.price || 0,
+        discount: c.discount || 0,
+      });
+      setThumbPreview(c.thumbnailUrl);
+    }
+  }, [data, isEditing]);
+
+  if (isLoading) return <div className="p-10 text-center animate-pulse font-bold text-slate-400">Loading Data...</div>;
+  if (isError || !data?.courseData) return <div className="p-10 text-center text-red-500 font-bold">Failed to load course.</div>;
 
   const courseData = data.courseData;
 
-  const handleConfirmAction = async () => {
+  // --- Logic: Calculate Discounted Price ---
+  const calculateSalePrice = (price: number, discountPercentage: number) => {
+    if (!discountPercentage || discountPercentage <= 0) return price;
+    const discountAmount = (price * discountPercentage) / 100;
+    return Math.max(0, price - discountAmount).toFixed(2);
+  };
+
+  const handleConfirmAdminAction = async () => {
     switch (action) {
       case "approve": await approveCourse.mutateAsync(id!); break;
       case "block": await blockCourse.mutateAsync({ courseId: id!, reason }); break;
@@ -58,262 +100,180 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
     refetch();
   };
 
+  const handleSaveDetails = async () => {
+    const formData = new FormData();
+    Object.entries(editForm).forEach(([k, v]) => formData.append(k, String(v)));
+    if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
+    await updateMutation.mutateAsync({ courseId: id!, payload: formData });
+    setIsEditing(false);
+    refetch();
+  };
+
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen font-sans text-slate-900 pb-20">
-      <AdminActionModal
-        open={!!action}
-        action={action}
-        reason={reason}
-        loading={isLoading}
-        setReason={setReason}
-        onClose={() => { setAction(null); setReason(""); }}
-        onConfirm={handleConfirmAction}
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 dark:bg-slate-950 min-h-screen font-sans text-slate-900 dark:text-slate-100 pb-20">
+      <AdminActionModal 
+        open={!!action} 
+        action={action} 
+        reason={reason} 
+        loading={approveCourse.isPending || blockCourse.isPending || rejectCourse.isPending || unblockCourse.isPending} 
+        setReason={setReason} 
+        onClose={() => setAction(null)} 
+        onConfirm={handleConfirmAdminAction} 
       />
 
-      {/* 1. Navigation & Header */}
+      {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
         <div>
-          <Button 
-            onClick={() => navigate(-1)} 
-            variant="ghost" 
-            size="sm" 
-            className="gap-1 pl-0 text-muted-foreground hover:text-foreground mb-2"
-          >
-            <ChevronLeft className="h-4 w-4" /> Back to List
+          <Button onClick={() => navigate(-1)} variant="ghost" size="sm" className="gap-1 pl-0 text-muted-foreground mb-2 dark:hover:bg-slate-900">
+            <ChevronLeft size={16} /> Back
           </Button>
-          <h1 className="text-3xl font-bold tracking-tight">Course Submission Review</h1>
-          <p className="text-slate-500">Reviewing: <span className="text-blue-600 font-medium">#{id?.slice(-6)}</span></p>
+          <h1 className="text-3xl font-bold tracking-tight">{isEditing ? "Edit Course Details" : "Course Review"}</h1>
         </div>
 
         {variant === 'creator' && (
-          <Button 
-            onClick={() => setIsEditing(!isEditing)}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all shadow-sm ${
-              isEditing ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-white border border-gray-200 text-slate-700 hover:bg-gray-50'
-            }`}
-          >
-            {isEditing ? <><Save size={18}/> Save Changes</> : <><Edit3 size={18}/> Edit Details</>}
-          </Button>
+          <div className="flex gap-2">
+            {isEditing && <Button variant="outline" onClick={() => setIsEditing(false)} className="rounded-xl dark:border-slate-800">Cancel</Button>}
+            <Button onClick={isEditing ? handleSaveDetails : () => setIsEditing(true)} className="rounded-xl font-bold shadow-sm px-6 bg-slate-900 dark:bg-indigo-600 text-white">
+              {updateMutation.isPending ? <Loader2 className="animate-spin" /> : isEditing ? <><Save size={18} className="mr-2"/> Save</> : <><Edit3 size={18} className="mr-2"/> Edit</>}
+            </Button>
+          </div>
         )}
       </header>
 
-      {/* 2. STATUS BANNER SECTION */}
-      {courseData.verificationStatus === 'rejected' && (
-        <div className="mb-8 border-l-4 border-red-500 bg-red-50 p-6 rounded-r-2xl flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-top-2">
-          <XCircle className="text-red-500 mt-1 flex-shrink-0" size={24} />
-          <div className="space-y-1">
-            <p className="font-bold text-red-800 text-lg">Submission Rejected</p>
-            <p className="text-red-700 leading-relaxed">
-              <span className="font-bold uppercase text-xs tracking-wider">Reviewer Feedback:</span> {courseData.rejectReason || "No specific feedback provided. Please ensure all content meets our quality guidelines."}
-            </p>
-            {variant === 'creator' && (
-              <Button 
-                variant="link" 
-                className="p-0 h-auto text-red-600 font-bold hover:text-red-800 underline" 
-                onClick={() => setIsEditing(true)}
-              >
-                Click here to start fixing these issues.
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {courseData.verificationStatus === 'approved' && (
-        <div className="mb-8 border-l-4 border-green-500 bg-green-50 p-5 rounded-r-2xl flex items-center gap-3 shadow-sm">
-          <CheckCircle2 className="text-green-600 flex-shrink-0" size={24} />
-          <p className="font-bold text-green-800">This course has been verified and is now visible to learners.</p>
-        </div>
-      )}
-
-      {/* 3. Full Width Thumbnail (Original Style) */}
-      <div className="w-full h-80 rounded-3xl overflow-hidden shadow-lg mb-8 border border-gray-200 relative group">
-        <img 
-          src={courseData.thumbnailUrl || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200"} 
-          alt="Thumbnail" 
-          className="w-full h-full object-cover" 
-        />
+      {/* Thumbnail Section */}
+      <div className="w-full h-80 rounded-3xl overflow-hidden shadow-lg mb-8 border border-gray-200 dark:border-slate-800 relative group">
+        <img src={thumbPreview} alt="Thumbnail" className="w-full h-full object-cover" />
         {isEditing && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="secondary" size="sm" className="font-bold">Update Cover Image</Button>
-          </div>
+          <label className="absolute inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer">
+            <Upload className="text-white mb-2" size={28} />
+            <span className="text-white font-bold">Change Cover Image</span>
+            <input type="file" className="hidden" accept="image/*" onChange={(e) => {
+              const file = e.target.files?.[0];
+              if(file) { setThumbnailFile(file); setThumbPreview(URL.createObjectURL(file)); }
+            }} />
+          </label>
         )}
       </div>
 
-      {/* 4. Main Content Grid (Original Layout) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Column: Details & Curriculum */}
         <div className="lg:col-span-2 space-y-8">
-          
-          <section className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex-1">
-                {isEditing ? (
-                  <input 
-                    className="text-2xl font-bold w-full border-b-2 border-blue-500 outline-none mb-2 bg-slate-50 px-2"
-                    defaultValue={courseData.title}
-                  />
-                ) : (
-                  <h2 className="text-2xl font-bold mb-2 text-slate-800">{courseData.title}</h2>
-                )}
+          <section className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-800">
+            {isEditing ? (
+              <div className="space-y-6">
+                <div className="space-y-2"><Label className="font-bold">Title</Label><Input value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} className="dark:bg-slate-800" /></div>
+                <div className="space-y-2"><Label className="font-bold">Description</Label><Textarea value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} rows={4} className="dark:bg-slate-800" /></div>
                 
-                {isEditing ? (
-                  <textarea 
-                    className="w-full text-slate-600 border rounded-lg p-3 outline-none bg-slate-50 mt-2"
-                    defaultValue={courseData.description}
-                    rows={4}
-                  />
-                ) : (
-                  <p className="text-slate-600 leading-relaxed">{courseData.description}</p>
-                )}
-              </div>
-              <Badge className={`ml-4 capitalize px-3 py-1 rounded-full text-[10px] font-black tracking-widest ${
-                courseData.verificationStatus === 'approved' ? 'bg-green-100 text-green-700' : 
-                courseData.verificationStatus === 'rejected' ? 'bg-red-100 text-red-700' : 
-                'bg-amber-100 text-amber-700'
-              }`}>
-                {courseData.verificationStatus}
-              </Badge>
-            </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-slate-400 uppercase">Category</Label>
+                    <Select value={editForm.category} onValueChange={(v) => setEditForm({...editForm, category: v, subCategory: ""})}>
+                      <SelectTrigger className="dark:bg-slate-800"><SelectValue placeholder="Select Category" /></SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-slate-900 z-[110]">
+                        {categoryList?.map((cat: any) => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-slate-400 uppercase">Sub-Category</Label>
+                    <Select value={editForm.subCategory} disabled={!subCategories.length} onValueChange={(v) => setEditForm({...editForm, subCategory: v})}>
+                      <SelectTrigger className="dark:bg-slate-800"><SelectValue placeholder={subLoading ? "..." : "Select Sub-Category"} /></SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-slate-900 z-[110]">
+                        {subCategories.map((sub: any) => <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-gray-100">
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Category</p>
-                <p className="font-semibold text-sm">{courseData.category}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Skill Level</p>
-                <Badge variant="secondary" className="bg-purple-50 text-purple-700 hover:bg-purple-50 border-none font-bold">{courseData.skillLevel}</Badge>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Price</p>
-                <p className="font-bold text-sm text-green-600">{courseData.price ? `$${courseData.price}` : "Free"}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Curriculum</p>
-                <p className="font-semibold text-sm">{courseData.chapterCount || 0} Chapters</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Curriculum Accordions */}
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-slate-800">Course Curriculum</h3>
-              {isEditing && <Button variant="link" className="text-blue-600 gap-1 p-0 h-auto font-bold"><PlusCircle size={16}/> Add Chapter</Button>}
-            </div>
-            
-            {!courseData.chapters || courseData.chapters.length === 0 ? (
-              <div className="bg-white p-10 rounded-2xl border-2 border-dashed border-gray-200 text-center text-slate-400 font-medium italic">
-                No curriculum content has been uploaded yet.
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="space-y-2"><Label className="text-xs font-bold text-slate-400 uppercase">Price ($)</Label><Input type="number" value={editForm.price} onChange={e => setEditForm({...editForm, price: e.target.value})} className="dark:bg-slate-800" /></div>
+                  <div className="space-y-2"><Label className="text-xs font-bold text-slate-400 uppercase">Discount (%)</Label><Input type="number" value={editForm.discount} onChange={e => setEditForm({...editForm, discount: e.target.value})} className="dark:bg-slate-800" /></div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-slate-400 uppercase">Skill Level</Label>
+                    <Select value={editForm.skillLevel} onValueChange={v => setEditForm({...editForm, skillLevel: v})}>
+                      <SelectTrigger className="dark:bg-slate-800"><SelectValue /></SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-slate-900"><SelectItem value="Beginner">Beginner</SelectItem><SelectItem value="Intermediate">Intermediate</SelectItem><SelectItem value="Advanced">Advanced</SelectItem></SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                {courseData.chapters.map((chapter: any) => (
-                  <Accordion key={chapter.id} type="single" collapsible className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                    <ChapterItem 
-                      chapter={chapter} 
-                      variant={variant} 
-                      onPreviewLesson={(lesson: any) => setPreviewLesson(lesson)} 
-                    />
-                  </Accordion>
-                ))}
-              </div>
+              <>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold mb-2">{courseData.title}</h2>
+                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{courseData.description}</p>
+                  </div>
+                  <Badge className="ml-4 capitalize dark:bg-slate-800 bg-green-500">{courseData.verificationStatus}</Badge>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t dark:border-slate-800">
+                  <div className="space-y-1"><p className="text-[10px] font-bold text-slate-400 uppercase">Category</p><p className="font-semibold text-sm">{courseData.category?.name || "N/A"}</p></div>
+                  <div className="space-y-1"><p className="text-[10px] font-bold text-slate-400 uppercase">Level</p><p className="font-bold text-xs text-indigo-600 dark:text-indigo-400">{courseData.skillLevel}</p></div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">Pricing</p>
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-green-600 dark:text-green-400 text-sm">
+                          ${calculateSalePrice(courseData.price, courseData.discount)}
+                        </span>
+                        {courseData.discount > 0 && (
+                          <span className="text-[10px] line-through text-slate-300 dark:text-slate-600">
+                            ${courseData.price} ({courseData.discount}% Off)
+                          </span>
+                        )}
+                    </div>
+                  </div>
+                  <div className="space-y-1"><p className="text-[10px] font-bold text-slate-400 uppercase">Content</p><p className="font-semibold text-sm">{courseData.chapterCount || 0} Chapters</p></div>
+                </div>
+              </>
             )}
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-xl font-bold dark:text-slate-200">Course Curriculum</h3>
+            {courseData.chapters?.map((chapter: any) => (
+              <Accordion key={chapter.id} type="single" collapsible className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                <ChapterItem chapter={chapter} variant={variant} />
+              </Accordion>
+            ))}
           </section>
         </div>
 
-        {/* Right Sidebar */}
+        {/* Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-6 space-y-6">
-            <section className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold mb-4 flex items-center gap-2 text-slate-800"><Layers size={18} className="text-blue-600"/> Instructor Info</h3>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-black text-blue-600">
-                  {courseData.createdBy?.name?.charAt(0)}
-                </div>
+            <section className="bg-white dark:bg-slate-900 p-6 rounded-3xl border dark:border-slate-800 shadow-sm">
+              <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-slate-400 uppercase tracking-widest"><Layers size={16}/> Instructor</h3>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold">{courseData.createdBy?.name?.charAt(0)}</div>
                 <div>
-                  <p className="font-bold text-sm text-slate-900">{courseData.createdBy?.name}</p>
-                  <p className="text-xs text-slate-400">{courseData.createdBy?.email}</p>
+                  <p className="font-bold text-sm">{courseData.createdBy?.name}</p>
+                  <p className="text-[11px] text-slate-400">{courseData.createdBy?.email}</p>
                 </div>
               </div>
-              <Separator className="my-4" />
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-400 font-medium uppercase tracking-tight">Created On</span>
-                  <span className="font-bold text-slate-700">{courseData.createdAt ? new Date(courseData.createdAt).toLocaleDateString() : 'N/A'}</span>
-                </div>
+              <Separator className="my-4 dark:bg-slate-800" />
+              <div className="flex justify-between text-[11px] font-bold">
+                <span className="text-slate-400 uppercase">Created</span>
+                <span className="dark:text-slate-200">{new Date(courseData.createdAt).toLocaleDateString()}</span>
               </div>
             </section>
 
             {variant === 'admin' && (
-              <section className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3">
-                <h3 className="font-bold mb-2 text-slate-800">Review Actions</h3>
-                
+              <section className="bg-slate-900 p-6 rounded-3xl shadow-xl space-y-3 text-white border border-slate-800">
+                <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-indigo-300"><ShieldAlert size={16} /> Admin Controls</h3>
                 {courseData.verificationStatus === "pending" && (
-                  <div className="grid grid-cols-1 gap-2">
-                    <Button 
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 rounded-xl"
-                      onClick={() => setAction("approve")}
-                    >
-                      Approve Course
-                    </Button>
-                    <Button 
-                      variant="destructive" 
-                      className="w-full font-bold py-6 rounded-xl"
-                      onClick={() => setAction("reject")}
-                    >
-                      Reject Course
-                    </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button className="bg-green-600 hover:bg-green-700 font-bold h-12 rounded-xl" onClick={() => setAction("approve")}>Approve</Button>
+                    <Button variant="destructive" className="font-bold h-12 rounded-xl" onClick={() => setAction("reject")}>Reject</Button>
                   </div>
                 )}
-
-                {courseData.isBlocked ? (
-                  <Button 
-                    className="w-full bg-blue-600 text-white hover:bg-blue-700 font-bold py-6 rounded-xl" 
-                    onClick={() => setAction("unblock")}
-                  >
-                    Unblock Course
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-red-600 text-red-600 hover:bg-red-50 font-bold py-6 rounded-xl"
-                    onClick={() => setAction("block")}
-                  >
-                    Block Course
-                  </Button>
-                )}
+                <Button variant="outline" className={`w-full h-12 rounded-xl font-bold border-white/10 hover:bg-white/5 ${courseData.isBlocked ? 'text-blue-400' : 'text-red-400'}`} onClick={() => setAction(courseData.isBlocked ? "unblock" : "block")}>
+                  {courseData.isBlocked ? "Unblock Course" : "Block Course"}
+                </Button>
               </section>
             )}
           </div>
         </div>
       </div>
-
-      {/* 5. Lesson Preview Modal (Standard Style) */}
-      {previewLesson && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-            <div className="p-6 border-b flex justify-between items-center bg-gray-50">
-              <h3 className="text-xl font-bold text-slate-800">{previewLesson.title}</h3>
-              <Button variant="ghost" size="icon" onClick={() => setPreviewLesson(null)} className="rounded-full hover:bg-red-50 hover:text-red-500">
-                <XCircle size={20}/>
-              </Button>
-            </div>
-            <div className="p-8 text-center bg-slate-50 min-h-[300px] flex flex-col items-center justify-center">
-              <PlayCircle size={64} className="text-slate-300 mb-4 animate-pulse"/>
-              <p className="text-xl font-bold text-slate-800 uppercase tracking-tighter italic">Secure Content Preview</p>
-              <p className="text-slate-500 italic max-w-sm mx-auto mt-2 text-sm leading-relaxed">
-                This is a secure playback environment for administrators to verify the technical and educational quality of resources.
-              </p>
-            </div>
-            <div className="p-4 flex justify-end bg-gray-50 border-t">
-              <Button onClick={() => setPreviewLesson(null)} className="px-10 bg-slate-900 font-bold rounded-xl">Close Preview</Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

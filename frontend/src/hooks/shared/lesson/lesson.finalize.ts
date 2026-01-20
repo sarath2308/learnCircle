@@ -1,6 +1,6 @@
 import { LessonApi } from "@/api/shared/lesson.api";
 import type { ILessons } from "@/interface/lesson.response.interface";
-import { addLesson } from "@/redux/slice/chapterSlice";
+import { addLesson } from "@/redux/slice/course/chapterSlice";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";

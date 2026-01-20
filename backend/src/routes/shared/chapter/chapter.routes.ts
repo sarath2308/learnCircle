@@ -17,7 +17,7 @@ export function chapterRoutes(controller: IChapterController) {
     validateRequest(chapterEditSchema),
     controller.editChapter.bind(controller),
   );
-  router.patch(
+  router.delete(
     "chapter/:chapterId/remove",
     validateRequest(chapterRemoveSchema),
     controller.removeChapter.bind(controller),

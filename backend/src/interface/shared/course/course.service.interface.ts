@@ -12,7 +12,11 @@ export default interface ICourseService {
     data: createCourseDtoType,
     thumbnail: UploadedFile,
   ) => Promise<{ courseId: string }>;
-  editCourse: (courseId: string, payload: Partial<createCourseDtoType>) => Promise<void>;
+  editCourse: (
+    courseId: string,
+    payload: Partial<createCourseDtoType>,
+    thumbnail?: UploadedFile | undefined,
+  ) => Promise<void>;
   publishCourse: (courseId: string) => Promise<void>;
   getCourseDataForCourseCreation: (courseId: string) => Promise<courseResponseType>;
   getAllCourse: () => Promise<any>;

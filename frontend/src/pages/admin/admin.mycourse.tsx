@@ -10,7 +10,7 @@ export default function AdminMyCoursePage(){
 
     const handleEdit = (id: string)=>
     {
-
+       navigate(`/admin/edit-course/${id}`)
     }
     const handleViewCourse = (id: string) =>
     {

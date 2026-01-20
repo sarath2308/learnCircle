@@ -81,9 +81,7 @@ export class CourseService implements ICourseService {
       const courseId = String(createdCourse._id);
 
       compressedPath = await this._imageCompressService.compress(thumbnail.path);
-      console.log("COMPRESSED PATH:", compressedPath);
       const key = await this._s3Service.generateS3Key(courseId, thumbnail.originalName);
-      console.log("GENERATED KEY:", key);
       await this._s3Service.uploadFileFromStream(
         compressedPath,
         key,
@@ -107,19 +105,66 @@ export class CourseService implements ICourseService {
    * @param courseId
    * @param payload
    */
-  async editCourse(courseId: string, payload: Partial<createCourseDtoType>): Promise<void> {
-    const categoryObjectId = new mongoose.Types.ObjectId(payload.category);
-    let subCategoryId: mongoose.Types.ObjectId | undefined = undefined;
-    if (payload.subCategory) {
-      subCategoryId = new mongoose.Types.ObjectId(payload.subCategory);
-    }
-    let updated = await this._courseRepo.update(courseId, {
-      ...payload,
-      category: categoryObjectId,
-      subCategory: subCategoryId,
-    });
-    if (!updated) {
-      throw new AppError(Messages.COURSE_NOT_UPDATED, HttpStatus.NOT_MODIFIED);
+  async editCourse(
+    courseId: string,
+    payload: Partial<createCourseDtoType>,
+    thumbnail?: UploadedFile,
+  ): Promise<void> {
+    let compressedPath: string | null = null;
+    let key: string | null = null;
+
+    try {
+      const courseData = await this._courseRepo.findById(courseId);
+
+      if (!courseData) {
+        throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.BAD_REQUEST);
+      }
+
+      let categoryObjectId: mongoose.Types.ObjectId | undefined;
+      if (payload.category) {
+        if (!mongoose.Types.ObjectId.isValid(payload.category)) {
+          throw new AppError("Invalid category id", HttpStatus.BAD_REQUEST);
+        }
+        categoryObjectId = new mongoose.Types.ObjectId(payload.category);
+      }
+
+      let subCategoryObjectId: mongoose.Types.ObjectId | undefined;
+      if (payload.subCategory) {
+        if (!mongoose.Types.ObjectId.isValid(payload.subCategory)) {
+          throw new AppError("Invalid sub category id", HttpStatus.BAD_REQUEST);
+        }
+        subCategoryObjectId = new mongoose.Types.ObjectId(payload.subCategory);
+      }
+
+      if (thumbnail) {
+        compressedPath = await this._imageCompressService.compress(thumbnail.path);
+
+        key = await this._s3Service.generateS3Key(courseId, thumbnail.originalName);
+
+        await this._s3Service.uploadFileFromStream(
+          compressedPath,
+          key,
+          thumbnail.mimeType,
+          Number(process.env.S3_URL_EXPIRES_IN),
+        );
+      }
+
+      courseData.title = payload.title ?? courseData.title;
+      courseData.description = payload.description ?? courseData.description;
+      courseData.category = categoryObjectId ?? courseData.category._id;
+      courseData.subCategory = subCategoryObjectId ?? courseData.subCategory?._id;
+      courseData.skillLevel = payload.skillLevel ?? courseData.skillLevel;
+      courseData.thumbnail_key = key ?? courseData.thumbnail_key;
+
+      await courseData.save();
+    } finally {
+      if (thumbnail) {
+        await this._safeDeleteService.safeDelete(thumbnail.path);
+
+        if (compressedPath) {
+          await this._safeDeleteService.safeDelete(compressedPath);
+        }
+      }
     }
   }
 
@@ -273,12 +318,17 @@ export class CourseService implements ICourseService {
     status?: CourseStatus,
   ): Promise<courseManageResponseType[]> {
     const courseData = await this._courseRepo.getCourseDataFromUserId(userId, { status });
+
     if (courseData.length === 0) {
       return [];
     }
+
+    console.log("course data" + courseData);
+
     return Promise.all(
       courseData.map(async (course) => {
-        let thumbnailUrl = null;
+        let thumbnailUrl = "";
+
         if (course.thumbnail_key) {
           thumbnailUrl = await this._s3Service.getFileUrl(
             course.thumbnail_key,
@@ -286,21 +336,25 @@ export class CourseService implements ICourseService {
           );
         }
 
-        const category = course.category as unknown as CategoryObjType;
+        const categoryDoc =
+          course.category && typeof course.category === "object"
+            ? (course.category as unknown as CategoryObjType)
+            : null;
+
         const responseObject = {
-          ...course,
           id: String(course._id),
           title: course.title,
           status: course.status,
           type: course.type,
-          thumbnail: thumbnailUrl ?? "",
+          thumbnail: thumbnailUrl,
           createdAt: String(course.createdAt),
-          category: category.name,
+          category: categoryDoc?.name ?? "",
           price: course.type === "Free" ? 0 : course.price,
           discount: course.type === "Free" ? 0 : course.discount,
           skillLevel: course.skillLevel,
           verificationStatus: course.verificationStatus,
         };
+
         return courseManageResponseSchema.parse(responseObject);
       }),
     );
@@ -318,10 +372,41 @@ export class CourseService implements ICourseService {
     if (!courseData) {
       throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+
+    let thumbnailUrl = "";
+
+    if (courseData.thumbnail_key) {
+      thumbnailUrl = await this._s3Service.getFileUrl(courseData.thumbnail_key);
+    }
+
+    // 🔒 Enforce mandatory category invariant
+    if (!courseData.category) {
+      throw new AppError(
+        "Course data corrupted: category is missing",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    const category = courseData.category as unknown as CategoryObjType;
+
     const responseObject = {
-      ...courseData,
-      id: courseData._id,
+      id: String(courseData._id),
+      title: courseData.title,
+      description: courseData.description,
+
+      category: String(category._id),
+
+      subCategory:
+        courseData.subCategory && typeof courseData.subCategory === "object"
+          ? String(courseData.subCategory._id)
+          : null,
+
+      skillLevel: courseData.skillLevel,
+      thumbnailUrl,
+      type: courseData.type,
+      status: courseData.status,
     };
+
     return courseResponseSchema.parse(responseObject);
   }
 
@@ -348,11 +433,15 @@ export class CourseService implements ICourseService {
     const courseObj = {
       ...courseData.toObject(),
       id: String(courseData._id),
-      category: category.name,
+      category: {
+        name: category.name,
+        id: String(category._id),
+      },
       createdBy: {
         name: createdBy?.name,
         role: createdBy?.role,
       },
+      discount: courseData.discount ?? 0,
       thumbnailUrl,
       rejectReason: courseData.rejectReason ?? "",
     };

@@ -12,7 +12,12 @@ export default interface ILessonService {
     thumbnailData: UploadedFile,
   ) => Promise<LessonResponseDto>;
   getLessonById: (lessonId: string) => Promise<LessonResponseDto>;
-  updateLesson: (lessonId: string, lessonDto: any) => Promise<LessonResponseDto>;
+  updateLesson: (
+    lessonId: string,
+    lessonDto: Partial<CreateLessonDto>,
+    resourceData?: UploadedFile,
+    thumbnailData?: UploadedFile,
+  ) => Promise<LessonResponseDto>;
   deleteLesson: (lessonId: string) => Promise<void>;
   changeLessonOrder: (chapterId: string, lessonOrderDto: any) => Promise<void>;
   createLessonWithVideo: (

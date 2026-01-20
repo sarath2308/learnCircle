@@ -2,12 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface CourseDetailsState {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   category: string;
   subCategory?: string;
   skillLevel: "beginner" | "intermediate" | "advanced" | "";
+  thumbnailUrl?: string;
+  thumbnailChanged: boolean;
 }
 
 const initialState: CourseDetailsState = {
@@ -17,6 +19,8 @@ const initialState: CourseDetailsState = {
   category: "",
   subCategory: "",
   skillLevel: "", // force user to pick a valid level
+  thumbnailUrl:"",
+  thumbnailChanged: false,
 };
 
 const courseDetailsSlice = createSlice({

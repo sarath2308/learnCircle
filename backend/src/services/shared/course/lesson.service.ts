@@ -4,7 +4,6 @@ import ILessonRepo from "@/interface/shared/lesson/lesson.repo.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
 import { CreateLessonDto } from "@/schema/shared/lesson/lesson.create.schema";
-import { UpdateLessonDto } from "@/schema/shared/lesson/lesson.update.schema";
 import { CreateLessonWithVideoDto } from "@/schema/shared/lesson/lesson.create.video.schema";
 import mongoose from "mongoose";
 import { Messages } from "@/constants/shared/messages";
@@ -16,6 +15,8 @@ import {
   LessonResponseSchema,
 } from "@/schema/shared/lesson/lesson.response.schema";
 import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
+import { ICompressor } from "@/interface/shared/compressor.interface";
+import { ISafeDeleteService } from "@/utils/safe.delete.service";
 
 @injectable()
 export class LessonService implements ILessonService {
@@ -23,6 +24,8 @@ export class LessonService implements ILessonService {
     @inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
     @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo,
+    @inject(TYPES.ImageCompressService) private _imageCompressService: ICompressor,
+    @inject(TYPES.ISafeDeleteService) private _safeDeleteService: ISafeDeleteService,
   ) {}
   /**
    *
@@ -41,66 +44,79 @@ export class LessonService implements ILessonService {
     resourceData: UploadedFile,
     thumbnailData: UploadedFile,
   ): Promise<LessonResponseDto> {
-    const present = await this._lessonRepo.findLessonByTitleAndChapterId(
-      lessonDto.title,
-      chapterId,
-    );
+    let compressedPath = null;
+    try {
+      const present = await this._lessonRepo.findLessonByTitleAndChapterId(
+        lessonDto.title,
+        chapterId,
+      );
 
-    if (present) {
-      throw new AppError(Messages.LESSON_DUPLICATE, HttpStatus.BAD_REQUEST);
-    }
+      if (present) {
+        throw new AppError(Messages.LESSON_DUPLICATE, HttpStatus.BAD_REQUEST);
+      }
 
-    const chapterObjectId = new mongoose.Types.ObjectId(chapterId);
+      const chapterObjectId = new mongoose.Types.ObjectId(chapterId);
 
-    const lessonData = await this._lessonRepo.create({ ...lessonDto, chapterId: chapterObjectId });
+      const lessonData = await this._lessonRepo.create({
+        ...lessonDto,
+        chapterId: chapterObjectId,
+      });
 
-    if (!lessonData) {
-      throw new AppError(Messages.LESSON_NOT_CREATED, HttpStatus.BAD_REQUEST);
-    }
+      if (!lessonData) {
+        throw new AppError(Messages.LESSON_NOT_CREATED, HttpStatus.BAD_REQUEST);
+      }
 
-    await this._chapterRepo.increseLessonCount(String(lessonData._id));
+      await this._chapterRepo.increseLessonCount(String(lessonData._id));
 
-    const thumbnail_key = await this._s3Service.generateS3Key(userId, thumbnailData.originalName);
+      const thumbnail_key = await this._s3Service.generateS3Key(userId, thumbnailData.originalName);
 
-    const thumbnailUrl = await this._s3Service.uploadFileFromStream(
-      thumbnailData.path,
-      thumbnail_key,
-      thumbnailData.mimeType,
-      60,
-    );
+      compressedPath = await this._imageCompressService.compress(thumbnailData.path);
 
-    lessonData.thumbnail_key = thumbnail_key;
-
-    let fileUrl = "";
-    if (lessonDto.type === "PDF") {
-      const file_key = await this._s3Service.generateS3Key(userId, resourceData.originalName);
-
-      fileUrl = await this._s3Service.uploadFileFromStream(
-        resourceData.path,
-        file_key,
-        resourceData.mimeType,
+      const thumbnailUrl = await this._s3Service.uploadFileFromStream(
+        compressedPath,
+        thumbnail_key,
+        thumbnailData.mimeType,
         60,
       );
-      lessonData.file_key = file_key;
+
+      lessonData.thumbnail_key = thumbnail_key;
+
+      let fileUrl = "";
+      if (lessonDto.type === "PDF") {
+        const file_key = await this._s3Service.generateS3Key(userId, resourceData.originalName);
+
+        fileUrl = await this._s3Service.uploadFileFromStream(
+          resourceData.path,
+          file_key,
+          resourceData.mimeType,
+          60,
+        );
+        lessonData.file_key = file_key;
+      }
+      await lessonData.save();
+      const lessonObject = lessonData.toObject();
+
+      const lessonDataWithUrls = {
+        ...lessonObject,
+
+        // ✅ serialize Mongo fields
+        id: lessonObject._id.toString(),
+        chapterId: lessonObject.chapterId.toString(),
+        createdAt: lessonObject.createdAt.toISOString(),
+        updatedAt: lessonObject.updatedAt.toISOString(),
+
+        // computed fields
+        thumbnailUrl,
+        fileUrl: fileUrl || undefined,
+      };
+
+      return LessonResponseSchema.parse(lessonDataWithUrls);
+    } finally {
+      await this._safeDeleteService.safeDelete(thumbnailData.path);
+      if (compressedPath) {
+        await this._safeDeleteService.safeDelete(compressedPath);
+      }
     }
-    await lessonData.save();
-    const lessonObject = lessonData.toObject();
-
-    const lessonDataWithUrls = {
-      ...lessonObject,
-
-      // ✅ serialize Mongo fields
-      id: lessonObject._id.toString(),
-      chapterId: lessonObject.chapterId.toString(),
-      createdAt: lessonObject.createdAt.toISOString(),
-      updatedAt: lessonObject.updatedAt.toISOString(),
-
-      // computed fields
-      thumbnailUrl,
-      fileUrl: fileUrl || undefined,
-    };
-
-    return LessonResponseSchema.parse(lessonDataWithUrls);
   }
   /**
    *
@@ -138,31 +154,91 @@ export class LessonService implements ILessonService {
    * @returns
    */
 
-  async updateLesson(lessonId: string, lessonDto: UpdateLessonDto): Promise<LessonResponseDto> {
-    const lesson = await this._lessonRepo.findById(lessonId);
-    if (!lesson) {
-      throw new AppError(Messages.LESSON_NOT_FOUND, HttpStatus.NOT_FOUND);
+  async updateLesson(
+    lessonId: string,
+    lessonDto: Partial<CreateLessonDto>,
+    resourceData?: UploadedFile,
+    thumbnailData?: UploadedFile,
+  ): Promise<LessonResponseDto> {
+    let compressedPath = null;
+    let thumbnailUrl = null;
+    let thumbnail_key = null;
+
+    try {
+      let lessonData = await this._lessonRepo.findById(lessonId);
+
+      if (!lessonData) {
+        throw new AppError(Messages.LESSON_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      if (lessonDto.title) {
+        const present = await this._lessonRepo.findDuplicateWithSameTitle(
+          lessonId,
+          String(lessonData.chapterId),
+          lessonDto.title,
+        );
+
+        if (present) {
+          throw new AppError(Messages.LESSON_DUPLICATE, HttpStatus.BAD_REQUEST);
+        }
+      }
+
+      const update = await this._lessonRepo.update(lessonId, lessonDto);
+
+      if (!update) {
+        throw new AppError(Messages.LESSON_NOT_UPDATED, HttpStatus.NOT_MODIFIED);
+      }
+
+      if (thumbnailData) {
+        thumbnail_key = await this._s3Service.generateS3Key(lessonId, thumbnailData.originalName);
+        compressedPath = await this._imageCompressService.compress(thumbnailData.path);
+        thumbnailUrl = await this._s3Service.uploadFileFromStream(
+          compressedPath,
+          thumbnail_key,
+          thumbnailData.mimeType,
+          60,
+        );
+        lessonData.thumbnail_key = thumbnail_key;
+      }
+
+      let fileUrl = "";
+      if (resourceData) {
+        if (lessonDto.type === "PDF") {
+          const file_key = await this._s3Service.generateS3Key(lessonId, resourceData.originalName);
+
+          fileUrl = await this._s3Service.uploadFileFromStream(
+            resourceData.path,
+            file_key,
+            resourceData.mimeType,
+            60,
+          );
+          lessonData.file_key = file_key;
+        }
+      }
+      await lessonData.save();
+      const lessonObject = lessonData.toObject();
+
+      const lessonDataWithUrls = {
+        ...lessonObject,
+
+        // ✅ serialize Mongo fields
+        id: lessonObject._id.toString(),
+        chapterId: lessonObject.chapterId.toString(),
+        createdAt: lessonObject.createdAt.toISOString(),
+        updatedAt: lessonObject.updatedAt.toISOString(),
+
+        // computed fields
+        thumbnailUrl,
+        fileUrl: fileUrl || undefined,
+      };
+
+      return LessonResponseSchema.parse(lessonDataWithUrls);
+    } finally {
+      if (thumbnailData) await this._safeDeleteService.safeDelete(thumbnailData.path);
+      if (compressedPath) {
+        await this._safeDeleteService.safeDelete(compressedPath);
+      }
     }
-    const updated = await this._lessonRepo.update(lessonId, lessonDto);
-    if (!updated) {
-      throw new AppError(Messages.LESSON_NOT_UPDATED, HttpStatus.NOT_MODIFIED);
-    }
-    let fileUrl = "";
-    let thumbnailUrl = "";
-    if (updated.file_key) {
-      fileUrl = await this._s3Service.getFileUrl(updated.file_key, 60);
-    }
-    if (updated.thumbnail_key) {
-      thumbnailUrl = await this._s3Service.getFileUrl(updated.thumbnail_key, 60);
-    }
-    const lessonDataWithUrls = {
-      ...updated.toObject(),
-      id: updated._id,
-      thumbnailUrl,
-      chapterId: String(updated.chapterId),
-      fileUrl: fileUrl ? fileUrl : undefined,
-    };
-    return LessonResponseSchema.parse(lessonDataWithUrls);
   }
 
   async deleteLesson(lessonId: string): Promise<void> {
@@ -170,7 +246,7 @@ export class LessonService implements ILessonService {
     if (!lesson) {
       throw new AppError(Messages.LESSON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    await this._lessonRepo.delete(lessonId);
+    await this._lessonRepo.removeLesson(lessonId);
     await this._chapterRepo.decreaseLessonCount(lessonId);
   }
 

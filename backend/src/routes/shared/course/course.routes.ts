@@ -3,6 +3,7 @@ import { busboyUpload } from "@/middleware";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { createCourseSchema } from "@/schema/shared/course/course.create.schema";
 import { coursePriceSchema } from "@/schema/shared/course/course.pricing.schema";
+import { updateCourseSchema } from "@/schema/shared/course/course.update.schema";
 import { Router } from "express";
 
 export function courseRoutes(controller: ICourseController) {
@@ -17,7 +18,13 @@ export function courseRoutes(controller: ICourseController) {
     controller.createCourse.bind(controller),
   );
   router.patch(
-    "/:id/pricing",
+    "/:courseId",
+    busboyUpload,
+    validateRequest(updateCourseSchema),
+    controller.editCourse.bind(controller),
+  );
+  router.patch(
+    "/:courseId/pricing",
     validateRequest(coursePriceSchema),
     controller.updatePrice.bind(controller),
   );

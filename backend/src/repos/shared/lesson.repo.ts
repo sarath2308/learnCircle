@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { BaseRepo } from "./base";
 import { TYPES } from "@/types/shared/inversify/types";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import ILessonRepo from "@/interface/shared/lesson/lesson.repo.interface";
 import { ILesson } from "@/model/shared/lesson.model";
 
@@ -31,5 +31,52 @@ export class LessonRepo extends BaseRepo<ILesson> implements ILessonRepo {
 
   async getLessonsByChapterIds(chapterArray: Array<string>): Promise<ILesson[]> {
     return await this._model.find({ chapterId: { $in: [...chapterArray] }, isDeleted: false });
+  }
+
+  async findDuplicateWithSameTitle(
+    lessonId: string,
+    chapterId: string,
+    title: string,
+  ): Promise<ILesson | null> {
+    return this._model.findOne({
+      _id: { $ne: new Types.ObjectId(lessonId) },
+      chapterId: new Types.ObjectId(chapterId),
+      isDeleted: false,
+      title,
+    });
+  }
+
+  async removeLesson(lessonId: string): Promise<void> {
+    const session = await this._model.startSession();
+
+    await session.withTransaction(async () => {
+      const lesson = await this._model.findOne({ _id: lessonId, isDeleted: false }, null, {
+        session,
+      });
+
+      if (!lesson) {
+        throw new Error("Lesson not found");
+      }
+
+      const { chapterId, order } = lesson;
+
+      // 1. Soft delete the lesson
+      await this._model.updateOne({ _id: lessonId }, { $set: { isDeleted: true } }, { session });
+
+      // 2. Shift remaining lessons
+      await this._model.updateMany(
+        {
+          chapterId,
+          isDeleted: false,
+          order: { $gt: order },
+        },
+        {
+          $inc: { order: -1 },
+        },
+        { session },
+      );
+    });
+
+    session.endSession();
   }
 }

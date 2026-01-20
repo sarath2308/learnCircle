@@ -72,6 +72,11 @@ export class ChapterService implements IChapterService {
    */
 
   async editChapter(chapterId: string, data: EditChapterType): Promise<ChapterResponseType> {
+    const chapter = await this._chapterRepo.findById(chapterId);
+    if (!chapter) {
+      throw new AppError(Messages.CHAPTER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
     let updatedData = await this._chapterRepo.update(chapterId, data);
 
     if (!updatedData) {
@@ -92,7 +97,12 @@ export class ChapterService implements IChapterService {
    */
 
   async removeChapter(chapterId: string): Promise<void> {
-    await this._chapterRepo.remove(chapterId);
+    let chapterData = await this._chapterRepo.findById(chapterId);
+
+    if (!chapterData) {
+      throw new AppError(Messages.CHAPTER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+    }
+    await this._chapterRepo.removeChapter(chapterId);
     await this._courseRepo.decreaseChapterCount(chapterId);
   }
 
