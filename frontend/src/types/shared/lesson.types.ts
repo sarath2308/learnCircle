@@ -1,1 +1,1 @@
-export type LessonType = "video" | "pdf" | "youtube" | "blog" | "article";
+export type LessonType = "Video" | "PDF" | "YouTube" | "Blog" | "Article";

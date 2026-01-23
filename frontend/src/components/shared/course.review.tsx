@@ -50,7 +50,7 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
   const { data: categoryList } = useGetCategory();
   
   // FIX: Passing editForm.category instead of hardcoded ID
-  const { data: subCatData, isLoading: subLoading } = useGetSubCategories(editForm.category.id);
+  const { data: subCatData, isLoading: subLoading } = useGetSubCategories(editForm.category);
   
   const updateMutation = useCourseDetailsUpdate();
   const blockCourse = useBlockCourse();
@@ -66,8 +66,8 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
       setEditForm({
         title: c.title,
         description: c.description,
-        category: c.category?._id || c.category,
-        subCategory: c.subCategory?._id || c.subCategory,
+        category: c.category?.id,
+        subCategory: c.subCategory?.id,
         skillLevel: c.skillLevel,
         price: c.price || 0,
         discount: c.discount || 0,

@@ -27,9 +27,10 @@ export function lessonRoutes(lessonController: ILessonController) {
     validateRequest(GetLessonSchema),
     lessonController.getLessonById.bind(lessonController),
   );
-  router.patch(
+  router.put(
     "/lesson/:lessonId",
     validateRequest(UpdateLessonSchema),
+    busboyUpload,
     lessonController.updateLesson.bind(lessonController),
   );
   router.delete(

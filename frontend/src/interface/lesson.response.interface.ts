@@ -1,5 +1,5 @@
 export interface ILessons {
-  id?: string;
+  id: string;
   chapterId: string;
   title: string;
   description: string;

@@ -100,7 +100,7 @@ export class ChapterService implements IChapterService {
    * @param chapterId
    */
 
-  async removeChapter(chapterId: string): Promise<void> {
+  async removeChapter(chapterId: string): Promise<{ chapterId: string }> {
     let chapterData = await this._chapterRepo.findById(chapterId);
 
     if (!chapterData) {
@@ -108,6 +108,8 @@ export class ChapterService implements IChapterService {
     }
     await this._chapterRepo.removeChapter(chapterId);
     await this._courseRepo.decreaseChapterCount(chapterId);
+
+    return { chapterId };
   }
 
   async getChapter(chapterId: string): Promise<ChapterResponseType> {

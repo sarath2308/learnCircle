@@ -19,6 +19,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
+import LessonFormModal from "../createCourse/lesson.form.modal";
+import { useLessonUpdate } from "@/hooks/shared/lesson/lesson.update";
+import { useRemoveLesson } from "@/hooks/shared/lesson/lesson.remove";
+import toast from "react-hot-toast";
 
 interface ILessonProps {
   lesson: ILessons;
@@ -27,6 +32,10 @@ interface ILessonProps {
 }
 
 const LessonItem = ({ lesson, setModalData, variant = "user" }: ILessonProps) => {
+
+  const [editModal, setEditModal] = useState(false)
+  const updateLesson = useLessonUpdate();
+  const removeLesson  = useRemoveLesson();
   
   // Dynamic Icon mapping for better UX
   const getIcon = () => {
@@ -54,9 +63,26 @@ const LessonItem = ({ lesson, setModalData, variant = "user" }: ILessonProps) =>
     }
   };
 
+  const onEdit =async (data:FormData)=>
+  {
+    await updateLesson.mutateAsync({lessonId: lesson.id, payload:data})
+    setEditModal(false)
+  }
+
+  const onRemove = async() =>
+  {
+    await removeLesson.mutateAsync(lesson.id)
+  }
+
   return (
     <div className="group flex items-center justify-between p-3 mb-2 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-blue-500/50 dark:hover:border-blue-400/50 transition-all shadow-sm hover:shadow-md">
-      
+      {editModal &&
+       <LessonFormModal
+       open = {editModal}
+       onClose={()=> setEditModal(false)}
+       onSubmit={onEdit}
+       initialData={lesson}
+       />}
       {/* Left Section: Visuals & Info */}
       <div className="flex items-center gap-4 flex-1">
         {variant === "creator" && (
@@ -100,7 +126,7 @@ const LessonItem = ({ lesson, setModalData, variant = "user" }: ILessonProps) =>
                   variant="ghost" 
                   size="icon" 
                   className="h-8 w-8 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                  onClick={() => console.log("Edit", lesson)}
+                  onClick={()=> setEditModal(true)}
                 >
                   <Pencil size={14} />
                 </Button>
@@ -114,7 +140,7 @@ const LessonItem = ({ lesson, setModalData, variant = "user" }: ILessonProps) =>
                   variant="ghost" 
                   size="icon" 
                   className="h-8 w-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  onClick={() => console.log("Delete", lesson.id)}
+                  onClick={onRemove}
                 >
                   <Trash2 size={14} />
                 </Button>

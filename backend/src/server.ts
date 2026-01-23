@@ -46,7 +46,7 @@ app.use(
       if (safeBody.password) delete safeBody.password;
       return { req: { body: safeBody } };
     },
-    colorize: false,
+    colorize: true,
   }),
 );
 

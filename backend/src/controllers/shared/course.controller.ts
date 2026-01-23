@@ -49,12 +49,28 @@ export class CourseController implements ICourseController {
   }
 
   async getCouseDataForCourseManagement(req: IAuthRequest, res: Response): Promise<void> {
-    const userId = req.user?.userId as string;
-    // ?status=draft | ?status=published | no param
-    const status = req.query.status as CourseStatus | undefined;
+    const userId = req.user!.userId as string;
 
-    const courseData = await this._courseService.getCouseDataForCourseManagement(userId, status);
-    res.status(HttpStatus.OK).json({ success: true, courseData });
+    const { status, category, type, skillLevel, search } = req.query as {
+      status?: CourseStatus;
+      category?: string;
+      type?: string;
+      skillLevel?: string;
+      search?: string;
+    };
+
+    const courseData = await this._courseService.getCouseDataForCourseManagement(userId, {
+      status,
+      category,
+      type,
+      skillLevel,
+      search,
+    });
+
+    res.status(HttpStatus.OK).json({
+      success: true,
+      courseData,
+    });
   }
 
   async getCourseById(req: IAuthRequest, res: Response): Promise<void> {

@@ -30,7 +30,7 @@ export class ChapterController implements IChapterController {
 
   async removeChapter(req: IAuthRequest, res: Response): Promise<void> {
     const { chapterId } = req.params;
-    await this._chapterService.removeChapter(chapterId);
-    res.status(HttpStatus.OK).json({ success: true });
+    let chapterResponse = await this._chapterService.removeChapter(chapterId);
+    res.status(HttpStatus.OK).json({ success: true, chapterId: chapterResponse.chapterId });
   }
 }

@@ -17,6 +17,7 @@ import {
 import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
 import { ICompressor } from "@/interface/shared/compressor.interface";
 import { ISafeDeleteService } from "@/utils/safe.delete.service";
+import { LESSON_TYPES } from "@/constants/shared/lessonType";
 
 @injectable()
 export class LessonService implements ILessonService {
@@ -151,6 +152,8 @@ export class LessonService implements ILessonService {
    *
    * @param lessonId
    * @param lessonDto
+   * @param resourceData
+   * @param thumbnailData
    * @returns
    */
 
@@ -183,16 +186,20 @@ export class LessonService implements ILessonService {
         }
       }
 
-      const update = await this._lessonRepo.update(lessonId, lessonDto);
-
-      if (!update) {
-        throw new AppError(Messages.LESSON_NOT_UPDATED, HttpStatus.NOT_MODIFIED);
+      lessonData.title = lessonDto.title ?? lessonData.title;
+      lessonData.description = lessonDto.description ?? lessonData.description;
+      if (lessonDto.type && [LESSON_TYPES.VIDEO, LESSON_TYPES.PDF].includes(lessonDto.type)) {
+        lessonData.link = "";
+      } else {
+        lessonData.link = lessonDto.link ?? lessonData.link;
       }
+      lessonData.type = lessonDto.type ?? lessonData.type;
+      await lessonData.save();
 
       if (thumbnailData) {
         thumbnail_key = await this._s3Service.generateS3Key(lessonId, thumbnailData.originalName);
         compressedPath = await this._imageCompressService.compress(thumbnailData.path);
-        thumbnailUrl = await this._s3Service.uploadFileFromStream(
+        await this._s3Service.uploadFileFromStream(
           compressedPath,
           thumbnail_key,
           thumbnailData.mimeType,
@@ -217,6 +224,8 @@ export class LessonService implements ILessonService {
       }
       await lessonData.save();
       const lessonObject = lessonData.toObject();
+      if (lessonData.thumbnail_key)
+        thumbnailUrl = await this._s3Service.getFileUrl(lessonData.thumbnail_key);
 
       const lessonDataWithUrls = {
         ...lessonObject,
@@ -241,13 +250,15 @@ export class LessonService implements ILessonService {
     }
   }
 
-  async deleteLesson(lessonId: string): Promise<void> {
+  async deleteLesson(lessonId: string): Promise<{ chapterId: string; lessonId: string }> {
     const lesson = await this._lessonRepo.findById(lessonId);
     if (!lesson) {
       throw new AppError(Messages.LESSON_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     await this._lessonRepo.removeLesson(lessonId);
     await this._chapterRepo.decreaseLessonCount(lessonId);
+
+    return { chapterId: String(lesson.chapterId), lessonId };
   }
 
   async changeLessonOrder(chapterId: string, lessonOrderDto: any): Promise<void> {}

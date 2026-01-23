@@ -240,7 +240,7 @@ const AdminCategoryManagement = () => {
                   <Button variant="outline" onClick={() => setCreateOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleCreate}>
+                  <Button onClick={handleCreate} className="bg-green-400">
                     {createCategory.isPending ? "Creating..." : "Create"}
                   </Button>
                 </DialogFooter>
@@ -280,7 +280,7 @@ const AdminCategoryManagement = () => {
               <Button variant="outline" onClick={() => setEditOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleEdit}>
+              <Button onClick={handleEdit} className="bg-green-400">
                 {updateCategory.isPending ? "Saving..." : "Save"}
               </Button>
             </DialogFooter>

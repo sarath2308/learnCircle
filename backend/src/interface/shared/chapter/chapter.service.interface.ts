@@ -7,5 +7,5 @@ export interface IChapterService {
   getChapters: (courseId: string) => Promise<ChapterResponseType[]>;
   getChapter: (chapterId: string) => Promise<ChapterResponseType>;
   editChapter: (chapterId: string, data: EditChapterType) => Promise<ChapterResponseType>;
-  removeChapter: (id: string) => Promise<void>;
+  removeChapter: (id: string) => Promise<{ chapterId: string }>;
 }

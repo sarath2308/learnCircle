@@ -24,7 +24,15 @@ export default interface ICourseService {
   getCourseDataForUserHome: () => Promise<userCourseCardResponseType[]>;
   getCouseDataForCourseManagement: (
     userId: string,
-    status?: CourseStatus,
+    filter: {
+      status?: CourseStatus;
+      search?: string;
+      type?: string;
+      category?: string;
+      subCategory?: string;
+      rating?: string;
+      skillLevel?: string;
+    },
   ) => Promise<courseManageResponseType[]>;
   getCourseById: (courseId: string) => Promise<courseResponseType>;
   getCourseDataForCreatorView: (courseId: string) => Promise<CreatorCourseViewResponse>;

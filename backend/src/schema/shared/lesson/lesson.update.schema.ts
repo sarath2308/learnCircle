@@ -1,11 +1,11 @@
 import z from "zod";
 
 const bodySchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string(),
-  type: z.enum(["Video", "PDF", "Article", "YouTube", "Blog"]),
+  title: z.string().min(1, "Title is required").optional(),
+  description: z.string().optional(),
+  type: z.enum(["Video", "PDF", "Article", "YouTube", "Blog"]).optional(),
   link: z.string().optional(),
-  order: z.number(),
+  order: z.number().optional(),
 });
 
 const paramsSchema = z.object({

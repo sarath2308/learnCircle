@@ -72,13 +72,40 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
 
   async getCourseDataFromUserId(
     userId: string,
-    query: { status?: CourseStatus },
+    query: {
+      status?: CourseStatus;
+      search?: string;
+      type?: string;
+      category?: string;
+      subCategory?: string;
+      rating?: string;
+      skillLevel?: string;
+    },
   ): Promise<ICourse[]> {
-    const filter: Record<string, any> = { createdBy: userId, isDeleted: false };
-    if (query.status) {
-      filter.status = query.status;
+    const filter: Record<string, any> = {
+      createdBy: userId,
+      isDeleted: false,
+    };
+
+    if (query.status) filter.status = query.status;
+    if (query.type) filter.type = query.type;
+    if (query.skillLevel) filter.skillLevel = query.skillLevel;
+    if (query.category) filter.category = query.category;
+    if (query.subCategory) filter.subCategory = query.subCategory;
+
+    if (query.search) {
+      const escapedSearch = query.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.title = { $regex: escapedSearch, $options: "i" };
     }
-    return await this._model.find(filter).populate("category");
+
+    if (query.rating) {
+      const ratingValue = Number(query.rating);
+      if (!isNaN(ratingValue)) {
+        filter.averageRating = { $gte: ratingValue };
+      }
+    }
+
+    return this._model.find(filter).populate("category", "name");
   }
 
   async getAllCourseForUserHome(): Promise<CoursePopulated[]> {

@@ -30,6 +30,8 @@ export class CategoryRepo extends BaseRepo<ICategory> implements ICategoryRepo {
   }
 
   async getCategoryByName(name: string): Promise<ICategory | null> {
-    return await this._model.findOne({ name: name });
+    return await this._model.findOne({
+      name: { $regex: name, $options: "i" },
+    });
   }
 }

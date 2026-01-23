@@ -42,6 +42,10 @@ export class CategoryService implements ICategoryService {
     if (!category) {
       throw new AppError(Messages.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    const duplicate = await this._categoryRepo.getCategoryByName(payload.name);
+
+    if (duplicate) throw new AppError(Messages.CATEGORY_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+
     category.name = payload.name;
     await category.save();
 

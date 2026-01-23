@@ -43,6 +43,12 @@ export class SubCategoryService implements ISubCategoryService {
     if (!subcategory) {
       throw new AppError(Messages.SUBCATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    if (payload.name) {
+      const present = await this._subCategoryRepo.getSubCategoryByName(payload.name);
+      if (present) {
+        throw new AppError(Messages.SUBCATEGORY_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+      }
+    }
     categoryId = new mongoose.Types.ObjectId(payload.categoryId);
 
     subcategory.name = payload.name || subcategory.name;

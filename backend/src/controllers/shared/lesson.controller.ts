@@ -53,6 +53,8 @@ export class LessonController implements ILessonController {
   async updateLesson(req: IAuthRequest, res: Response): Promise<void> {
     const { lessonId } = req.params;
     const lessonDto = req.body;
+
+    console.log("from lesson controller" + lessonDto.title);
     let resourceFile = null;
     let thumbnailFile = null;
 
@@ -70,13 +72,17 @@ export class LessonController implements ILessonController {
       thumbnailFile || undefined,
     );
 
-    res.status(HttpStatus.CREATED).json({ success: true, lessonData: lessonResponse });
+    res.status(HttpStatus.OK).json({ success: true, lessonData: lessonResponse });
   }
 
   async deleteLesson(req: IAuthRequest, res: Response): Promise<void> {
     const { lessonId } = req.params;
-    await this._lessonService.deleteLesson(lessonId);
-    res.status(HttpStatus.OK).json({ success: true });
+    const lessonResponse = await this._lessonService.deleteLesson(lessonId);
+    res.status(HttpStatus.OK).json({
+      success: true,
+      chapterId: lessonResponse.chapterId,
+      lessonId: lessonResponse.lessonId,
+    });
   }
 
   async createLessonWithVideo(req: IAuthRequest, res: Response): Promise<void> {

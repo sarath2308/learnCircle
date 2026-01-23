@@ -315,9 +315,17 @@ export class CourseService implements ICourseService {
    */
   async getCouseDataForCourseManagement(
     userId: string,
-    status?: CourseStatus,
+    filter: {
+      status?: CourseStatus;
+      search?: string;
+      type?: string;
+      category?: string;
+      subCategory?: string;
+      rating?: string;
+      skillLevel?: string;
+    },
   ): Promise<courseManageResponseType[]> {
-    const courseData = await this._courseRepo.getCourseDataFromUserId(userId, { status });
+    const courseData = await this._courseRepo.getCourseDataFromUserId(userId, filter);
 
     if (courseData.length === 0) {
       return [];

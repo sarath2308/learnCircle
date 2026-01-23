@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import LessonItem from "./lessonItem";
-import LessonCreateModal from "../createCourse/lessonCreateModal";
+import LessonFormModal from "../createCourse/lesson.form.modal";
 import { ResourceViewerModal } from "./ResourceViewModal";
 import { UploadStatus } from "../createCourse/upload.status.progress";
 
@@ -108,7 +108,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
       
       {stage !== "idle" && <UploadStatus progress={progress} stage={stage} />}
       
-      <LessonCreateModal
+      <LessonFormModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={onAddLesson}

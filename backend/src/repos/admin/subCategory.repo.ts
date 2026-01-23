@@ -34,7 +34,9 @@ export class SubCategoryRepo extends BaseRepo<ISubcategory> implements ISubCateg
   }
 
   async getSubCategoryByName(name: string): Promise<ISubcategory | null> {
-    return await this._model.findOne({ name: name });
+    return await this._model.findOne({
+      name: { $regex: name, $options: "i" },
+    });
   }
   async getSubCategoriesByCategoryId(
     categoryId: string,

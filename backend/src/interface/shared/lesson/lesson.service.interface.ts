@@ -18,7 +18,7 @@ export default interface ILessonService {
     resourceData?: UploadedFile,
     thumbnailData?: UploadedFile,
   ) => Promise<LessonResponseDto>;
-  deleteLesson: (lessonId: string) => Promise<void>;
+  deleteLesson: (lessonId: string) => Promise<{ chapterId: string; lessonId: string }>;
   changeLessonOrder: (chapterId: string, lessonOrderDto: any) => Promise<void>;
   createLessonWithVideo: (
     chapterId: string,
