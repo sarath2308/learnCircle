@@ -12,7 +12,10 @@ type CourseType = {
   title: string,
   status: string,
   verificationStatus: string,
-  category: string,
+  category:{
+    id: string,
+    name: string
+  },
   createdAt: Date,
   createdBy: string,
   chapterCount: number,
@@ -49,10 +52,16 @@ const categoryData = useGetCategory();
       header: "Title",
       accessor: "title",
     },
-    {
-      header: "Category",
-      accessor: "category",
-    },
+    // Inside columns array
+{
+  header: "Category",
+  accessor: "category.name", // This can stay for reference
+  cell: (_, row: CourseType) => (
+    <span className="text-sm font-medium">
+      {row.category?.name || "Uncategorized"}
+    </span>
+  )
+},
     {
       header: "Verification",
       accessor: "verificationStatus",

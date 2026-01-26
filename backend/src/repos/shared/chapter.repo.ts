@@ -45,7 +45,7 @@ export class ChapterRepo extends BaseRepo<IChapter> implements IChapterRepo {
   }
 
   async getChapters(courseId: string): Promise<IChapter[]> {
-    return await this._model.find({ courseId: courseId });
+    return await this._model.find({ courseId: courseId, isDeleted: false });
   }
 
   async getChapterWithTitle(title: string, courseId: string): Promise<IChapter | null> {

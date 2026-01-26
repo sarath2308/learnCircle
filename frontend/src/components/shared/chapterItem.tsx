@@ -45,7 +45,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
   const [lessonSubmitting, setLessonSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState<"idle" | "compress" | "upload" | "finalize">("idle");
-  const [modalData, setModalData] = useState<{ type: string; url?: string } | null>(null);
+  const [modalData, setModalData] = useState<{ type: string; url?: string, title?:string, description?: string } | null>(null);
 
   // Hooks
   const createLessonWithVideo = useLessonCreateWithVideo();

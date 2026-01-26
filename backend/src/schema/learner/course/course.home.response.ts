@@ -19,7 +19,7 @@ export const userCourseCardResponseSchema = z.object({
 
   skillLevel: z.enum(["Beginner", "Intermediate", "Advanced"]),
 
-  thumbnailUrl: z.string().url(),
+  thumbnailUrl: z.string(),
 
   price: z.number().optional(),
   discount: z.number().optional(),

@@ -255,6 +255,8 @@ export class CourseService implements ICourseService {
             throw new Error("Course createdBy not populated");
           }
 
+          const chapters = await this._chapterRepo.getChapters(String(course._id));
+
           const responseObject: userCourseCardResponseType = {
             id: String(course._id),
             title: course.title,
@@ -286,7 +288,7 @@ export class CourseService implements ICourseService {
               role: course.createdBy.role,
             },
 
-            chapterCount: 4,
+            chapterCount: chapters.length ?? 0,
             averageRating: 4,
           };
 

@@ -66,7 +66,10 @@ export class AdminCourseManagementService implements IAdminCourseManagementServi
           title: courseObj.title,
           status: courseObj.status,
           verificationStatus: courseObj.verificationStatus,
-          category: category.name,
+          category: {
+            id: String(category._id),
+            name: category.name,
+          },
           skillLevel: courseObj.skillLevel,
           price: courseObj.price,
           type: courseObj.type,
