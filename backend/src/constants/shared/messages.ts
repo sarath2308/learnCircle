@@ -81,4 +81,8 @@ export const Messages = {
   LESSON_DUPLICATE: "Lesson title must be unique within a chapter.",
   RESOURCE_FILE_MISSING: "Resource file is missing for the lesson.",
   THUMBNAIL_FILE_MISSING: "Thumbnail file is missing for the lesson.",
+
+  //Conversation
+  CONVERSATION_NOT_STARTED: "Conversation Not Started",
+  CONVERSATION_NOT_FOUND: "Conversation Not found",
 };

@@ -54,6 +54,26 @@ import ILessonService from "@/interface/shared/lesson/lesson.service.interface";
 import { LessonService } from "@/services/shared/course/lesson.service";
 import { LessonController } from "@/controllers/shared/lesson.controller";
 import { ILessonController } from "@/interface/shared/lesson/lesson.controller.interface";
+import { IMessage, Message } from "@/model/shared/messages";
+import { Enroll, IEnroll } from "@/model/shared/enroll";
+import { Conversation, IConversation } from "@/model/shared/conversation.model";
+import { IPayment, Payment } from "@/model/shared/payments";
+import { IMessageRepo } from "@/interface/shared/messages/message.repo.interface";
+import { MessageRepo } from "@/repos/shared/message.repo";
+import { IPaymentRepo } from "@/interface/shared/payment/payment.repo.interface";
+import { PaymentRepo } from "@/repos/shared/payment.repo";
+import { IEnrollRepo } from "@/interface/shared/enroll/enroll.repo.interface";
+import { EnrollRepo } from "@/repos/shared/enroll.repo";
+import { IChatService } from "@/interface/shared/chat/chat.service.interface";
+import { ChatService } from "@/services/shared/chat/chat.service";
+import { IChatController } from "@/interface/shared/chat/chat.controller.interface";
+import { ChatController } from "@/controllers/shared/chat.controller";
+import { ISocketHandler } from "@/interface/shared/socket/socket.handler.interface";
+import { SocketHandler } from "@/socket/socket.handler";
+import {
+  ISocketAuthMiddleware,
+  SocketAuthMiddleware,
+} from "@/middleware/socket/socket.auth.middleware";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -61,6 +81,10 @@ export const registerShared = (container: Container): void => {
   container.bind<Model<ICourse>>(TYPES.ICourseModel).toConstantValue(Course);
   container.bind<Model<ILesson>>(TYPES.ILessonModel).toConstantValue(Lesson);
   container.bind<Model<IChapter>>(TYPES.IChapterModel).toConstantValue(Chapter);
+  container.bind<Model<IMessage>>(TYPES.IMessage).toConstantValue(Message);
+  container.bind<Model<IEnroll>>(TYPES.IEnroll).toConstantValue(Enroll);
+  container.bind<Model<IConversation>>(TYPES.IConversation).toConstantValue(Conversation);
+  container.bind<Model<IPayment>>(TYPES.IPayment).toConstantValue(Payment);
   /*-------------------Repo-----------------------*/
 
   container.bind<ICourseRepo>(TYPES.ICourseRepo).to(CourseRepo);
@@ -68,6 +92,10 @@ export const registerShared = (container: Container): void => {
   container.bind<IChapterRepo>(TYPES.IChapterRepo).to(ChapterRepo);
   container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
   container.bind(TYPES.IRedisRepository).toConstantValue(new RedisRepository(redisClient));
+  container.bind<IMessageRepo>(TYPES.IMessageRepo).to(MessageRepo);
+  container.bind<IConversation>(TYPES.IConversation).to(Conversation);
+  container.bind<IPaymentRepo>(TYPES.IPaymentRepo).to(PaymentRepo);
+  container.bind<IEnrollRepo>(TYPES.IEnrollRepo).to(EnrollRepo);
 
   /*-------------------Service-----------------------*/
 
@@ -88,15 +116,21 @@ export const registerShared = (container: Container): void => {
   container.bind<IChapterService>(TYPES.IChapterService).to(ChapterService);
   container.bind<ISafeDeleteService>(TYPES.ISafeDeleteService).to(SafeDeleteService);
   container.bind<ILessonService>(TYPES.ILessonService).to(LessonService);
+  container.bind<IChatService>(TYPES.IChatService).to(ChatService);
 
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
   container.bind<ICourseController>(TYPES.ICourseController).to(CourseController);
   container.bind<IChapterController>(TYPES.IChapterController).to(ChapterController);
   container.bind<ILessonController>(TYPES.ILessonController).to(LessonController);
+  container.bind<IChatController>(TYPES.IChatController).to(ChatController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
+  container.bind<ISocketAuthMiddleware>(TYPES.ISocketAuthMiddleware).to(SocketAuthMiddleware);
+
+  //handler
+  container.bind<ISocketHandler>(TYPES.ISocketHandler).to(SocketHandler);
 
   // Refresh token (shared)
   container.bind(TYPES.IRefreshService).toDynamicValue(() => {

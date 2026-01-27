@@ -14,20 +14,35 @@ import { ILearnerProfileMapperService } from "@/interface/learner/learner.profil
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
 import { Container } from "inversify";
+import { ILearnerCourseService } from "@/interface/learner/learner.course.interface";
+import { LearnerCourseService } from "@/services/learner/learner.course.service";
+import { ILearnerCourseController } from "@/interface/learner/learner.course.controller.interface";
+import { LearnerCourseController } from "@/controllers/learner/learner.course.controller";
 
 export const registerLearner = (container: Container): void => {
+  //--------------------Model-----------------------------
   container
     .bind<Model<ILearnerProfile>>(TYPES.ILearnerProfileModel)
     .toConstantValue(LearnerProfile);
+
+  //---------------Repo-------------------------------
   container.bind<ILearnerProfileRepo>(TYPES.ILearnerProfileRepo).to(LearnerProfileRepo);
+
+  //-----------------Service------------------------------
   container.bind<ILearnerProfileService>(TYPES.ILearnerProfileService).to(LearnerProfileService);
+  container.bind<ILearnerHomeService>(TYPES.ILearnerHomeService).to(LearnerHomeService);
   container
     .bind<ILearnerProfileMapperService>(TYPES.ILearnerProfileDto)
     .to(LearnerProfileMapperService);
+
+  container.bind<ILearnerCourseService>(TYPES.ILearnerCourseService).to(LearnerCourseService);
+  //-------------------Controller--------------------------
   container
     .bind<ILearnerProfileController>(TYPES.ILearnerProfileController)
     .to(LearnerProfileController);
 
-  container.bind<ILearnerHomeService>(TYPES.ILearnerHomeService).to(LearnerHomeService);
   container.bind<ILearnerHomeController>(TYPES.ILearnerHomeController).to(LearnerHomeController);
+  container
+    .bind<ILearnerCourseController>(TYPES.ILearnerCourseController)
+    .to(LearnerCourseController);
 };

@@ -9,12 +9,14 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import type { ILearnerHomeCourseType } from "@/pages/Learner/LearnerHome";
+import { useNavigate } from "react-router-dom";
 
 interface CourseCardProps {
   course: ILearnerHomeCourseType;
 }
 
 export function CourseDiscoveryCard({ course }: CourseCardProps) {
+  const navigate = useNavigate();
   const originalPrice = course.price ?? 0;
   const discountPercent = course.discount ?? 0;
   const isFree = course.type === "Free";
@@ -25,6 +27,11 @@ export function CourseDiscoveryCard({ course }: CourseCardProps) {
     : originalPrice;
 
   const savings = originalPrice - offerPrice;
+
+  const handleCourseView = ()=>
+  {
+    navigate(`/learner/course/${course.id}`)
+  }
 
   return (
     <HoverCard openDelay={200} closeDelay={100}>
@@ -147,7 +154,7 @@ export function CourseDiscoveryCard({ course }: CourseCardProps) {
 
           <div className="flex gap-3 pt-1">
             {/* High Contrast Button Fix */}
-            <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600 font-black text-sm h-12 rounded-xl shadow-md">
+            <Button  onClick={handleCourseView} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600 font-black text-sm h-12 rounded-xl shadow-md">
               {isFree ? "ENROLL FREE" : "PURCHASE NOW"}
             </Button>
             <Button variant="outline" size="icon" className="border-slate-200 dark:border-slate-800 h-12 w-12 rounded-xl">

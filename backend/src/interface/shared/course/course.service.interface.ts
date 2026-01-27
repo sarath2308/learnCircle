@@ -6,6 +6,7 @@ import { courseManageResponseType } from "@/schema/shared/course/course.manage.r
 import { CourseStatus } from "./course.repo.interface";
 import { CreatorCourseViewResponse } from "@/types/admin/course/admin.course.manage.type";
 import { userCourseCardResponseType } from "@/schema/learner/course/course.home.response";
+import { LearnerCourseResponse } from "@/types/learner/course/learner.course.type";
 
 export default interface ICourseService {
   createCourse: (
@@ -36,4 +37,5 @@ export default interface ICourseService {
   ) => Promise<courseManageResponseType[]>;
   getCourseById: (courseId: string) => Promise<courseResponseType>;
   getCourseDataForCreatorView: (courseId: string) => Promise<CreatorCourseViewResponse>;
+  getCourseDataForLearner: (courseId: string) => Promise<LearnerCourseResponse>;
 }

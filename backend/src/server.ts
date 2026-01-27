@@ -9,7 +9,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
 import { entryRoute } from "./routes/entry.route";
-
+import http from "http";
+import { initSocket } from "./socket";
 dotenv.config();
 const app = express();
 app.use(
@@ -56,7 +57,9 @@ async function startServer() {
   await db.connect();
   console.log("MongoDB connected");
 
-  // Routes
+  const server = http.createServer(app);
+
+  initSocket(server);
 
   app.use("/api", entryRoute());
 
@@ -73,7 +76,7 @@ async function startServer() {
   console.log("Server is ready!");
 
   const PORT: number = Number(process.env.PORT) || 5000;
-  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 }
 
 startServer().catch((error) => {
