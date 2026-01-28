@@ -38,6 +38,8 @@ export class ChatService implements IChatService {
     let conversationParticipant = null;
     let unreadCount = null;
     let lastreadAt = null;
+     const course = await this._courseRepo.findCourseWithOutPoppulate(courseId);
+      if (!course) throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     if (existing) {
       conversationParticipant = await this._conversationParticipantRepo.updateLastRead(
@@ -55,13 +57,12 @@ export class ChatService implements IChatService {
         courseId: String(existing.courseId),
         learnerId: String(existing.learnerId),
         instructorId: String(existing.instructorId),
+        courseName: course.title,
         unreadCount,
+
       });
     }
 
-    const course = await this._courseRepo.findCourseWithOutPoppulate(courseId);
-
-    if (!course) throw new AppError(Messages.COURSE_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     const instructorId = String(course.createdBy);
 

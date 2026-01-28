@@ -26,9 +26,24 @@ import { useCourseDetailsUpdate } from "@/hooks/shared/course/course.details.upd
 import { useGetCategory } from "@/hooks/shared/category.get";
 import { useGetSubCategories } from "@/hooks/shared/sub.category.get";
 
-import ChapterItem from "@/components/shared/chapterItem";
+import ChapterItem, { type IChapter } from "@/components/shared/chapterItem";
+import { useLessonUpdate } from "@/hooks/shared/lesson/lesson.update";
+import { useChapterUpdate } from "@/hooks/shared/chapter/chapter.update";
+import { useRemoveChapter } from "@/hooks/shared/chapter/chapter.remove";
+import { useRemoveLesson } from "@/hooks/shared/lesson/lesson.remove";
+import { Modal } from "../Modal";
 
 type AdminAction = "block" | "reject" | "approve" | "unblock" | null;
+
+interface IEditForm{
+  title: string;
+  description: string;
+  category: string;
+  subCategory: string;
+  skillLevel: string;
+  price: number;
+  discount: number;
+}
 
 export default function CourseReviewPage({ variant }: { variant: 'admin' | 'creator' }) {
   const { id } = useParams<{ id: string }>();
@@ -36,10 +51,17 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
   
   const [action, setAction] = useState<AdminAction>(null);
   const [reason, setReason] = useState("");
+  const [modalOpen,setModalOpen] = useState();
+  const [deleteModal,setDeleteModal] = useState();
   const [isEditing, setIsEditing] = useState(false);
+  const courseDetailsUpdate = useCourseDetailsUpdate();
+  const chapterUpdate = useChapterUpdate();
+  const deleteChapter = useRemoveChapter();
+
+
 
   // --- Form State ---
-  const [editForm, setEditForm] = useState<any>({
+  const [editForm, setEditForm] = useState<IEditForm>({
     title: "", description: "", category: "", subCategory: "", skillLevel: "", price: 0, discount: 0
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -51,6 +73,56 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
   
   // FIX: Passing editForm.category instead of hardcoded ID
   const { data: subCatData, isLoading: subLoading } = useGetSubCategories(editForm.category);
+
+    const handleChapterUpdate = async(chapter: IChapter)=>
+  {
+    await chapterUpdate.mutateAsync({chapterId: chapter.id, title:chapter.title,description:chapter.description});
+    refetch();
+  }
+
+  const handleChapterRemove = async(id:string)=>
+  {
+   await deleteChapter.mutateAsync(id)
+  }
+
+  const handleCourseDetailsUpdate = async() =>
+  {
+    const formData = new FormData();
+    if(thumbnailFile)
+    {
+      formData.append("thumbnail",thumbnailFile);
+    }
+     if (editForm.title) {
+  formData.append("title", editForm.title);
+}
+
+if (editForm.description) {
+  formData.append("description", editForm.description);
+}
+
+if (editForm.category) {
+  formData.append("category", editForm.category);
+}
+
+if (editForm.subCategory) {
+  formData.append("subCategory", editForm.subCategory);
+}
+
+if (editForm.skillLevel) {
+  formData.append("skillLevel", editForm.skillLevel);
+}
+if(editForm.price)
+{
+  formData.append("price", String(editForm.price))
+}
+if(editForm.discount)
+{
+  formData.append("discount",String(editForm.discount))
+}
+     await courseDetailsUpdate.mutateAsync({ courseId: id!,payload:formData})
+      setIsEditing(false);
+     refetch();
+  }
   
   const updateMutation = useCourseDetailsUpdate();
   const blockCourse = useBlockCourse();
@@ -133,8 +205,8 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
         {variant === 'creator' && (
           <div className="flex gap-2">
             {isEditing && <Button variant="outline" onClick={() => setIsEditing(false)} className="rounded-xl dark:border-slate-800">Cancel</Button>}
-            <Button onClick={isEditing ? handleSaveDetails : () => setIsEditing(true)} className="rounded-xl font-bold shadow-sm px-6 bg-slate-900 dark:bg-indigo-600 text-white">
-              {updateMutation.isPending ? <Loader2 className="animate-spin" /> : isEditing ? <><Save size={18} className="mr-2"/> Save</> : <><Edit3 size={18} className="mr-2"/> Edit</>}
+            <Button onClick={isEditing ? handleCourseDetailsUpdate : () => setIsEditing(true)} className="rounded-xl font-bold shadow-sm px-6 bg-slate-900 dark:bg-indigo-600 text-white">
+              {updateMutation.isPending ? <Loader2 className="animate-spin" /> : isEditing ? <><Save onClick={handleCourseDetailsUpdate} size={18} className="mr-2"/> Save</> : <><Edit3 size={18} className="mr-2"/> Edit</>}
             </Button>
           </div>
         )}
@@ -274,6 +346,7 @@ export default function CourseReviewPage({ variant }: { variant: 'admin' | 'crea
           </div>
         </div>
       </div>
+
     </div>
   );
 }

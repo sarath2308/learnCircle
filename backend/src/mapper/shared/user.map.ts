@@ -8,13 +8,12 @@ export interface IUserDtoMapper {
 
 export class UserDtoMapper implements IUserDtoMapper {
   async toResponse(user: IUser): Promise<UserResponseDto> {
-    const plainUser = user.toObject ? user.toObject() : user;
-
     const transformedUser = {
-      ...plainUser,
-      id: plainUser._id?.toString?.() || plainUser._id,
+      id: String(user._id),
+      name: user.name,
+      email: user.email,
+      role: user.role,
     };
-    delete transformedUser._id;
 
     const safeUser = UserResponseSchema.parse(transformedUser);
 

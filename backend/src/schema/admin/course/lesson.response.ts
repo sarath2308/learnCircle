@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const adminLessonResponseSchema = z.object({
+  id: z.string(),
   chapterId: z.string(),
   title: z.string(),
   description: z.string(),

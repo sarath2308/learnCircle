@@ -26,6 +26,14 @@ import { useUploadToS3 } from "@/hooks/shared/upload.s3.hook";
 import { useLessonFinalize } from "@/hooks/shared/lesson/lesson.finalize";
 import { useLessonCreate } from "@/hooks/shared/lesson/lesson.create";
 import type { ILessons } from "@/interface/lesson.response.interface";
+export interface IChapter
+{
+    id: string;
+    title: string;
+    description: string;
+    order: number;
+    lessons: ILessons[];
+}
 
 interface ChapterItemProps {
   chapter: {
@@ -35,8 +43,8 @@ interface ChapterItemProps {
     order: number;
     lessons: ILessons[];
   };
-  onEdit?: () => void;
-  onRemove?: () => void; // Renamed to match the prop passed from parent
+  onEdit?: (chapter: IChapter) => void;
+  onRemove?: (id: string) => void; // Renamed to match the prop passed from parent
   variant: "creator" | "admin" | "user";
 }
 
@@ -146,7 +154,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
                 className="h-9 w-9 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-400 hover:text-blue-600"
                 onClick={(e) => { 
                   e.stopPropagation(); 
-                  onEdit?.(); 
+                  onEdit?.(chapter); 
                 }}
               >
                 <Pencil className="h-4 w-4" />
@@ -157,7 +165,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
                 className="h-9 w-9 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600"
                 onClick={(e) => { 
                   e.stopPropagation(); 
-                  onRemove?.(); 
+                  onRemove?.(chapter.id); 
                 }}
               >
                 <Trash2 className="h-4 w-4" />
@@ -198,6 +206,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
           </div>
         </AccordionContent>
       </AccordionItem>
+      
     </div>
   );
 };

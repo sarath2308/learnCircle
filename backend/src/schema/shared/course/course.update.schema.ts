@@ -12,6 +12,8 @@ const bodySchema = z.object({
     .regex(/^[a-fA-F0-9]{24}$/, "Invalid subCategoryId")
     .optional(),
   skillLevel: z.enum(["Beginner", "Intermediate", "Advanced"]).optional(),
+  price: z.coerce.number().optional(),
+  discount: z.coerce.number().optional(),
 });
 
 export const updateCourseSchema = z.object({

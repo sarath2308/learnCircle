@@ -24,6 +24,7 @@ import { useState } from "react";
 import LessonFormModal from "../createCourse/lesson.form.modal";
 import { useLessonUpdate } from "@/hooks/shared/lesson/lesson.update";
 import { useRemoveLesson } from "@/hooks/shared/lesson/lesson.remove";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ILessonProps {
   lesson: ILessons;
@@ -32,6 +33,7 @@ interface ILessonProps {
 }
 
 const LessonItem = ({ lesson, setModalData, variant = "user" }: ILessonProps) => {
+  const queryClient = useQueryClient();
   const [editModal, setEditModal] = useState(false);
   const updateLesson = useLessonUpdate();
   const removeLesson = useRemoveLesson();
@@ -71,10 +73,16 @@ const LessonItem = ({ lesson, setModalData, variant = "user" }: ILessonProps) =>
   const onEdit = async (data: FormData) => {
     await updateLesson.mutateAsync({ lessonId: lesson.id, payload: data });
     setEditModal(false);
+     queryClient.invalidateQueries({
+    queryKey: ['get-course'],
+  });
   };
 
   const onRemove = async () => {
     await removeLesson.mutateAsync(lesson.id);
+      queryClient.invalidateQueries({
+    queryKey: ['get-course'],
+  });
   };
 
   return (

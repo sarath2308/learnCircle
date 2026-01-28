@@ -80,6 +80,7 @@ export const GoogleLoginSchema = z.object({
 // ----------------- Response Schemas -----------------
 
 export const UserResponseSchema = z.object({
+  id: z.string(),
   name: z.string(),
   email: z.string(),
   role: z.enum(["learner", "professional", "admin"]),

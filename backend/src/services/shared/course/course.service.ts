@@ -159,6 +159,8 @@ export class CourseService implements ICourseService {
       courseData.subCategory = subCategoryObjectId ?? courseData.subCategory?._id;
       courseData.skillLevel = payload.skillLevel ?? courseData.skillLevel;
       courseData.thumbnail_key = key ?? courseData.thumbnail_key;
+      courseData.price = Number(payload.price) ?? courseData.price;
+      courseData.discount = Number(payload.discount) ?? courseData.discount;
 
       await courseData.save();
     } finally {
