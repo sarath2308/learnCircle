@@ -30,4 +30,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
     },
   ) => Promise<ICourse[]>;
   getAllCourseForUserHome: () => Promise<CoursePopulated[]>;
+  findCourseWithOutPoppulate: (courseId: string) => Promise<ICourse | null>;
 }

@@ -74,6 +74,14 @@ import {
   ISocketAuthMiddleware,
   SocketAuthMiddleware,
 } from "@/middleware/socket/socket.auth.middleware";
+import { ConversationRepo } from "@/repos/shared/conversation.repo";
+import { IConversationRepo } from "@/interface/shared/conversation/conversation.repo.interface";
+import {
+  ConversationParticipant,
+  IConversationParticipant,
+} from "@/model/shared/conversation.participants";
+import { IConversationParticipantRepo } from "@/interface/shared/conversation/conversation.participant.interface";
+import { ConversationParticipantRepo } from "@/repos/shared/conversation.participant.repo";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -85,6 +93,9 @@ export const registerShared = (container: Container): void => {
   container.bind<Model<IEnroll>>(TYPES.IEnroll).toConstantValue(Enroll);
   container.bind<Model<IConversation>>(TYPES.IConversation).toConstantValue(Conversation);
   container.bind<Model<IPayment>>(TYPES.IPayment).toConstantValue(Payment);
+  container
+    .bind<Model<IConversationParticipant>>(TYPES.IConversationParticipant)
+    .toConstantValue(ConversationParticipant);
   /*-------------------Repo-----------------------*/
 
   container.bind<ICourseRepo>(TYPES.ICourseRepo).to(CourseRepo);
@@ -93,9 +104,12 @@ export const registerShared = (container: Container): void => {
   container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
   container.bind(TYPES.IRedisRepository).toConstantValue(new RedisRepository(redisClient));
   container.bind<IMessageRepo>(TYPES.IMessageRepo).to(MessageRepo);
-  container.bind<IConversation>(TYPES.IConversation).to(Conversation);
+  container.bind<IConversationRepo>(TYPES.IConversationRepo).to(ConversationRepo);
   container.bind<IPaymentRepo>(TYPES.IPaymentRepo).to(PaymentRepo);
   container.bind<IEnrollRepo>(TYPES.IEnrollRepo).to(EnrollRepo);
+  container
+    .bind<IConversationParticipantRepo>(TYPES.IConversationParticipantRepo)
+    .to(ConversationParticipantRepo);
 
   /*-------------------Service-----------------------*/
 

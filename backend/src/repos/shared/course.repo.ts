@@ -121,4 +121,7 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
       .populate("createdBy", "name role")
       .lean<CoursePopulated[]>();
   }
+  async findCourseWithOutPoppulate(courseId: string): Promise<ICourse | null> {
+    return await this._model.findOne({ _id: courseId, isBlocked: false, isDeleted: false });
+  }
 }

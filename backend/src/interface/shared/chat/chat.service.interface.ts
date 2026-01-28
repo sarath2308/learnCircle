@@ -1,5 +1,5 @@
 import { ConversationResponseType } from "@/schema/shared/conversation/conversation.response.schema";
-import { MessageResponseType } from "@/schema/shared/message.response.schema";
+import { MessageResponseType } from "@/schema/shared/message/message.response.schema";
 
 export interface IChatService {
   getOrCreateConversation(userId: string, courseId: string): Promise<ConversationResponseType>;
@@ -9,4 +9,5 @@ export interface IChatService {
     conversationId: string,
     content: string,
   ): Promise<MessageResponseType>;
+  getAllConversation: (userId: string) => Promise<ConversationResponseType[]>;
 }

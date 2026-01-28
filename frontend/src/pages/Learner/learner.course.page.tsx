@@ -9,6 +9,8 @@ import LearnerChapterItem from '@/components/learner/learner.chapter.component';
 import toast from 'react-hot-toast';
 import { Modal } from '@/components/Modal';
 import UniversalLessonStage from '@/components/learner/learner.lesson.stage';
+import ChatComponent from '@/components/shared/instructor.connect.componet';
+import InstructorConnectComponent from '@/components/shared/instructor.connect.componet';
 
 const LearnerCoursePage = () => {
   const {courseId} = useParams();
@@ -35,7 +37,7 @@ const LearnerCoursePage = () => {
   {
     return<div>No data....</div>
   }
-  const premium = false;
+  const premium = true;
 
   const tabs = [
     { id: "learning-path", label: "Learning Path", icon: <BookOpen size={16} /> },
@@ -119,9 +121,7 @@ const onSelect = (lesson: LearnerLessonResponseType) =>
 
             <TabsContent value="instructor" className="m-0 focus-visible:outline-none">
               {premium ? (
-                <div className="p-10 border rounded-3xl dark:bg-slate-900/40 border-slate-200 dark:border-slate-800">
-                  <h2 className="text-xl font-bold">Connect with Instructor</h2>
-                </div>
+                <InstructorConnectComponent courseId={courseId} />
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900/40 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/[0.03] to-transparent" />

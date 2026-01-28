@@ -81,4 +81,6 @@ export const TYPES = {
   IChatController: Symbol.for("IChatController"),
   ISocketHandler: Symbol.for("ISocketHandler"),
   ISocketAuthMiddleware: Symbol.for("ISocketAuthMiddleware"),
+  IConversationParticipant: Symbol.for("IConversationParticipant"),
+  IConversationParticipantRepo: Symbol.for("IConversationParticipantRepo"),
 };

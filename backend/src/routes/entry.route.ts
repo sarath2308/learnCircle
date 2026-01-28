@@ -15,6 +15,8 @@ import { ISubCategoryController } from "@/interface/shared/category/subCat/sub.c
 import { ICategoryController } from "@/interface/shared/category/category.controller.interface";
 import subCategoryRoutes from "./shared/category/sub.category.routes";
 import { creatorEntryRoutes } from "./shared/course-creator/creator.entry";
+import { chatRoutes } from "./shared/chat/chat.routes";
+import { IChatController } from "@/interface/shared/chat/chat.controller.interface";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -25,7 +27,7 @@ export function entryRoute() {
   const subCategoryController = wrapAsyncController(
     container.get<ISubCategoryController>(TYPES.ISubCategoryController),
   );
-
+  const chatController = wrapAsyncController(container.get<IChatController>(TYPES.IChatController));
   const router = Router();
 
   router.use("/auth", authEntryRoute());
@@ -77,6 +79,13 @@ export function entryRoute() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.PROFESSIONAL, ROLE.ADMIN),
     creatorEntryRoutes(),
+  );
+
+  router.use(
+    "/chat",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.ADMIN, ROLE.LEARNER, ROLE.PROFESSIONAL),
+    chatRoutes(chatController),
   );
   return router;
 }

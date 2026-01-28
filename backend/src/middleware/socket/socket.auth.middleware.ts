@@ -8,25 +8,48 @@ export interface ISocketAuthMiddleware {
 
 @injectable()
 export class SocketAuthMiddleware implements ISocketAuthMiddleware {
-  constructor(@inject(TYPES.ITokenService) private _tokenService: ITokenService) {}
+  constructor(
+    @inject(TYPES.ITokenService)
+    private _tokenService: ITokenService,
+  ) {}
 
   async handle(socket: any, next: (err?: Error) => void): Promise<void> {
+    console.log("🔐 SocketAuthMiddleware invoked");
+
     try {
       const cookie = socket.handshake.headers.cookie;
-      if (!cookie) throw new Error("No cookie");
+      console.log("🍪 cookies:", cookie);
+
+      if (!cookie) {
+        console.error("❌ No cookie header");
+        return next(new Error("No cookie"));
+      }
 
       const token = cookie
         .split("; ")
         .find((c: string) => c.startsWith("accessToken="))
         ?.split("=")[1];
 
-      if (!token) throw new Error("No token");
+      console.log("🎫 accessToken:", token ? "FOUND" : "MISSING");
+
+      if (!token) {
+        return next(new Error("No token"));
+      }
 
       const user = await this._tokenService.verifyAccessToken(token);
+      console.log("👤 token payload:", user);
+
+      if (!user || !user.userId) {
+        console.error("❌ Invalid user payload");
+        return next(new Error("Invalid user"));
+      }
+
       socket.data.user = user;
+      console.log("✅ Socket authenticated:", user.id);
 
       next();
-    } catch {
+    } catch (err) {
+      console.error("❌ Socket auth failed:", err);
       next(new Error("Unauthorized"));
     }
   }

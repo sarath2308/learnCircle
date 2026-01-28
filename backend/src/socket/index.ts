@@ -16,12 +16,14 @@ export const initSocket = (server: any) => {
       origin: process.env.FRONTEND_URL,
       credentials: true,
     },
+    connectionStateRecovery: {},
   });
 
   // GLOBAL SOCKET AUTH
   io.use(SocketMiddleware.handle);
 
   io.on("connection", (socket) => {
+    console.log("User Connected");
     SocketHandler.register(io, socket);
   });
 };

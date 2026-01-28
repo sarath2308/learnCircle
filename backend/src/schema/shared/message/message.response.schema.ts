@@ -7,7 +7,6 @@ export const MessageResponseSchema = z.object({
   receiverId: z.string(),
   content: z.string(),
   createdAt: z.string(),
-  isSender: z.boolean(),
 });
 
 export type MessageResponseType = z.infer<typeof MessageResponseSchema>;

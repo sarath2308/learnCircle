@@ -10,6 +10,17 @@ export class MessageRepo extends BaseRepo<IMessage> implements IMessageRepo {
     super(_messageModel);
   }
   async getMessagesFromConversation(conversationId: string): Promise<IMessage[] | []> {
-    return await this._messageModel.find({ conversationId });
+    return await this._messageModel.find({ conversationId }).sort({ createdAt: 1 });
+  }
+  async countUnreadMessage(
+    conversationId: string,
+    userId: string,
+    lastReadAt: Date,
+  ): Promise<number> {
+    return await this._messageModel.countDocuments({
+      conversationId,
+      senderId: { $ne: userId },
+      createdAt: { $gt: lastReadAt },
+    });
   }
 }

@@ -23,4 +23,10 @@ export class ChatController implements IChatController {
     const messageData = await this._chatService.getMessages(userId, conversationId);
     res.status(HttpStatus.OK).json({ success: true, messageData });
   }
+
+  async getAllConversation(req: IAuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const conversationData = await this._chatService.getAllConversation(userId);
+    res.status(HttpStatus.OK).json({ success: true, conversationData });
+  }
 }
