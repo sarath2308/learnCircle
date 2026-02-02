@@ -5,8 +5,7 @@ import { NavLink, useNavigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { 
   Search, 
-  ShoppingBag, 
-  Bell, 
+  ShoppingBag,
   Menu, 
   X, 
   BookOpen,
@@ -78,7 +77,7 @@ export default function LearnerHomeLayout() {
               {["Courses", "Mentors", "Enterprise"].map((item) => (
                 <NavLink 
                   key={item}
-                  to={`/${item.toLowerCase()}`}
+                  to={`/learner/${item.toLowerCase()}`}
                   className={({ isActive }) => `text-sm font-bold tracking-tight transition-colors ${
                     isActive ? "text-blue-600" : "text-slate-500 hover:text-blue-600"
                   }`}

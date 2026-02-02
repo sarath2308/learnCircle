@@ -1,7 +1,7 @@
 import { categoryApi } from "@/api/shared/category.api";
 import { useQuery } from "@tanstack/react-query";
 
-type CategoryDataType = {
+export type CategoryDataType = {
   id: string;
   name: string;
   isBlocked?: boolean;

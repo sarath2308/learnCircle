@@ -1,5 +1,6 @@
 import { ICourse } from "@/model/shared/course.model";
 import { IBaseRepo } from "@/repos/shared/base";
+import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
 import { CoursePopulated } from "@/types/learner/course/course.home.card.type";
 
 export type CourseStatus = "draft" | "published";
@@ -31,4 +32,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   ) => Promise<ICourse[]>;
   getAllCourseForUserHome: () => Promise<CoursePopulated[]>;
   findCourseWithOutPoppulate: (courseId: string) => Promise<ICourse | null>;
+  getAllCourseForUser: (filter: LearnerAllCourseRequestType) => Promise<CoursePopulated[]>;
 }

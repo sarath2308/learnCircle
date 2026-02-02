@@ -18,4 +18,9 @@ export class LearnerCourseController implements ILearnerCourseController {
     const courseData = await this._learnerCourseService.getCourseData(courseId, userId);
     res.status(HttpStatus.OK).json({ success: true, courseData });
   }
+
+  async getAllCourseDataForUser(req: IAuthRequest, res: Response): Promise<void> {
+    const courseData = await this._learnerCourseService.getAllCourseData(req.query);
+    res.status(HttpStatus.OK).json({ success: true, courseData });
+  }
 }

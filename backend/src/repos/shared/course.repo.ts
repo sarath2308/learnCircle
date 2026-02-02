@@ -5,6 +5,7 @@ import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
 import { BaseRepo } from "./base";
 import { CoursePopulated } from "@/types/learner/course/course.home.card.type";
+import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
 
 @injectable()
 export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
@@ -123,5 +124,51 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
   }
   async findCourseWithOutPoppulate(courseId: string): Promise<ICourse | null> {
     return await this._model.findOne({ _id: courseId, isBlocked: false, isDeleted: false });
+  }
+
+  async getAllCourseForUser(filter: LearnerAllCourseRequestType): Promise<CoursePopulated[]> {
+    const query: any = {};
+    const sort: any = {};
+    console.log(filter);
+    // Filtering
+    if (filter.categoryId) {
+      query.category = filter.categoryId;
+    }
+
+    if (filter.subCategoryId) {
+      query.subCategory = filter.subCategoryId;
+    }
+
+    if (filter.type) {
+      query.type = filter.type;
+    }
+
+    if (filter.search) {
+      query.title = { $regex: filter.search, $options: "i" };
+    }
+
+    if (filter.sortPrice) {
+      sort.price = Number(filter.sortPrice); // 1 or -1
+    }
+
+    if (filter.sortDate) {
+      sort.createdAt = Number(filter.sortDate);
+    }
+
+    if (filter.sortRating) {
+      sort.rating = Number(filter.sortRating);
+    }
+    query.isDeleted = false;
+    query.status = "published";
+    query.verificationStatus = "approved";
+    query.isBlocked = false;
+
+    return this._model
+      .find(query)
+      .sort(sort)
+      .populate("category", "name")
+      .populate("subCategory", "name")
+      .populate("createdBy", "name role")
+      .lean<CoursePopulated[]>();
   }
 }

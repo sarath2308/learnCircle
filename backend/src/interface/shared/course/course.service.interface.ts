@@ -7,6 +7,7 @@ import { CourseStatus } from "./course.repo.interface";
 import { CreatorCourseViewResponse } from "@/types/admin/course/admin.course.manage.type";
 import { userCourseCardResponseType } from "@/schema/learner/course/course.home.response";
 import { LearnerCourseResponse } from "@/types/learner/course/learner.course.type";
+import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
 
 export default interface ICourseService {
   createCourse: (
@@ -20,7 +21,9 @@ export default interface ICourseService {
   ) => Promise<void>;
   publishCourse: (courseId: string) => Promise<void>;
   getCourseDataForCourseCreation: (courseId: string) => Promise<courseResponseType>;
-  getAllCourse: () => Promise<any>;
+  getAllCourseForUser: (
+    filter: LearnerAllCourseRequestType,
+  ) => Promise<userCourseCardResponseType[]>;
   updatePriceDetails: (id: string, data: CoursePriceDtoType) => Promise<void>;
   getCourseDataForUserHome: () => Promise<userCourseCardResponseType[]>;
   getCouseDataForCourseManagement: (

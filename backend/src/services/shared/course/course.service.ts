@@ -37,6 +37,7 @@ import { LearnerCourseResponse } from "@/types/learner/course/learner.course.typ
 import { LearnerCourseDetailsSchema } from "@/schema/learner/course/learner.course.page.schema";
 import { learnerLessonResponseSchema } from "@/schema/learner/course/lesson/learner.lesson.response";
 import { learnerChapterResponse } from "@/schema/learner/course/chapter/learner.chapter.response.schema";
+import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
 
 @injectable()
 export class CourseService implements ICourseService {
@@ -228,8 +229,86 @@ export class CourseService implements ICourseService {
    *
    * @returns
    */
-  async getAllCourse(): Promise<any> {
-    return await this._courseRepo.getAll();
+  async getAllCourseForUser(
+    filter: LearnerAllCourseRequestType,
+  ): Promise<userCourseCardResponseType[] | []> {
+    const courseData: CoursePopulated[] = await this._courseRepo.getAllCourseForUser(filter);
+
+    if (!courseData.length) return [];
+
+    const results = await Promise.allSettled(
+      courseData.map(async (course) => {
+        try {
+          // thumbnail
+          let thumbnailUrl = "";
+          if (course.thumbnail_key) {
+            thumbnailUrl = await this._s3Service.getFileUrl(
+              course.thumbnail_key,
+              Number(process.env.S3_URL_EXPIRES_IN),
+            );
+          }
+
+          // hard validation — course must be correctly populated
+          if (!course.category || typeof course.category !== "object") {
+            throw new Error("Course category not populated");
+          }
+
+          if (!course.createdBy || typeof course.createdBy !== "object") {
+            throw new Error("Course createdBy not populated");
+          }
+
+          const chapters = await this._chapterRepo.getChapters(String(course._id));
+
+          const responseObject: userCourseCardResponseType = {
+            id: String(course._id),
+            title: course.title,
+            description: course.description,
+            type: course.type,
+            thumbnailUrl,
+            createdAt: String(course.createdAt),
+
+            category: {
+              id: String(course.category._id),
+              name: course.category.name,
+            },
+
+            subCategory: course.subCategory
+              ? {
+                  id: String(course.subCategory._id),
+                  name: course.subCategory.name,
+                }
+              : undefined,
+
+            skillLevel: course.skillLevel,
+
+            price: course.type === "Free" ? 0 : course.price,
+            discount: course.type === "Free" ? 0 : course.discount,
+
+            createdBy: {
+              id: String(course.createdBy._id),
+              name: course.createdBy.name,
+              role: course.createdBy.role,
+            },
+
+            chapterCount: chapters.length ?? 0,
+            averageRating: 4,
+          };
+
+          // final runtime validation
+          return userCourseCardResponseSchema.parse(responseObject);
+        } catch (error) {
+          console.error(`[USER_HOME_COURSE_SKIP] courseId=${course._id}`, error);
+          return null;
+        }
+      }),
+    );
+
+    return results
+      .filter(
+        (r): r is PromiseFulfilledResult<userCourseCardResponseType> =>
+          r.status === "fulfilled" && r.value !== null,
+      )
+      .map((r) => r.value);
   }
   /**
    *
