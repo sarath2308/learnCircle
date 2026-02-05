@@ -85,4 +85,7 @@ export const Messages = {
   //Conversation
   CONVERSATION_NOT_STARTED: "Conversation Not Started",
   CONVERSATION_NOT_FOUND: "Conversation Not found",
+
+  //Availability
+  AVAILABILITY_NOT_FOUND: "Availability Not Found",
 };

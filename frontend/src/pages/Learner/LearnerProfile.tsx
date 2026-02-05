@@ -10,7 +10,6 @@ import { useUpdatePassword } from "@/hooks/learner/profile/useUpdatePassword";
 import { useGetProfile } from "@/hooks/learner/profile/useGetProfile";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { React } from "react";
 import { useUpdatName } from "@/hooks/learner/profile/useUpdateName";
 import { useRequestEmailChangeOtp } from "@/hooks/learner/profile/useRequestEmailChangeOtp";
 import { useResendEmailChangeOtp } from "@/hooks/learner/profile/useResendEmailChangeOtp";
@@ -127,172 +126,121 @@ export default function LearnerProfile() {
   // ✅ Logout logic
   const handleLogout = () => {};
 
-  return (
-    <div className="space-y-6 p-4">
+ return (
+    <div className="min-h-screen bg-slate-50/50 p-6 lg:p-10 space-y-8">
       {/* Profile Header */}
-      <Card className="shadow-md rounded-xl">
-        <CardContent className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6 p-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8">
+        <div className="flex items-center gap-6">
           <div className="relative group">
-            <Avatar className="h-24 w-24">
+            <Avatar className="h-28 w-28 border-4 border-white shadow-xl">
               <AvatarImage src={profileImg} alt={name} />
-              <AvatarFallback className="text-2xl">{getInitials(name)}</AvatarFallback>
+              <AvatarFallback className="bg-indigo-100 text-indigo-700 text-3xl font-bold">
+                {getInitials(name)}
+              </AvatarFallback>
             </Avatar>
-
-            <Badge className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
-              {streak} day streak
-            </Badge>
-
             <button
-              type="button"
-              aria-label="Change Profile Picture"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 h-8 w-8 flex items-center justify-center 
-                         bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 
-                         transition-opacity"
+              className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full text-white opacity-0 group-hover:opacity-100 transition-all"
             >
-              <Camera className="h-4 w-4" />
+              <Camera className="h-6 w-6" />
             </button>
-
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-            />
+            <input type="file" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
+            <Badge className="absolute -top-2 -right-2 bg-orange-500 hover:bg-orange-600 border-2 border-white">
+               🔥 {streak} Day Streak
+            </Badge>
           </div>
 
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
-              <div className="flex items-center gap-2">
-                <EditProfileDialog
-                  userData={{ name, email, hasPassword }}
-                  onUpdateProfile={handleUpdateName}
-                  onUpdateEmail={requestEmailChange}
-                  onResendOtp={requestResendEmailOtp}
-                  onVerifyOtp={verifyOtp}
-                  onUpdatePassword={updatePassword}
-                />
-
-                {/* ✅ Logout Button */}
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-            <p className="text-gray-500 dark:text-gray-400">{email}</p>
-            <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-              <div className="flex items-center space-x-1">
-                <Calendar className="h-4 w-4" />
-                <span>Joined {joinDate}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="h-4 w-4" />
-                <span>Last login: {lastLogin}</span>
-              </div>
+          <div className="space-y-1">
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{name}</h1>
+            <p className="text-slate-500 font-medium">{email}</p>
+            <div className="flex gap-4 pt-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Joined {joinDate}</span>
+              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Active {lastLogin}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Stats Cards */}
+        <div className="flex gap-3">
+          <EditProfileDialog
+            userData={{ name, email, hasPassword }}
+            onUpdateProfile={handleUpdateName}
+            onUpdateEmail={requestEmailChange}
+            onResendOtp={requestResendEmailOtp}
+            onVerifyOtp={verifyOtp}
+            onUpdatePassword={updatePassword}
+          />
+          <button 
+            onClick={handleLogout}
+            className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          {
-            title: "Hours Learned",
-            value: `${stats.hoursLearned}h`,
-            note: "+12h this week",
-            color: "blue-600",
-          },
-          {
-            title: "Certificates",
-            value: stats.certificatesEarned,
-            note: "2 in progress",
-            color: "yellow-500",
-          },
-          { title: "Global Rank", value: stats.rank, note: "Top 5% learners", color: "green-500" },
+          { title: "Hours Learned", value: `${stats.hoursLearned}h`, icon: Clock, color: "text-blue-600", bg: "bg-blue-50" },
+          { title: "Certificates", value: stats.certificatesEarned, icon: Trophy, color: "text-amber-600", bg: "bg-amber-50" },
+          { title: "Global Rank", value: stats.rank, icon: Badge, color: "text-emerald-600", bg: "bg-emerald-50" },
         ].map((stat) => (
-          <Card key={stat.title} className="shadow-sm rounded-xl">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                {stat.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold text-${stat.color} dark:text-${stat.color}-400`}>
-                {stat.value}
+          <Card key={stat.title} className="border-none shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${stat.bg}`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} />
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{stat.note}</p>
+              <div>
+                <p className="text-sm font-medium text-slate-500">{stat.title}</p>
+                <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Learning Progress */}
-      <Card className="shadow-md rounded-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-gray-900 dark:text-white">
-            <Trophy className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
-            <span>Learning Progress</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Learning Progress Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 border-none shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">Learning Progress</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-8">
             <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">Skill Development</h3>
-              {Object.entries(skillProgress).map(([skill, value]) => (
-                <div key={skill} className="space-y-1">
-                  <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <span>{skill}</span>
-                    <span>4%</span>
+               <div className="flex justify-between items-end">
+                  <div>
+                    <h3 className="font-bold text-slate-900">Overall Completion</h3>
+                    <p className="text-sm text-slate-500">{completedCourses} of {totalCourses} courses finished</p>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${value}%` }} />
-                  </div>
-                </div>
+                  <span className="text-2xl font-black text-indigo-600">
+                    {Math.round((completedCourses / totalCourses) * 100)}%
+                  </span>
+               </div>
+               <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-indigo-600 h-full rounded-full transition-all duration-500" 
+                    style={{ width: `${(completedCourses / totalCourses) * 100}%` }} 
+                  />
+               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">Interests</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {["Web Developer", "Data Analyst", "Designer"].map((skill) => (
+                <Badge key={skill} variant="secondary" className="px-3 py-1 text-sm bg-slate-100 text-slate-600 hover:bg-indigo-600 hover:text-white transition-colors cursor-default">
+                  {skill}
+                </Badge>
               ))}
             </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">Course Completion</h3>
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                  <span>Overall Progress</span>
-                  <span>{Math.round((completedCourses / totalCourses) * 100)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full">
-                  <div
-                    className="bg-green-500 h-2 rounded-full"
-                    style={{ width: `${(completedCourses / totalCourses) * 100}%` }}
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {completedCourses} of {totalCourses} courses completed
-              </p>
-
-              <div className="pt-4 flex flex-wrap gap-2">
-                {["Web Developer", "Data Analyst", "Designer"].map((skill) => (
-                  <Badge
-                    key={skill}
-                    className={
-                      skill === "Web Developer"
-                        ? "bg-blue-500 text-white"
-                        : "border border-gray-400 text-gray-500"
-                    }
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

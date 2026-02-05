@@ -17,6 +17,8 @@ import subCategoryRoutes from "./shared/category/sub.category.routes";
 import { creatorEntryRoutes } from "./shared/course-creator/creator.entry";
 import { chatRoutes } from "./shared/chat/chat.routes";
 import { IChatController } from "@/interface/shared/chat/chat.controller.interface";
+import { availabilityRoutes } from "./shared/availability/availability.routes";
+import { IAvailabilityController } from "@/interface/shared/session-booking/availabillity/availability.controller.interface";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -28,6 +30,11 @@ export function entryRoute() {
     container.get<ISubCategoryController>(TYPES.ISubCategoryController),
   );
   const chatController = wrapAsyncController(container.get<IChatController>(TYPES.IChatController));
+
+  const availabilityController = wrapAsyncController(
+    container.get<IAvailabilityController>(TYPES.IAvailabilityController),
+  );
+
   const router = Router();
 
   router.use("/auth", authEntryRoute());
@@ -87,5 +94,13 @@ export function entryRoute() {
     authorizeRoles(ROLE.ADMIN, ROLE.LEARNER, ROLE.PROFESSIONAL),
     chatRoutes(chatController),
   );
+
+  router.use(
+    "/availability",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.PROFESSIONAL),
+    availabilityRoutes(availabilityController),
+  );
+
   return router;
 }

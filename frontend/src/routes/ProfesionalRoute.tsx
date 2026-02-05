@@ -41,6 +41,10 @@ const professionalRoutes: RouteObject[] = [
             path: "my-courses/:id",
             element: <ProfessionalViewCourse />,
           },
+          {
+            path: "schedule",
+            element: <ProfessionalViewCourse />,
+          },
            {
             path: "create-course",
             element: <ProfessionalCreateCourse />,

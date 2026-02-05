@@ -41,8 +41,6 @@ const LearnerCoursePage = () => {
 
   const tabs = [
     { id: "learning-path", label: "Learning Path", icon: <BookOpen size={16} /> },
-    { id: "resources", label: "Best Resources", icon: <FileText size={16} /> },
-    { id: "notes", label: "Notes", icon: <Sparkles size={16} /> },
     { id: "instructor", label: "Connect Instructor", isPremium: true },
   ];
 
