@@ -19,6 +19,8 @@ import { chatRoutes } from "./shared/chat/chat.routes";
 import { IChatController } from "@/interface/shared/chat/chat.controller.interface";
 import { availabilityRoutes } from "./shared/availability/availability.routes";
 import { IAvailabilityController } from "@/interface/shared/session-booking/availabillity/availability.controller.interface";
+import { exceptionRoutes } from "./shared/availability-exception/exception.routes";
+import { IAvailabilityExceptionController } from "@/interface/shared/session-booking/availability-exception/availability.exception.controller";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -33,6 +35,10 @@ export function entryRoute() {
 
   const availabilityController = wrapAsyncController(
     container.get<IAvailabilityController>(TYPES.IAvailabilityController),
+  );
+
+  const exceptionController = wrapAsyncController(
+    container.get<IAvailabilityExceptionController>(TYPES.IAvailabilityExceptionController),
   );
 
   const router = Router();
@@ -100,6 +106,13 @@ export function entryRoute() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.PROFESSIONAL),
     availabilityRoutes(availabilityController),
+  );
+
+  router.use(
+    "/availability/exception",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.PROFESSIONAL),
+    exceptionRoutes(exceptionController),
   );
 
   return router;

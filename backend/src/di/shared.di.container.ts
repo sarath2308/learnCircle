@@ -82,6 +82,33 @@ import {
 } from "@/model/shared/conversation.participants";
 import { IConversationParticipantRepo } from "@/interface/shared/conversation/conversation.participant.interface";
 import { ConversationParticipantRepo } from "@/repos/shared/conversation.participant.repo";
+import { AvailabilityModel, IAvailability } from "@/model/shared/availability.model";
+import {
+  AvailabilityExceptionModel,
+  IAvailabilityException,
+} from "@/model/shared/availability.exception.model";
+import { ISessionBooking, SessionBookingModel } from "@/model/shared/session.booking.model";
+import { IAvailabilityRepo } from "@/interface/shared/session-booking/availabillity/availability.repo.interface";
+import { AvailabilityRepo } from "@/repos/shared/availability.repo";
+import { IAvailabilityExceptionRepo } from "@/interface/shared/session-booking/availability-exception/availability.exception.repo.interface";
+import { AvailabilityExceptionRepo } from "@/repos/shared/availability.exception.repo";
+import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
+import { SessionBookingRepo } from "@/repos/shared/session.booking.repo";
+import { IAvailabilityService } from "@/interface/shared/session-booking/availabillity/availability.service.interface";
+import { AvailabilityService } from "@/services/shared/session-booking/availability.service";
+import { IAvailabilityExceptionService } from "@/interface/shared/session-booking/availability-exception/availability.exception.service.interface";
+import { AvailabilityExceptionService } from "@/services/shared/session-booking/availability.exception.service";
+import { ISessionBookingService } from "@/interface/shared/session-booking/booking/session.booking.service.interface";
+import { SessionBookingService } from "@/services/shared/session-booking/session.booking.service";
+import { IAvailabilityController } from "@/interface/shared/session-booking/availabillity/availability.controller.interface";
+import { AvailabilityController } from "@/controllers/shared/availability.controller";
+import { IAvailabilityExceptionController } from "@/interface/shared/session-booking/availability-exception/availability.exception.controller";
+import { AvailabilityExceptionController } from "@/controllers/shared/availability.exception.controller";
+import { ISessionBookingController } from "@/interface/shared/session-booking/booking/session.booking.controller";
+import { SessionBookingController } from "@/controllers/shared/session.booking.controller";
+import { IMapper } from "@/interface/shared/mapper/mapper.interface";
+import { AvailabilityMapper } from "@/mapper/shared/availability/availability.mapper";
+import { AvailabilityResponseType } from "@/schema/shared/availability/availability.response.schema";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -96,6 +123,13 @@ export const registerShared = (container: Container): void => {
   container
     .bind<Model<IConversationParticipant>>(TYPES.IConversationParticipant)
     .toConstantValue(ConversationParticipant);
+  container.bind<Model<IAvailability>>(TYPES.IAvailability).toConstantValue(AvailabilityModel);
+  container
+    .bind<Model<IAvailabilityException>>(TYPES.IAvailabilityException)
+    .toConstantValue(AvailabilityExceptionModel);
+  container
+    .bind<Model<ISessionBooking>>(TYPES.ISessionBooking)
+    .toConstantValue(SessionBookingModel);
   /*-------------------Repo-----------------------*/
 
   container.bind<ICourseRepo>(TYPES.ICourseRepo).to(CourseRepo);
@@ -110,6 +144,11 @@ export const registerShared = (container: Container): void => {
   container
     .bind<IConversationParticipantRepo>(TYPES.IConversationParticipantRepo)
     .to(ConversationParticipantRepo);
+  container.bind<IAvailabilityRepo>(TYPES.IAvailabilityRepo).to(AvailabilityRepo);
+  container
+    .bind<IAvailabilityExceptionRepo>(TYPES.IAvailabilityExceptionRepo)
+    .to(AvailabilityExceptionRepo);
+  container.bind<ISessionBookingRepo>(TYPES.ISessionBookingRepo).to(SessionBookingRepo);
 
   /*-------------------Service-----------------------*/
 
@@ -131,6 +170,11 @@ export const registerShared = (container: Container): void => {
   container.bind<ISafeDeleteService>(TYPES.ISafeDeleteService).to(SafeDeleteService);
   container.bind<ILessonService>(TYPES.ILessonService).to(LessonService);
   container.bind<IChatService>(TYPES.IChatService).to(ChatService);
+  container.bind<IAvailabilityService>(TYPES.IAvailabilityService).to(AvailabilityService);
+  container
+    .bind<IAvailabilityExceptionService>(TYPES.IAvailabilityExceptionService)
+    .to(AvailabilityExceptionService);
+  container.bind<ISessionBookingService>(TYPES.ISessionBookingService).to(SessionBookingService);
 
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
@@ -138,6 +182,13 @@ export const registerShared = (container: Container): void => {
   container.bind<IChapterController>(TYPES.IChapterController).to(ChapterController);
   container.bind<ILessonController>(TYPES.ILessonController).to(LessonController);
   container.bind<IChatController>(TYPES.IChatController).to(ChatController);
+  container.bind<IAvailabilityController>(TYPES.IAvailabilityController).to(AvailabilityController);
+  container
+    .bind<IAvailabilityExceptionController>(TYPES.IAvailabilityExceptionController)
+    .to(AvailabilityExceptionController);
+  container
+    .bind<ISessionBookingController>(TYPES.ISessionBookingController)
+    .to(SessionBookingController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
@@ -145,6 +196,11 @@ export const registerShared = (container: Container): void => {
 
   //handler
   container.bind<ISocketHandler>(TYPES.ISocketHandler).to(SocketHandler);
+
+  //mapper
+  container
+    .bind<IMapper<IAvailability, AvailabilityResponseType>>(TYPES.IAvailabilityMapper)
+    .to(AvailabilityMapper);
 
   // Refresh token (shared)
   container.bind(TYPES.IRefreshService).toDynamicValue(() => {

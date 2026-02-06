@@ -88,4 +88,7 @@ export const Messages = {
 
   //Availability
   AVAILABILITY_NOT_FOUND: "Availability Not Found",
+
+  // Availability-exception
+  AVAILABILITY_EXCEPTION_NOT_FOUND: "Availability Exception Not found",
 };

@@ -31,13 +31,4 @@ const InstructorAvailabilitySchema = new Schema<IAvailability>(
   { timestamps: true },
 );
 
-// Prevent overlapping rules for same instructor + same day
-InstructorAvailabilitySchema.index(
-  { instructorId: 1, dayOfWeek: 1, startTime: 1, endTime: 1 },
-  { unique: true },
-);
-
-export const InstructorAvailabilityModel = model<IAvailability>(
-  "Availability",
-  InstructorAvailabilitySchema,
-);
+export const AvailabilityModel = model<IAvailability>("Availability", InstructorAvailabilitySchema);

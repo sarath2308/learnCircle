@@ -4,35 +4,22 @@ export interface IAvailabilityException extends Document {
   _id: Types.ObjectId;
   instructorId: Types.ObjectId;
 
-  date: string;
-
-  startTime?: string;
-  endTime?: string;
-
-  reason?: string;
+  date: Date;
 
   createdAt: Date;
   updatedAt: Date;
+
+  isActive: boolean;
 }
 
 const AvailabilityExceptionSchema = new Schema<IAvailabilityException>(
   {
     instructorId: { type: Schema.Types.ObjectId, required: true, index: true },
 
-    date: { type: String, required: true },
-
-    startTime: { type: String },
-    endTime: { type: String },
-
-    reason: { type: String },
+    date: { type: Date, required: true },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true },
-);
-
-// Prevent duplicate blocks for same date + time range
-AvailabilityExceptionSchema.index(
-  { instructorId: 1, date: 1, startTime: 1, endTime: 1 },
-  { unique: true },
 );
 
 export const AvailabilityExceptionModel = model<IAvailabilityException>(

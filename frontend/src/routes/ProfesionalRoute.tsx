@@ -3,6 +3,7 @@ import type { RouteObject } from "react-router-dom";
 import Verification from "@/pages/Profesional/Verification";
 import { ROLE } from "@/contstant/role";
 import ProtectedProfessionalRoute from "./protected/protected.professional.routes";
+import AvailabilityManager from "@/pages/Profesional/Professional.schedule.page";
 
 const ProfessionalDashboard = lazy(() => import("@/pages/Profesional/profesionalDashboard"));
 const ProfessionalLayout = lazy(() => import("@/pages/Profesional/ProfesionalLayout"));
@@ -43,7 +44,7 @@ const professionalRoutes: RouteObject[] = [
           },
           {
             path: "schedule",
-            element: <ProfessionalViewCourse />,
+            element: <AvailabilityManager />,
           },
            {
             path: "create-course",

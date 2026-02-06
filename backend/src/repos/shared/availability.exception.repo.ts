@@ -16,4 +16,11 @@ export class AvailabilityExceptionRepo
   ) {
     super(_availabilityExceptionModel);
   }
+
+  async removeException(exId: string): Promise<void> {
+    await this._availabilityExceptionModel.updateOne({ _id: exId }, { $set: { isActive: false } });
+  }
+  async listExceptionOfInstructor(instructorId: string): Promise<IAvailabilityException[]> {
+    return await this._availabilityExceptionModel.find({ instructorId, isActive: true });
+  }
 }

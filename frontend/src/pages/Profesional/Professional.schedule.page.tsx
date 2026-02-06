@@ -1,210 +1,312 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Clock, 
-  Plus, 
-  Trash2, 
-  Edit2, 
-  CalendarOff, 
-  ChevronDown,
-  Info
+  Plus, Trash2, CalendarOff, ChevronDown, 
+  Loader2, AlertCircle, X, Calendar as CalendarIcon 
 } from 'lucide-react';
+import { useCreateAvailability } from '@/hooks/profesional/availability/availability.create.hook';
+import { useAvailabilityRemove } from '@/hooks/profesional/availability/availability.remove.hook';
+import { useGetAvailabilityRecords } from '@/hooks/profesional/availability/availability.get.rules.hook';
+import { useGetException, type IGetException } from '@/hooks/profesional/availability/exception/exception.get.hook';
+import { useCreateException } from '@/hooks/profesional/availability/exception/exception.create.hook';
+import { useRemoveException } from '@/hooks/profesional/availability/exception/exception.remove.hook';
 
-// --- Types ---
-type Day = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat';
+type DayName = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat';
+const DAYS: DayName[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DURATIONS = [15, 30, 45, 60, 90, 120];
 
-interface AvailabilityRule {
+interface AvailabilityRecord {
   id: string;
-  days: Day[];
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
-  duration: string;
-  price: string;
+  slotDuration: number;
+  price: number;
 }
 
-const DAYS: Day[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const DURATIONS = ['15 min', '30 min', '45 min', '60 min'];
-
 export default function AvailabilityManager() {
-  const [rules, setRules] = useState<AvailabilityRule[]>([]);
-  const [selectedDays, setSelectedDays] = useState<Day[]>([]);
+  // API Hooks
+  const { data: availabilityRes, isLoading: isApiLoading } = useGetAvailabilityRecords();
+  const { data: exceptionRes, isLoading: isExcLoading, refetch:refetchException } = useGetException();
+  
+  const createAvailability = useCreateAvailability();
+  const removeAvailability = useAvailabilityRemove();
+  const createException = useCreateException();
+  const removeException = useRemoveException();
+
+  // LOCAL STATE
+  const [records, setRecords] = useState<AvailabilityRecord[]>([]);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // Form States
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('17:00');
-  const [duration, setDuration] = useState('60 min');
+  const [slotDuration, setSlotDuration] = useState(30);
   const [price, setPrice] = useState('');
+  const [exceptionDate, setExceptionDate] = useState('');
 
-  // --- Handlers ---
-  const toggleDay = (day: Day) => {
-    setSelectedDays(prev => 
-      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
-    );
+  useEffect(() => {
+    if (availabilityRes?.availabilityData) {
+      setRecords(availabilityRes.availabilityData);
+    }
+  }, [availabilityRes]);
+
+  const toMinutes = (t: string) => t.split(':').reduce((h, m) => Number(h) * 60 + Number(m), 0);
+
+  // --- HANDLERS ---
+
+  const handleAddAvailability = async () => {
+    setLocalError(null);
+    const s = toMinutes(startTime);
+    const e = toMinutes(endTime);
+
+    if (selectedDays.length === 0) return setLocalError("Select at least one day.");
+    if (!price || Number(price) <= 0) return setLocalError("Invalid price.");
+    if (s >= e) return setLocalError("End time must be after start time.");
+
+    for (const day of selectedDays) {
+      if (records.find(r => r.dayOfWeek === day && s < toMinutes(r.endTime) && e > toMinutes(r.startTime))) {
+        return setLocalError(`Conflict: Overlap exists on ${DAYS[day]}`);
+      }
+    }
+
+    try {
+      const response = await createAvailability.mutateAsync({
+        daysOfWeek: selectedDays,
+        startTime,
+        endTime,
+        slotDuration,
+        price: Number(price),
+      });
+
+      if (response?.availabilityData) {
+        const newRecords = Array.isArray(response.availabilityData) ? response.availabilityData : [response.availabilityData];
+        setRecords(prev => [...prev, ...newRecords]);
+      }
+      setSelectedDays([]);
+      setPrice('');
+    } catch (err: any) {
+      setLocalError(err.message || "Failed to save schedule.");
+    }
   };
 
-  const addRule = () => {
-    if (selectedDays.length === 0 || !price) return;
-    
-    const newRule: AvailabilityRule = {
-      id: crypto.randomUUID(),
-      days: [...selectedDays],
-      startTime,
-      endTime,
-      duration,
-      price,
-    };
-
-    setRules([...rules, newRule]);
-    // Reset selection for next entry
-    setSelectedDays([]);
+  const handleAddException = async () => {
+    if (!exceptionDate) return;
+    try {
+      const isoDate = new Date(exceptionDate).toISOString();
+      await createException.mutateAsync( isoDate );
+      setExceptionDate('');
+      refetchException()
+    } catch (err: any) {
+      setLocalError(err.message || "Failed to add leave date.");
+    }
   };
 
-  const deleteRule = (id: string) => {
-    setRules(rules.filter(r => r.id !== id));
+  const handleRemoveException = async (id: string) => {
+    try {
+      await removeException.mutateAsync(id);
+      refetchException()
+    } catch (err: any) {
+      setLocalError("Failed to remove exception.");
+    }
   };
+    const handleRemove = async (id: string) => {
+
+    // OPTIMISTIC UPDATE: Remove from UI immediately
+
+    const previousRecords = [...records];
+
+    setRecords(prev => prev.filter(r => r.id !== id));
+
+
+
+    try {
+
+      await removeAvailability.mutateAsync(id);
+
+    } catch (err) {
+
+      // ROLLBACK: If API fails, put the record back
+
+      setRecords(previousRecords);
+
+      setLocalError("Failed to delete. Reverting UI...");
+
+    }
+
+  };
+
+  // Helper to get today's date for input 'min' attribute
+  const todayStr = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-12 transition-colors">
-      <div className="max-w-3xl mx-auto space-y-8">
-        
-        {/* Header */}
-        <header className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Set Weekly Availability</h1>
-          <p className="text-slate-500 dark:text-slate-400 flex items-center gap-2 text-sm">
-            <Info size={16} />
-            Choose days and time ranges you're available every week.
-          </p>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 md:p-12 transition-colors">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <header className="flex flex-col gap-2">
+          <h1 className="text-3xl font-black tracking-tight uppercase italic">Availability Engine</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Manage weekly rules and specific leaves</p>
         </header>
 
-        {/* Configuration Card */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
-          <div className="p-6 space-y-6">
-            
-            {/* Day Selector */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium">Available Days</label>
-              <div className="flex flex-wrap gap-2">
-                {DAYS.map(day => (
-                  <button
-                    key={day}
-                    onClick={() => toggleDay(day)}
-                    className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all
-                      ${selectedDays.includes(day) 
-                        ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' 
-                        : 'bg-transparent border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}
-                  >
-                    {day}
-                  </button>
+        {localError && (
+          <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-400 text-[11px] font-bold rounded-2xl flex justify-between items-center animate-in fade-in slide-in-from-top-2">
+            <div className="flex gap-2 items-center"><AlertCircle size={14}/> {localError}</div>
+            <button onClick={() => setLocalError(null)}><X size={14}/></button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* LEFT: Weekly Schedule Form & Rules */}
+          <div className="lg:col-span-8 space-y-8">
+            <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-8">
+              <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-4">
+                <Plus size={20} className="text-blue-600" />
+                <h2 className="font-bold text-xs uppercase tracking-widest">Weekly Recurrence</h2>
+              </div>
+
+              {/* Day Selector */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase text-slate-400">Select Days</label>
+                <div className="flex flex-wrap gap-2">
+                  {DAYS.map((day, i) => {
+                    const hasData = records.some(r => r.dayOfWeek === i);
+                    const isSelected = selectedDays.includes(i);
+                    return (
+                      <button 
+                        key={day} 
+                        onClick={() => setSelectedDays(prev => isSelected ? prev.filter(x => x !== i) : [...prev, i])}
+                        className={`relative h-14 w-[calc(33%-0.5rem)] md:w-20 rounded-2xl border-2 font-black text-xs transition-all flex flex-col items-center justify-center 
+                          ${isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'bg-transparent border-slate-100 dark:border-slate-800 hover:border-blue-400'}`}
+                      >
+                        <span>{day}</span>
+                        {hasData && (
+                          <span className={`w-1.5 h-1.5 rounded-full mt-1 ${isSelected ? 'bg-white' : 'bg-blue-600 animate-pulse'}`} />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Time Window</label>
+                  <div className="flex items-center bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 p-1">
+                    <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full bg-transparent p-3 text-sm font-bold outline-none" />
+                    <span className="text-slate-300">—</span>
+                    <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full bg-transparent p-3 text-sm font-bold outline-none" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Slot Duration</label>
+                  <select value={slotDuration} onChange={(e) => setSlotDuration(Number(e.target.value))} className="w-full bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-sm font-bold outline-none border border-transparent focus:border-blue-500 transition-all">
+                    {DURATIONS.map(d => <option key={d} value={d}>{d} Minutes</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Price (INR)</label>
+                  <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="w-full bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-sm font-bold outline-none border border-transparent focus:border-blue-500 transition-all" placeholder="0" />
+                </div>
+              </div>
+
+              <button 
+                onClick={handleAddAvailability} 
+                disabled={createAvailability.isPending}
+                className="w-full bg-slate-900 dark:bg-blue-600 text-white font-black py-5 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-xl"
+              >
+                {createAvailability.isPending ? <Loader2 className="animate-spin" size={20}/> : "COMMIT TO SCHEDULE"}
+              </button>
+            </section>
+
+            {/* List of Rules */}
+            <section className="space-y-4">
+              <h3 className="font-bold text-slate-400 uppercase text-[10px] tracking-widest px-2">Active Rules</h3>
+              <div className="grid gap-3">
+                {isApiLoading && records.length === 0 && <Loader2 className="animate-spin mx-auto text-blue-600" />}
+                {records.length === 0 && !isApiLoading && (
+                  <div className="text-center py-10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl text-slate-400 font-bold text-sm uppercase">No active rules</div>
+                )}
+                {[...records].sort((a,b) => a.dayOfWeek - b.dayOfWeek).map(r => (
+                  <div key={r.id} className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-2xl flex justify-between items-center shadow-sm hover:border-blue-300 transition-all">
+                    <div className="flex gap-5 items-center">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 px-4 py-1.5 rounded-xl font-black text-[10px] min-w-16 text-center uppercase tracking-tighter">{DAYS[r.dayOfWeek]}</div>
+                      <div>
+                        <p className="font-black text-sm">{r.startTime} — {r.endTime}</p>
+                        <p className="text-[10px] font-bold text-slate-500">{r.slotDuration}m slots • ₹{r.price}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => handleRemove(r.id)} className="p-2 text-slate-300 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-all">
+                      <Trash2 size={16}/>
+                    </button>
+                  </div>
                 ))}
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Time Inputs */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium">Time Range (24h)</label>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="time" 
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none" 
-                  />
-                  <span className="text-slate-400">—</span>
-                  <input 
-                    type="time" 
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none" 
-                  />
-                </div>
-              </div>
-
-              {/* Slot Duration */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium">Slot Duration</label>
-                <div className="relative">
-                  <select 
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    className="w-full appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
-                  >
-                    {DURATIONS.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-3 text-slate-400" size={18} />
-                </div>
-              </div>
-            </div>
-
-            {/* Price Input */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium">Price (INR)</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-slate-400 font-medium">₹</span>
-                <input 
-                  type="number" 
-                  placeholder="0.00"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 pl-8 focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-            </div>
-
-            <button 
-              onClick={addRule}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              <Plus size={20} /> Add Availability
-            </button>
+            </section>
           </div>
-        </section>
 
-        {/* Schedule List */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Your Weekly Schedule</h2>
-          
-          {rules.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-12 text-center">
-              <p className="text-slate-400 italic">No availability set yet.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {rules.map((rule) => (
-                <div key={rule.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl flex items-center justify-between group">
-                  <div className="space-y-1">
-                    <div className="flex gap-2 items-center">
-                      <span className="font-bold text-blue-600 dark:text-blue-400">{rule.days.join(', ')}</span>
-                      <span className="text-slate-300 dark:text-slate-700">|</span>
-                      <span className="text-sm font-medium">{rule.startTime} - {rule.endTime}</span>
-                    </div>
-                    <div className="text-xs text-slate-500 flex gap-3">
-                      <span>{rule.duration} slots</span>
-                      <span>₹{rule.price} per session</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-600 dark:text-slate-400">
-                      <Edit2 size={16} />
-                    </button>
-                    <button 
-                      onClick={() => deleteRule(rule.id)}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md text-red-500"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+          {/* RIGHT: Exceptions / Leaves */}
+          <div className="lg:col-span-4 space-y-8">
+            <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-4">
+                <CalendarOff size={18} className="text-orange-500" />
+                <h2 className="font-bold text-xs uppercase tracking-widest">Date Exceptions</h2>
+              </div>
+              
+              <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">Add specific dates where you are unavailable (Leaves/Holidays).</p>
+
+              <div className="space-y-4">
+                <div className="relative">
+                  <input 
+                    type="date" 
+                    min={todayStr}
+                    value={exceptionDate}
+                    onChange={e => setExceptionDate(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-sm font-bold outline-none border border-transparent focus:border-orange-500 transition-all appearance-none"
+                  />
+                  <CalendarIcon className="absolute right-4 top-4 text-slate-400 pointer-events-none" size={18} />
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+                
+                <button 
+                  onClick={handleAddException}
+                  disabled={!exceptionDate || createException.isPending}
+                  className="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {createException.isPending ? <Loader2 className="animate-spin" size={18}/> : "MARK AS LEAVE"}
+                </button>
+              </div>
 
-        {/* Block Dates - Secondary Action */}
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
-          <button className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors">
-            <CalendarOff size={18} />
-            Need to block specific dates? <span className="underline decoration-2 underline-offset-4">Manage Overrides</span>
-          </button>
+              {/* Exception List */}
+              <div className="space-y-3 pt-4 border-t border-slate-50 dark:border-slate-800">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase">Upcoming Leaves</h4>
+                {isExcLoading && <Loader2 className="animate-spin mx-auto text-orange-500" size={18}/>}
+                
+                {exceptionRes?.exceptionData?.length === 0 && (
+                   <div className="text-[10px] text-center py-4 text-slate-400 font-bold uppercase">No leaves scheduled</div>
+                )}
+
+                {exceptionRes?.exceptionData?.map((exc:IGetException) => (
+                  <div key={exc.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                        <CalendarOff size={12} className="text-orange-600" />
+                      </div>
+                      <span className="text-xs font-black tracking-tight">
+                        {new Date(exc.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => handleRemoveException(exc.id)}
+                      className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
-
       </div>
     </div>
   );

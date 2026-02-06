@@ -32,6 +32,5 @@ export const useGetDashboard = () => {
       const response = await dashboardApi.getDashboard();
       return response.userData;
     },
-    refetchInterval: 5000,
   });
 };

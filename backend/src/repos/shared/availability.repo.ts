@@ -16,10 +16,10 @@ export class AvailabilityRepo extends BaseRepo<IAvailability> implements IAvaila
   }
 
   async removeAvailability(avlId: string): Promise<void> {
-    await this._availabilityModel.updateOne({ id: avlId }, { $set: { isActive: false } });
+    await this._availabilityModel.updateOne({ _id: avlId }, { $set: { isActive: false } });
   }
 
   async findById(id: string): Promise<IAvailability | null> {
-    return this._availabilityModel.findOne({ isActive: true, id });
+    return this._availabilityModel.findOne({ isActive: true, _id: id });
   }
 }
