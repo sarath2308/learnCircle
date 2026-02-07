@@ -2,7 +2,7 @@ import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 import { Response } from "express";
 import { ILearnerProfileService } from "@/interface/learner/learner.profile.service.interface";
-import { ILearnerProfileController } from "@/interface/learner/ILearnerProfileController";
+import { ILearnerProfileController } from "@/interface/learner/learner.profile.controller.interface";
 import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";

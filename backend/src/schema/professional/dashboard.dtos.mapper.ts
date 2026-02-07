@@ -1,5 +1,5 @@
 import { IProfessionalDashboardDtoMap } from "@/interface/professional/professional.dto.mapper.interface";
-import { IProfessionalProfile } from "../../model/professional/profesional.profile";
+import { IProfessionalProfile } from "../../model/professional/professional.profile";
 import { ProfessionalDashboardResponseDTO } from "./dahsboard.dtos.schema";
 import { ProfessionalProfileResponseSchema } from "./dahsboard.dtos.schema";
 import { injectable } from "inversify";

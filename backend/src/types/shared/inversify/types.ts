@@ -96,4 +96,5 @@ export const TYPES = {
   ISessionBookingController: Symbol.for("ISessionBookingController"),
   IAvailabilityExceptionController: Symbol.for("IAvailabilityExceptionController"),
   IAvailabilityMapper: Symbol.for("IAvailabilityMapper"),
+  ILearnerProfessionalProfileController: Symbol.for("ILearnerProfessionalProfileController"),
 };

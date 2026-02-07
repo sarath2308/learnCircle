@@ -18,6 +18,8 @@ import { ILearnerCourseService } from "@/interface/learner/learner.course.interf
 import { LearnerCourseService } from "@/services/learner/learner.course.service";
 import { ILearnerCourseController } from "@/interface/learner/learner.course.controller.interface";
 import { LearnerCourseController } from "@/controllers/learner/learner.course.controller";
+import { ILearnerProfessionalProfileController } from "@/interface/learner/learner.professional.profile.controller";
+import { LearnerProfessionalProfileController } from "@/controllers/learner/learner.professional.profiles.controller";
 
 export const registerLearner = (container: Container): void => {
   //--------------------Model-----------------------------
@@ -40,6 +42,10 @@ export const registerLearner = (container: Container): void => {
   container
     .bind<ILearnerProfileController>(TYPES.ILearnerProfileController)
     .to(LearnerProfileController);
+
+  container
+    .bind<ILearnerProfessionalProfileController>(TYPES.ILearnerProfessionalProfileController)
+    .to(LearnerProfessionalProfileController);
 
   container.bind<ILearnerHomeController>(TYPES.ILearnerHomeController).to(LearnerHomeController);
   container

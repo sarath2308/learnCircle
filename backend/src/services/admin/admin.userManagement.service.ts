@@ -107,7 +107,7 @@ export class AdminUserManagementService implements IAdminUserManagementService {
     data: AdminProfessionalArrayDTO;
     totalCount: number;
   }> {
-    const professionals = await this._professionalRepo.getAllProfile(page, search);
+    const professionals = await this._professionalRepo.getAllProfileForAdmin(page, search);
     const totalCount = await this._professionalRepo.countAll(search);
 
     const professionalData = await Promise.all(

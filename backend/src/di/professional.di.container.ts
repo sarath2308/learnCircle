@@ -9,7 +9,7 @@ import { ProfessionalProfileService } from "@/services/professional/profesional.
 import { ProfessionalProfileController } from "@/controllers/professional/profesional.profile.controller";
 import ProfessionalProfile, {
   IProfessionalProfile,
-} from "@/model/professional/profesional.profile";
+} from "@/model/professional/professional.profile";
 import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import { ProfessionalProfileRepo } from "@/repos/professional/professional.profile.repo";
 import { TYPES } from "@/types/shared/inversify/types";

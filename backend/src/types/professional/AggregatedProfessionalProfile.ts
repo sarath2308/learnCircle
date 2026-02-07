@@ -10,4 +10,5 @@ export type AggregatedProfessionalProfile = {
   totalSessions?: number | null;
   profile_key?: string | null;
   resume_key?: string | null;
+  title?: string | null;
 };

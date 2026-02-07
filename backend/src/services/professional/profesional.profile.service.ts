@@ -9,6 +9,10 @@ import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
+import {
+  LearnerProfessionalProfileResponseSchema,
+  LearnerProfessionalProfileResponseType,
+} from "@/schema/learner/professional-profile/learner.professional.profile.response.schema";
 
 export interface UploadFiles {
   avatar?: {
@@ -90,5 +94,29 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
       profileData.resume_key = resume_key;
       await profileData.save();
     }
+  }
+
+  async getAllProfilesForUser(
+    search: string,
+    page: number,
+  ): Promise<LearnerProfessionalProfileResponseType[]> {
+    const profileData = await this._profileRepo.getAllProfileForUser(page, search);
+
+    const responseObj = Promise.all(
+      profileData.map(async (profile) => {
+        let profileUrl = null;
+        if (profile.profile_key) {
+          profileUrl = await this._s3Service.getFileUrl(profile.profile_key);
+        }
+        return LearnerProfessionalProfileResponseSchema.parse({
+          name: profile.name,
+          rating: profile.rating,
+          instructorId: String(profile.userId),
+          profileUrl: profileUrl ?? "",
+          title: profile.title ?? "",
+        });
+      }),
+    );
+    return responseObj;
   }
 }

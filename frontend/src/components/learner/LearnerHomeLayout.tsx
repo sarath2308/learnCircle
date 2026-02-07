@@ -74,7 +74,7 @@ export default function LearnerHomeLayout() {
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
             <nav className="hidden lg:flex items-center gap-6 mr-4">
-              {["Courses", "Mentors", "Enterprise"].map((item) => (
+              {["Courses", "Professionals", "Enterprise"].map((item) => (
                 <NavLink 
                   key={item}
                   to={`/learner/${item.toLowerCase()}`}
