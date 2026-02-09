@@ -12,5 +12,6 @@ export interface IAvailabilityService {
     data: UpdateAvailabilitySchemaType,
   ) => Promise<AvailabilityResponseType[]>;
   removeAvailability: (avlId: string) => Promise<AvailabilityResponseType[]>;
-  getAllAvailabilityOfInstructor: (instructorId: string) => Promise<AvailabilityResponseType[]>;
+  getAllAvailabilityOfInstructor: (instructorId: string, date: Date) => Promise<any>;
+  getAllAvailabilityRules: (instructorId: string) => Promise<AvailabilityResponseType[]>;
 }

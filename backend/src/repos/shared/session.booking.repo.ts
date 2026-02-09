@@ -4,10 +4,21 @@ import { ISessionBooking } from "@/model/shared/session.booking.model";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { Model } from "mongoose";
+import { BOOKING_STATUS } from "@/constants/shared/booking.status";
 
 @injectable()
 export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISessionBookingRepo {
   constructor(@inject(TYPES.ISessionBooking) private _sessionBookingModel: Model<ISessionBooking>) {
     super(_sessionBookingModel);
+  }
+  async getBookingsOfInstructorWithDate(
+    date: Date,
+    instructorId: string,
+  ): Promise<ISessionBooking[] | []> {
+    return await this._sessionBookingModel.find({
+      instructorId: instructorId,
+      date: date,
+      status: BOOKING_STATUS.CONFIRMED,
+    });
   }
 }

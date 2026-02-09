@@ -22,4 +22,10 @@ export class AvailabilityRepo extends BaseRepo<IAvailability> implements IAvaila
   async findById(id: string): Promise<IAvailability | null> {
     return this._availabilityModel.findOne({ isActive: true, _id: id });
   }
+  async getAvailabilityByInstructorAndDay(
+    instructorId: string,
+    dayOfWeek: number,
+  ): Promise<IAvailability | null> {
+    return await this._availabilityModel.findOne({ instructorId, dayOfWeek, isActive: true });
+  }
 }

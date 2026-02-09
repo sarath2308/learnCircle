@@ -22,4 +22,10 @@ export class LearnerProfessionalProfileController implements ILearnerProfessiona
     );
     res.status(HttpStatus.OK).json({ success: true, profileData });
   }
+
+  async getProfile(req: IAuthRequest, res: Response): Promise<void> {
+    const instructorId = req.params.instructorId;
+    const profileData = await this._professionalService.getProfessionalProfileForUser(instructorId);
+    res.status(HttpStatus.OK).json({ success: true, profileData });
+  }
 }

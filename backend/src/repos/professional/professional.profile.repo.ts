@@ -2,9 +2,10 @@ import { inject, injectable } from "inversify";
 import { IProfessionalProfileRepo } from "@/interface/professional/professional.profile.repo.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { IProfessionalProfile } from "@/model/professional/professional.profile";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { BaseRepo } from "../shared/base";
 import { AggregatedProfessionalProfile } from "@/types/professional/AggregatedProfessionalProfile";
+import { IProfessionalDocumentResponse } from "@/types/professional/professional.profile.type";
 @injectable()
 export class ProfessionalProfileRepo
   extends BaseRepo<IProfessionalProfile>
@@ -116,5 +117,44 @@ export class ProfessionalProfileRepo
         },
       },
     ]);
+  }
+  async getProfileOfInstructor(
+    instructorId: string,
+  ): Promise<IProfessionalDocumentResponse | null> {
+    const objId = new mongoose.Types.ObjectId(instructorId);
+
+    const result = await this._model.aggregate([
+      { $match: { userId: objId } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $match: { "user.isBlocked": false } },
+      {
+        $project: {
+          userId: 1,
+          name: "$user.name",
+          bio: 1,
+          companyName: 1,
+          experience: 1,
+          profile_key: 1,
+          rating: 1,
+          sessionPrice: 1,
+          skills: 1,
+          title: 1,
+          totalSessions: 1,
+          typesOfSessions: 1,
+          email: "$user.email",
+        },
+      },
+      { $limit: 1 },
+    ]);
+
+    return result[0] || null;
   }
 }

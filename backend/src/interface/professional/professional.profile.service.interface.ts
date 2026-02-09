@@ -13,4 +13,6 @@ export interface IProfessionalProfileService {
     search: string,
     page: number,
   ) => Promise<LearnerProfessionalProfileResponseType[]>;
+
+  getProfessionalProfileForUser: (instructorId: string) => Promise<any>;
 }

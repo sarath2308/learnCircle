@@ -52,4 +52,21 @@ export class AvailabilityExceptionService implements IAvailabilityExceptionServi
       });
     });
   }
+  async getExceptionForInstructorWithDate(
+    instructorId: string,
+    date: Date,
+  ): Promise<AvailabilityExceptionResponseType | null> {
+    const exception = await this._availabilityExceptionRepo.getExceptionWithDateAndInstructorId(
+      date,
+      instructorId,
+    );
+
+    if (!exception) {
+      return null;
+    }
+    return AvailabilityExceptionResponseSchema.parse({
+      id: String(exception._id),
+      date: exception.date.toISOString(),
+    });
+  }
 }

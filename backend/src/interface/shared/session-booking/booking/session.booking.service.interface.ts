@@ -4,4 +4,5 @@ export interface ISessionBookingService {
   confirmBooking?: () => Promise<any>;
   getAllBookingForUser?: (userId: string) => Promise<any>;
   getAllBoookingForInstructor?: (instructorId: string) => Promise<any>;
+  getBookings: (date: Date, instructorId: string) => Promise<any>;
 }

@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const LearnerProfessionalProfileResponseSchema = z.object({
+export const LearnerProfessionalProfileCardResponseSchema = z.object({
   name: z.string(),
   rating: z.number(),
   profileUrl: z.string(),
@@ -9,5 +9,5 @@ export const LearnerProfessionalProfileResponseSchema = z.object({
 });
 
 export type LearnerProfessionalProfileResponseType = z.infer<
-  typeof LearnerProfessionalProfileResponseSchema
+  typeof LearnerProfessionalProfileCardResponseSchema
 >;

@@ -8,6 +8,8 @@ const Homepage = lazy(()=> import("@/pages/Learner/LearnerHome"));
 const LearnerCoursePage = lazy(()=>import("@/pages/Learner/learner.course.page"));
 const LearnerAllCoursePage = lazy(()=> import("@/pages/Learner/learner.all.course"));
 const Professionals = lazy(()=> import("@/pages/Learner/learner.professionals.page"))
+const LearnerSlotPage = lazy(() => import("@/pages/Learner/learner.slot.page"));
+
 const learnerRoutes: RouteObject[] = [
   {
     element: <ProtectedLearnerRoute />, // PROTECT EVERYTHING UNDER /learner
@@ -24,6 +26,7 @@ const learnerRoutes: RouteObject[] = [
             { path: "course/:courseId", element: <LearnerCoursePage /> },
              { path: "courses", element: <LearnerAllCoursePage /> },
               { path: "professionals", element: <Professionals /> },
+               { path: "professionals/:instructorId", element: <LearnerSlotPage /> },
         ],
       },
     ],

@@ -23,7 +23,7 @@ export function availabilityRoutes(controller: IAvailabilityController) {
     validateRequest(RemoveAvailabilitySchema),
     controller.removeAvailability.bind(controller),
   );
-  router.get("/", controller.getAllAvailabilityOfInstructor.bind(controller));
+  router.get("/", controller.getAllAvailabilityRules.bind(controller));
 
   return router;
 }

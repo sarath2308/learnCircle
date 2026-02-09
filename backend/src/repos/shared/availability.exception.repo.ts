@@ -23,4 +23,20 @@ export class AvailabilityExceptionRepo
   async listExceptionOfInstructor(instructorId: string): Promise<IAvailabilityException[]> {
     return await this._availabilityExceptionModel.find({ instructorId, isActive: true });
   }
+  async getExceptionWithDateAndInstructorId(
+    date: Date,
+    instructorId: string,
+  ): Promise<IAvailabilityException | null> {
+    const start = new Date(date);
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date(date);
+    end.setUTCHours(23, 59, 59, 999);
+
+    return await this._availabilityExceptionModel.findOne({
+      instructorId,
+      isActive: true,
+      date: { $gte: start, $lte: end },
+    });
+  }
 }

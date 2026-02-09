@@ -2,6 +2,7 @@ import React from 'react';
 import { Star } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileProps {
   instructorId: string;
@@ -11,11 +12,13 @@ interface ProfileProps {
   profileUrl: string;
 }
 
-const ProfessionalProfileCard = ({ name, title, rating, profileUrl }: ProfileProps) => {
+const ProfessionalProfileCard = ({ instructorId, name, title, rating, profileUrl }: ProfileProps) => {
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+  const navigate = useNavigate();
+
 
   return (
-    <Card className="relative group overflow-hidden transition-all duration-300 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-500 shadow-sm">
+    <Card onClick={()=>navigate(`/learner/professionals/${instructorId}`)} className="relative group overflow-hidden transition-all duration-300 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-500 shadow-sm">
       <CardContent className="p-4 flex flex-col items-center">
         {/* Smaller Avatar for 4-col compatibility */}
         <div className="relative mb-3">

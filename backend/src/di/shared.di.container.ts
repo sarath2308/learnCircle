@@ -109,6 +109,8 @@ import { SessionBookingController } from "@/controllers/shared/session.booking.c
 import { IMapper } from "@/interface/shared/mapper/mapper.interface";
 import { AvailabilityMapper } from "@/mapper/shared/availability/availability.mapper";
 import { AvailabilityResponseType } from "@/schema/shared/availability/availability.response.schema";
+import { ISlotGenerator } from "@/interface/shared/ISlotGenerator";
+import { SlotGenerator } from "@/utils/slot.generator.service";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -175,6 +177,7 @@ export const registerShared = (container: Container): void => {
     .bind<IAvailabilityExceptionService>(TYPES.IAvailabilityExceptionService)
     .to(AvailabilityExceptionService);
   container.bind<ISessionBookingService>(TYPES.ISessionBookingService).to(SessionBookingService);
+  container.bind<ISlotGenerator>(TYPES.ISlotGenerator).to(SlotGenerator);
 
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);

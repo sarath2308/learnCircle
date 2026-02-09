@@ -97,4 +97,5 @@ export const TYPES = {
   IAvailabilityExceptionController: Symbol.for("IAvailabilityExceptionController"),
   IAvailabilityMapper: Symbol.for("IAvailabilityMapper"),
   ILearnerProfessionalProfileController: Symbol.for("ILearnerProfessionalProfileController"),
+  ISlotGenerator: Symbol.for("ISlotGenerator"),
 };

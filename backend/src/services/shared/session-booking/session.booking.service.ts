@@ -9,4 +9,14 @@ export class SessionBookingService implements ISessionBookingService {
     @inject(TYPES.ISessionBookingRepo) private _sessionBookingRepo: ISessionBookingRepo,
   ) {}
   async bookSession(data: any): Promise<any> {}
+  async getBookings(date: Date, instructorId: string): Promise<any> {
+    const bookingsData = await this._sessionBookingRepo.getBookingsOfInstructorWithDate(
+      date,
+      instructorId,
+    );
+    if (bookingsData?.length === 0) {
+      return [];
+    }
+    return bookingsData;
+  }
 }

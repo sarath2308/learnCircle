@@ -32,10 +32,25 @@ export class AvailabilityController implements IAvailabilityController {
     const availabilityData = await this._availabilityService.removeAvailability(availabilityId);
     res.status(HttpStatus.OK).json({ success: true, availabilityData });
   }
-  async getAllAvailabilityOfInstructor(req: IAuthRequest, res: Response): Promise<void> {
+  async getAllAvailabilityRules(req: IAuthRequest, res: Response): Promise<void> {
     const instructorId = req.user?.userId as string;
-    const availabilityData =
-      await this._availabilityService.getAllAvailabilityOfInstructor(instructorId);
+    const availabilityData = await this._availabilityService.getAllAvailabilityRules(instructorId);
+    res.status(HttpStatus.OK).json({ success: true, availabilityData });
+  }
+
+  async getAllAvailabilityOfInstructor(req: IAuthRequest, res: Response): Promise<void> {
+    const { instructorId, date } = req.query;
+    if (!date) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "Invalid date parameter" });
+      return;
+    }
+    const parsedDate = new Date(date as string);
+    const availabilityData = await this._availabilityService.getAllAvailabilityOfInstructor(
+      instructorId as string,
+      parsedDate,
+    );
     res.status(HttpStatus.OK).json({ success: true, availabilityData });
   }
 }

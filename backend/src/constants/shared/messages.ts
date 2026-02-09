@@ -91,4 +91,5 @@ export const Messages = {
 
   // Availability-exception
   AVAILABILITY_EXCEPTION_NOT_FOUND: "Availability Exception Not found",
+  AVAILABILITY_EXCEPTION_FOUND: "There are no available Slot",
 };

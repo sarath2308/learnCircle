@@ -10,9 +10,10 @@ import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
 import {
-  LearnerProfessionalProfileResponseSchema,
+  LearnerProfessionalProfileCardResponseSchema,
   LearnerProfessionalProfileResponseType,
 } from "@/schema/learner/professional-profile/learner.professional.profile.response.schema";
+import { LearnerProfessionalProfileResponseSchema } from "@/schema/learner/professional-profile/learner.professional.profile.response";
 
 export interface UploadFiles {
   avatar?: {
@@ -108,7 +109,7 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
         if (profile.profile_key) {
           profileUrl = await this._s3Service.getFileUrl(profile.profile_key);
         }
-        return LearnerProfessionalProfileResponseSchema.parse({
+        return LearnerProfessionalProfileCardResponseSchema.parse({
           name: profile.name,
           rating: profile.rating,
           instructorId: String(profile.userId),
@@ -118,5 +119,38 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
       }),
     );
     return responseObj;
+  }
+
+  async getProfessionalProfileForUser(
+    instructorId: string,
+  ): Promise<LearnerProfessionalProfileResponseType> {
+    const profileData = await this._profileRepo.getProfileOfInstructor(instructorId);
+    if (!profileData) {
+      throw new AppError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    console.log("Profile Data:", profileData); // Debug log to check the retrieved profile data
+    let profileUrl = null;
+    if (profileData.profile_key) {
+      profileUrl = await this._s3Service.getFileUrl(profileData.profile_key);
+    }
+
+    const reponseObj = {
+      userId: String(profileData.userId),
+      email: profileData.email,
+      name: profileData.name ?? "",
+      bio: profileData.bio,
+      companyName: profileData.companyName,
+      experience: profileData.experience,
+      profileUrl: profileUrl ?? "",
+      rating: profileData.rating ?? 0,
+      sessionPrice: profileData.sessionPrice ?? 0,
+      skills: profileData.skills,
+      title: profileData.title,
+      totalSessions: profileData.totalSessions ?? 0,
+      typesOfSessions: profileData.typesOfSessions,
+      instructorId: String(profileData.userId),
+    };
+
+    return LearnerProfessionalProfileResponseSchema.parse(reponseObj);
   }
 }
