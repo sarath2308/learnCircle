@@ -140,22 +140,17 @@ export class AvailabilityService implements IAvailabilityService {
       throw new AppError(Messages.AVAILABILITY_EXCEPTION_FOUND, HttpStatus.NO_CONTENT);
     }
     const dayOfWeek = date.getDay(); // 0-6 (Sunday-Saturday)
-    console.log(
-      "🚀 ~ file: availability.service.ts:149 ~ AvailabilityService ~ getAllAvailabilityOfInstructor ~ dayOfWeek:",
-      dayOfWeek,
-    );
+
     const availabilityData = await this._availabilityRepo.getAvailabilityByInstructorAndDay(
       instructorId,
       dayOfWeek,
     );
-    console.log(
-      "🚀 ~ file: availability.service.ts:154 ~ AvailabilityService ~ getAllAvailabilityOfInstructor ~ availabilityData:",
-      availabilityData,
-    );
+
     if (!availabilityData) {
       throw new AppError(Messages.AVAILABILITY_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const bookings = await this._sessionBookingService.getBookings(date, instructorId);
+    console.log("Bookings for the date:", bookings);
     const slots = this._slotGenerator.generateSlots(
       availabilityData.startTime,
       availabilityData.endTime,

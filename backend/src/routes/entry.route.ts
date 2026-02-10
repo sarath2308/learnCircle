@@ -21,6 +21,8 @@ import { availabilityRoutes } from "./shared/availability/availability.routes";
 import { IAvailabilityController } from "@/interface/shared/session-booking/availabillity/availability.controller.interface";
 import { exceptionRoutes } from "./shared/availability-exception/exception.routes";
 import { IAvailabilityExceptionController } from "@/interface/shared/session-booking/availability-exception/availability.exception.controller";
+import { ISessionBookingController } from "@/interface/shared/session-booking/booking/session.booking.controller";
+import { sessionBookingRoutes } from "./shared/session-booking/session.booking.routes";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -39,6 +41,10 @@ export function entryRoute() {
 
   const exceptionController = wrapAsyncController(
     container.get<IAvailabilityExceptionController>(TYPES.IAvailabilityExceptionController),
+  );
+
+  const sessionBookingController = wrapAsyncController(
+    container.get<ISessionBookingController>(TYPES.ISessionBookingController),
   );
 
   const router = Router();
@@ -113,6 +119,13 @@ export function entryRoute() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.PROFESSIONAL),
     exceptionRoutes(exceptionController),
+  );
+
+  router.use(
+    "/session-booking",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.PROFESSIONAL, ROLE.LEARNER),
+    sessionBookingRoutes(sessionBookingController),
   );
 
   return router;

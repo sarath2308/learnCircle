@@ -111,6 +111,8 @@ import { AvailabilityMapper } from "@/mapper/shared/availability/availability.ma
 import { AvailabilityResponseType } from "@/schema/shared/availability/availability.response.schema";
 import { ISlotGenerator } from "@/interface/shared/ISlotGenerator";
 import { SlotGenerator } from "@/utils/slot.generator.service";
+import { SessionBookingResponseType } from "@/schema/learner/session.booking/session.booking.response.schema";
+import { SessionBookingMapper } from "@/mapper/shared/session-booking/session.booking.mapper";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -204,6 +206,10 @@ export const registerShared = (container: Container): void => {
   container
     .bind<IMapper<IAvailability, AvailabilityResponseType>>(TYPES.IAvailabilityMapper)
     .to(AvailabilityMapper);
+
+  container
+    .bind<IMapper<ISessionBooking, SessionBookingResponseType>>(TYPES.ISessionBookingMapper)
+    .to(SessionBookingMapper);
 
   // Refresh token (shared)
   container.bind(TYPES.IRefreshService).toDynamicValue(() => {

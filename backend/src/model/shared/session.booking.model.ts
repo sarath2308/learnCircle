@@ -7,13 +7,16 @@ export interface ISessionBooking extends Document {
   instructorId: Types.ObjectId;
   learnerId: Types.ObjectId;
 
-  date: string;
+  date: Date;
   startTime: string;
   endTime: string;
 
   price: number;
 
   status: BookingStatus;
+  typeOfSession: string;
+
+  expiresAt?: Date;
 
   createdAt: Date;
   updatedAt: Date;
@@ -24,11 +27,12 @@ const SessionBookingSchema = new Schema<ISessionBooking>(
     instructorId: { type: Schema.Types.ObjectId, required: true, index: true },
     learnerId: { type: Schema.Types.ObjectId, required: true, index: true },
 
-    date: { type: String, required: true },
+    date: { type: Date, required: true },
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
 
     price: { type: Number, required: true },
+    typeOfSession: { type: String, required: true },
 
     status: {
       type: String,
@@ -36,16 +40,21 @@ const SessionBookingSchema = new Schema<ISessionBooking>(
       default: "pending",
       index: true,
     },
+
+    expiresAt: { type: Date },
   },
   { timestamps: true },
 );
 
-//  prevent double booking of same slot
+SessionBookingSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 600 });
+
 SessionBookingSchema.index(
-  { instructorId: 1, date: 1, startTime: 1, endTime: 1, status: 1 },
+  { instructorId: 1, date: 1, startTime: 1, endTime: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: "confirmed" },
+    partialFilterExpression: {
+      status: { $in: ["pending", "confirmed"] },
+    },
   },
 );
 

@@ -14,11 +14,52 @@ export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISe
   async getBookingsOfInstructorWithDate(
     date: Date,
     instructorId: string,
-  ): Promise<ISessionBooking[] | []> {
+  ): Promise<ISessionBooking[]> {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0); // 👈 LOCAL start of day
+
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999); // 👈 LOCAL end of day
+
     return await this._sessionBookingModel.find({
-      instructorId: instructorId,
-      date: date,
-      status: BOOKING_STATUS.CONFIRMED,
+      instructorId,
+      date: { $gte: start, $lte: end },
+      status: { $in: [BOOKING_STATUS.CONFIRMED, BOOKING_STATUS.PENDING] },
     });
+  }
+
+  async checkSessionBookingExists(
+    instructorId: string,
+    date: Date,
+    startTime: string,
+    endTime: string,
+  ): Promise<boolean> {
+    const start = new Date(date);
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date(date);
+    end.setUTCHours(23, 59, 59, 999);
+
+    const existingBooking = await this._sessionBookingModel.findOne({
+      instructorId: instructorId,
+      date: { $gte: start, $lte: end },
+      startTime: startTime,
+      endTime: endTime,
+    });
+    return !!existingBooking;
+  }
+
+  async confirmSessionBooking(bookingId: string): Promise<void> {
+    await this._sessionBookingModel.updateOne(
+      { _id: bookingId },
+      { $set: { status: BOOKING_STATUS.CONFIRMED }, $unset: { expiresAt: "" } },
+    );
+  }
+
+  async cancelSessionBooking(bookingId: string): Promise<void> {
+    await this._sessionBookingModel.updateOne(
+      { _id: bookingId },
+      { $set: { status: BOOKING_STATUS.CANCELLED }, $unset: { expiresAt: "" } },
+    );
   }
 }

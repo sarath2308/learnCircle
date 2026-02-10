@@ -1,24 +1,43 @@
 import React, { useState } from 'react';
 import { Star, Briefcase, Video, Users, CheckCircle2, Loader2, Calendar as CalendarIcon, Clock, Sparkles, AlertCircle } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+interface InstructorBookingPageProps {
+  instructor:{
+    name: string;
+    title: string;
+    companyName: string;
+    bio: string;
+    profileUrl: string;
+    sessionPrice?: number;
+    typesOfSessions: string[];
+    experience: number;
+    rating: number;
+    totalSessions: number;
+  };
+  onBook: (date: Date, slot: string,price: number,typeOfSession: string) => void;
+  getSlots: (date: Date | undefined) => { time: string; isAvailable: boolean }[];
+  getPrice: (date: Date | undefined) => number | null;
+  isBookingLoading: boolean;
+  isSlotsLoading: boolean;
+  }
 
-const InstructorBookingPage = ({ instructor, onBook, getSlots, getPrice, isBookingLoading, isSlotsLoading }: any) => {
+
+const InstructorBookingPage = ({ instructor, onBook, getSlots, getPrice, isBookingLoading, isSlotsLoading }: InstructorBookingPageProps) => {
   
 const today = React.useMemo(() => {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d;
 }, []);
-  const [date, setDate] = React.useState<Date | undefined>(today);
+  const [date, setDate] = React.useState<Date>(today);
  const [month, setMonth] = React.useState<Date>(today);
 
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [selectedSessionType, setSelectedSessionType] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string>('');
+  const [selectedSessionType, setSelectedSessionType] = useState<string>('');
 
   const availableSlots = getSlots(date);
   const hasSlots = availableSlots && availableSlots.length > 0;
@@ -135,7 +154,7 @@ const today = React.useMemo(() => {
     d.setHours(0, 0, 0, 0);
     setDate(d);
     setMonth(d); // Jumps view to selected date
-    setSelectedSlot(null);
+    setSelectedSlot('');
   }}
   disabled={(d) => d < today}
 />
@@ -229,7 +248,7 @@ const today = React.useMemo(() => {
 </div>
                 {/* Action Button */}
                 <Button 
-                  onClick={() => onBook(date, selectedSlot, selectedSessionType, currentPrice)}
+                  onClick={() => onBook(date as Date, selectedSlot, 100, selectedSessionType)}
                   disabled={!selectedSlot || !selectedSessionType || isBookingLoading}
                   className={`w-full h-16 md:h-20 rounded-[1.8rem] md:rounded-[2.2rem] font-black transition-all duration-300 flex flex-col items-center justify-center gap-1
                     ${selectedSlot && selectedSessionType 

@@ -1,5 +1,5 @@
 export enum BOOKING_STATUS {
-  PENGING = "pending",
+  PENDING = "pending",
   CONFIRMED = "confirmed",
   CANCELLED = "cancelled",
 }

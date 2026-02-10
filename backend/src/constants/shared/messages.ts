@@ -92,4 +92,9 @@ export const Messages = {
   // Availability-exception
   AVAILABILITY_EXCEPTION_NOT_FOUND: "Availability Exception Not found",
   AVAILABILITY_EXCEPTION_FOUND: "There are no available Slot",
+
+  //Session Booking
+  SESSION_BOOKING_NOT_CREATED: "Session Booking Not Created",
+  SESSION_BOOKING_NOT_FOUND: "Session Booking Not Found",
+  SLOT_NOT_AVAILABLE: "The selected time slot is not available. Please choose a different time.",
 };

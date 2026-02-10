@@ -1,8 +1,11 @@
+import { SessionBookingRequestType } from "@/schema/learner/session.booking/session.booking.request.schema";
+import { SessionBookingResponseType } from "@/schema/learner/session.booking/session.booking.response.schema";
+
 export interface ISessionBookingService {
-  bookSession: (data: any) => Promise<any>;
-  cancelBooking?: (sessionBookingId: string) => Promise<any>;
-  confirmBooking?: () => Promise<any>;
-  getAllBookingForUser?: (userId: string) => Promise<any>;
-  getAllBoookingForInstructor?: (instructorId: string) => Promise<any>;
-  getBookings: (date: Date, instructorId: string) => Promise<any>;
+  createSession: (data: SessionBookingRequestType) => Promise<SessionBookingResponseType>;
+  cancelBooking?: (sessionBookingId: string) => Promise<void>;
+  confirmBooking: (sessionBookingId: string) => Promise<SessionBookingResponseType>;
+  getAllBookingForUser?: (userId: string) => Promise<SessionBookingResponseType[]>;
+  getAllBoookingForInstructor?: (instructorId: string) => Promise<SessionBookingResponseType[]>;
+  getBookings: (date: Date, instructorId: string) => Promise<SessionBookingResponseType[]>;
 }

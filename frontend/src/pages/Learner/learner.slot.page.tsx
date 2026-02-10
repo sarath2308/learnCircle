@@ -4,7 +4,7 @@ import InstructorBookingPage from '@/components/learner/session.booking';
 import { useGetProfessionalProfile } from '@/hooks/learner/professionals/learner.get.professional.profile.user';
 import { useGetAvailability } from '@/hooks/learner/availability/learner.get.availability';
 import { Loader2, AlertCircle } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useCreateSession } from '@/hooks/learner/session-booking/session.create';
 
 // Explicit interfaces based on your request
 export interface ISlot {
@@ -23,8 +23,10 @@ const InstructorBookingContainer = () => {
     useGetProfessionalProfile(instructorId || "");
 
   // 2. Data Fetching - Availability based on date selection
-  const { data: availabilityResponse, isLoading: availabilityLoading } = 
+  const { data: availabilityResponse, isLoading: availabilityLoading, refetch: refetchAvailability } = 
     useGetAvailability(instructorId || "", selectedDate);
+
+    const createSessionMutation = useCreateSession();
 
   const profileData = profileResponse?.profileData;
   const slots: ISlot[] = availabilityResponse?.availabilityData?.slots || [];
@@ -55,18 +57,24 @@ const getSlotsForDate = useCallback((date: Date | undefined) => {
   }, [slots]);
 
   // 5. Logic: Booking Handler
-  const handleBooking = async (date: Date | undefined, slot: string | null, finalPrice: number) => {
+  const handleBooking = async (date: Date, slot: string, finalPrice: number,typeOfSession: string) => {
     if (!date || !slot) return;
     setIsBooking(true);
     try {
-      // API call placeholder for booking
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log(`Booking request: ${instructorId} at ${slot} for $${finalPrice}`);
-      toast.success("Booking successful! Check your sessions for details.");
-    } catch (err) {
-      console.error("Booking failed", err);
+      const [startTime, endTime] = slot.split(" - ");
+      console.log("Booking Session with details:", {
+        instructorId,
+        date: date.toLocaleDateString("en-CA"),
+        startTime,
+        endTime,
+        price: finalPrice,
+        typeOfSession
+      });
+     await createSessionMutation.mutateAsync({startTime, endTime, instructorId: instructorId || "", date: date.toLocaleDateString("en-CA"), price: Number(finalPrice), typeOfSession: typeOfSession});
+    
     } finally {
       setIsBooking(false);
+      refetchAvailability(); // Refetch availability data after booking
     }
   };
 

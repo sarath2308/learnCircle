@@ -1,3 +1,5 @@
+import { symbol } from "zod";
+
 export const TYPES = {
   ILearnerProfileModel: Symbol.for("ILearnerProfileModel"),
   IUserModel: Symbol.for("IUserModel"), //models
@@ -98,4 +100,5 @@ export const TYPES = {
   IAvailabilityMapper: Symbol.for("IAvailabilityMapper"),
   ILearnerProfessionalProfileController: Symbol.for("ILearnerProfessionalProfileController"),
   ISlotGenerator: Symbol.for("ISlotGenerator"),
+  ISessionBookingMapper: Symbol.for("ISessionBookingMapper"),
 };
