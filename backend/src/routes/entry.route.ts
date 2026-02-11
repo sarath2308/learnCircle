@@ -124,7 +124,7 @@ export function entryRoute() {
   router.use(
     "/session-booking",
     authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.PROFESSIONAL, ROLE.LEARNER),
+    authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     sessionBookingRoutes(sessionBookingController),
   );
 

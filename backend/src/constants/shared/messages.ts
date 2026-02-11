@@ -97,4 +97,8 @@ export const Messages = {
   SESSION_BOOKING_NOT_CREATED: "Session Booking Not Created",
   SESSION_BOOKING_NOT_FOUND: "Session Booking Not Found",
   SLOT_NOT_AVAILABLE: "The selected time slot is not available. Please choose a different time.",
+  SESSION_IS_NOT_CONFIRM: "Session is not confirm yet, Please wait for confirmation",
+  NO_PERMISSION_TO_JOIN: "You do not have permission to join this session",
+  SESSION_NOT_AVAILABLE_AT_THIS_TIME:
+    "Session is not available at this time. You can join 5 minutes before and leave 5 minutes after the scheduled time.",
 };

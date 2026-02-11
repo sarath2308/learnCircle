@@ -12,6 +12,8 @@ import { ILearnerProfessionalProfileController } from "@/interface/learner/learn
 import { learnerProfessionalProfileRoutes } from "./learner.professional.profile.routes";
 import { IAvailabilityController } from "@/interface/shared/session-booking/availabillity/availability.controller.interface";
 import { learnerAvailabilityRoutes } from "./learner.availability.routes";
+import { LearnerSessionBookingRoutes } from "./learner.session.booking.routes";
+import { ISessionBookingController } from "@/interface/shared/session-booking/booking/session.booking.controller";
 
 export function learnerEntryRoute() {
   const router = Router();
@@ -35,11 +37,16 @@ export function learnerEntryRoute() {
     container.get<IAvailabilityController>(TYPES.IAvailabilityController),
   );
 
+  const sessionBookingController = wrapAsyncController(
+    container.get<ISessionBookingController>(TYPES.ISessionBookingController),
+  );
+
   router.use("/home", learnerHomeRoute(learnerHomeController));
   router.use("/profile", learnerProfileRoute(learnerProfileController));
   router.use("/course", learnerCourseRoutes(learnerCourseController));
   router.use("/professionals", learnerProfessionalProfileRoutes(learnerProfessionalsController));
   router.use("/availability", learnerAvailabilityRoutes(availabilityController));
+  router.use("/session-booking", LearnerSessionBookingRoutes(sessionBookingController));
 
   return router;
 }

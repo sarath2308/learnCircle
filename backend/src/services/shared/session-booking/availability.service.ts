@@ -140,7 +140,8 @@ export class AvailabilityService implements IAvailabilityService {
       throw new AppError(Messages.AVAILABILITY_EXCEPTION_FOUND, HttpStatus.NO_CONTENT);
     }
     const dayOfWeek = date.getDay(); // 0-6 (Sunday-Saturday)
-
+    console.log("Day of week:", dayOfWeek);
+    console.log("Instructor ID:", instructorId);
     const availabilityData = await this._availabilityRepo.getAvailabilityByInstructorAndDay(
       instructorId,
       dayOfWeek,
@@ -156,7 +157,31 @@ export class AvailabilityService implements IAvailabilityService {
       availabilityData.endTime,
       availabilityData.slotDuration,
     );
-    const responseObj = slots.map((slot) => {
+
+    const now = new Date();
+
+    // Normalize date to compare only date part
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const isToday = selectedDate.getTime() === today.getTime();
+
+    const filteredSlots = slots.filter((slot) => {
+      if (!isToday) return true; // future date → keep all
+
+      // Convert slot.start ("HH:mm") into Date
+      const [h, m] = slot.start.split(":").map(Number);
+      const slotStart = new Date(date);
+      slotStart.setHours(h, m, 0, 0);
+
+      // Only allow slots strictly after now
+      return slotStart > now;
+    });
+
+    const responseObj = filteredSlots.map((slot) => {
       let match = bookings.some((booking: Bookings) => {
         return slot.start === booking.startTime && slot.end === booking.endTime;
       });

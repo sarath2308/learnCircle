@@ -20,7 +20,24 @@ export class SessionBookingController implements ISessionBookingController {
 
   async confirmBooking(req: IAuthRequest, res: Response): Promise<void> {
     const { bookingId } = req.params;
-    await this._sessionBookingService.confirmBooking(bookingId);
-    res.status(HttpStatus.OK).json({ success: true, message: "Booking confirmed successfully" });
+    const bookingData = await this._sessionBookingService.confirmBooking(bookingId);
+    res.status(HttpStatus.OK).json({ success: true, bookingData });
+  }
+  async getAllBookingForUser(req: IAuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const bookings = await this._sessionBookingService.getAllBookingForUser(userId);
+    res.status(HttpStatus.OK).json({ success: true, data: bookings });
+  }
+
+  async getAllBoookingForInstructor(req: IAuthRequest, res: Response): Promise<void> {
+    const instructorId = req.user?.userId as string;
+    const bookings = await this._sessionBookingService.getAllBoookingForInstructor(instructorId);
+    res.status(HttpStatus.OK).json({ success: true, data: bookings });
+  }
+  async checkJoinPermission(req: IAuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const { bookingId } = req.params;
+    const permissionData = await this._sessionBookingService.checkJoinPermission(bookingId, userId);
+    res.status(HttpStatus.OK).json({ success: true, data: permissionData });
   }
 }

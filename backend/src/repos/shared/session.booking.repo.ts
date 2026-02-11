@@ -62,4 +62,29 @@ export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISe
       { $set: { status: BOOKING_STATUS.CANCELLED }, $unset: { expiresAt: "" } },
     );
   }
+  async getAllUpcomingBookingsForUser(userId: string): Promise<ISessionBooking[]> {
+    return await this._sessionBookingModel.find({
+      learnerId: userId,
+      status: BOOKING_STATUS.CONFIRMED,
+    });
+  }
+
+  async getAllCompletedBookingsForUser(userId: string): Promise<ISessionBooking[]> {
+    return await this._sessionBookingModel.find({
+      learnerId: userId,
+      status: BOOKING_STATUS.COMPLETED,
+    });
+  }
+  async getAllUpcomingBookingsForInstructor(instructorId: string): Promise<ISessionBooking[]> {
+    return await this._sessionBookingModel.find({
+      instructorId: instructorId,
+      status: BOOKING_STATUS.CONFIRMED,
+    });
+  }
+  async getAllCompletedBookingsForInstructor(instructorId: string): Promise<ISessionBooking[]> {
+    return await this._sessionBookingModel.find({
+      instructorId: instructorId,
+      status: BOOKING_STATUS.COMPLETED,
+    });
+  }
 }

@@ -1,3 +1,4 @@
+import { BOOKING_STATUS } from "@/constants/shared/booking.status";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
@@ -57,6 +58,7 @@ export class SessionBookingService implements ISessionBookingService {
       typeOfSession: data.typeOfSession,
       startTime: data.startTime,
       endTime: data.endTime,
+      expiresAt: new Date(),
     });
 
     if (!sessionBooking) {
@@ -106,8 +108,73 @@ export class SessionBookingService implements ISessionBookingService {
     }
     await this._sessionBookingRepo.cancelSessionBooking(sessionBookingId);
   }
-  async getAllBookingForUser(userId: string): Promise<any> {}
-  async getAllBoookingForInstructor(instructorId: string): Promise<SessionBookingResponseType[]> {
-    // return await this._sessionBookingRepo.getAllBookingsForInstructor(instructorId);
+  async getAllBookingForUser(
+    userId: string,
+  ): Promise<{ upcoming: SessionBookingResponseType[]; completed: SessionBookingResponseType[] }> {
+    const upcomingBookings = await this._sessionBookingRepo.getAllUpcomingBookingsForUser(userId);
+    const completedBookings = await this._sessionBookingRepo.getAllCompletedBookingsForUser(userId);
+    console.log("upcomingBookings", upcomingBookings);
+    console.log("completedBookings", completedBookings);
+    const completedList = completedBookings.map((booking) =>
+      this._sessionBookingMapper.map(booking),
+    );
+    const upcomingList = upcomingBookings.map((booking) => this._sessionBookingMapper.map(booking));
+    return { upcoming: upcomingList, completed: completedList };
+  }
+  async getAllBoookingForInstructor(
+    instructorId: string,
+  ): Promise<{ upcoming: SessionBookingResponseType[]; completed: SessionBookingResponseType[] }> {
+    const upcomingBookings =
+      await this._sessionBookingRepo.getAllUpcomingBookingsForInstructor(instructorId);
+    const completedBookings =
+      await this._sessionBookingRepo.getAllCompletedBookingsForInstructor(instructorId);
+    const completedList = completedBookings.map((booking) =>
+      this._sessionBookingMapper.map(booking),
+    );
+    const upcomingList = upcomingBookings.map((booking) => this._sessionBookingMapper.map(booking));
+    return { upcoming: upcomingList, completed: completedList };
+  }
+
+  async checkJoinPermission(
+    sessionBookingId: string,
+    userId: string,
+  ): Promise<{ hasPermission: boolean; roomId: string }> {
+    const booking = await this._sessionBookingRepo.findById(sessionBookingId);
+
+    if (!booking) {
+      throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (booking.status !== BOOKING_STATUS.CONFIRMED) {
+      throw new AppError(Messages.SESSION_IS_NOT_CONFIRM, HttpStatus.BAD_REQUEST);
+    }
+    const isLearner = booking.learnerId.toString() === userId;
+    const isInstructor = booking.instructorId.toString() === userId;
+
+    if (!isLearner && !isInstructor) {
+      throw new AppError(Messages.NO_PERMISSION_TO_JOIN, HttpStatus.FORBIDDEN);
+    }
+    const [startHour, startMinute] = booking.startTime.split(":").map(Number);
+    const sessionStart = new Date(booking.date);
+    sessionStart.setHours(startHour, startMinute, 0, 0);
+
+    // Build session end datetime
+    const [endHour, endMinute] = booking.endTime.split(":").map(Number);
+    const sessionEnd = new Date(booking.date);
+    sessionEnd.setHours(endHour, endMinute, 0, 0);
+
+    const now = new Date();
+
+    // Allow join 5 minutes before and 5 minutes after
+    const earlyJoin = new Date(sessionStart.getTime() - 5 * 60 * 1000);
+    const lateLeave = new Date(sessionEnd.getTime() + 5 * 60 * 1000);
+
+    if (now < earlyJoin || now > lateLeave) {
+      throw new AppError(Messages.SESSION_NOT_AVAILABLE_AT_THIS_TIME, HttpStatus.FORBIDDEN);
+    }
+
+    return {
+      hasPermission: true,
+      roomId: `session_${sessionBookingId}`,
+    };
   }
 }

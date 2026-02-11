@@ -1,4 +1,5 @@
 import { IChatService } from "@/interface/shared/chat/chat.service.interface";
+import { ISessionBookingService } from "@/interface/shared/session-booking/booking/session.booking.service.interface";
 import { ISocketHandler } from "@/interface/shared/socket/socket.handler.interface";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
@@ -8,6 +9,7 @@ export class SocketHandler implements ISocketHandler {
   constructor(
     @inject(TYPES.IChatService)
     private _chatService: IChatService,
+    @inject(TYPES.ISessionBookingService) private sessionBookingService: ISessionBookingService,
   ) {}
 
   register(io: any, socket: any) {
@@ -70,6 +72,44 @@ export class SocketHandler implements ISocketHandler {
         }
       },
     );
+
+    // 🎥 VIDEO CHAT EVENTS---------------------------------------------
+
+    socket.on("join-room", async ({ roomId }: { roomId: string }) => {
+      try {
+        const bookingId = roomId.replace("session_", "");
+        const userId = socket.data.user.userId;
+
+        // Reuse the SAME logic as Phase 1 (or call that service)
+        const { roomId: allowedRoom } = await this.sessionBookingService.checkJoinPermission(
+          bookingId,
+          userId,
+        );
+
+        // If no error thrown, user is allowed
+        socket.join(allowedRoom);
+        const room = io.sockets.adapter.rooms.get(allowedRoom);
+        const count = room ? room.size : 0;
+
+        if (count > 2) {
+          socket.leave(allowedRoom);
+          socket.emit("join-error", { message: "Room is full" });
+          return;
+        }
+        socket.emit("joined-room", { roomId: allowedRoom });
+
+        // Optional: notify the other peer
+        socket.to(allowedRoom).emit("peer-joined");
+
+        console.log(`User ${userId} joined ${allowedRoom}`);
+      } catch (err: any) {
+        socket.emit("join-error", { message: err.message || "Not allowed" });
+      }
+    });
+
+    socket.on("leave-room", ({ roomId }: { roomId: string }) => {
+      socket.leave(roomId);
+    });
 
     // 🔌 DISCONNECT DEBUG
     socket.on("disconnect", (reason: unknown) => {

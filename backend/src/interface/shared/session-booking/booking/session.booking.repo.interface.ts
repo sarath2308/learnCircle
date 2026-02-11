@@ -17,4 +17,10 @@ export interface ISessionBookingRepo extends IBaseRepo<ISessionBooking> {
   confirmSessionBooking: (bookingId: string) => Promise<void>;
 
   cancelSessionBooking: (bookingId: string) => Promise<void>;
+
+  getAllUpcomingBookingsForUser: (userId: string) => Promise<ISessionBooking[]>;
+  getAllCompletedBookingsForUser: (userId: string) => Promise<ISessionBooking[]>;
+
+  getAllUpcomingBookingsForInstructor: (instructorId: string) => Promise<ISessionBooking[]>;
+  getAllCompletedBookingsForInstructor: (instructorId: string) => Promise<ISessionBooking[]>;
 }

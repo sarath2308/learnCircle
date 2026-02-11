@@ -4,6 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProfessionalProfileCard from '@/components/learner/learner.profile.card';
 import { useGetProfessionalsProfile } from '@/hooks/learner/professionals/learner.professionals.get.hook';
+import { useGetSessions } from '@/hooks/learner/session-booking/learner.session.get.hook';
+import type { SessionBooking } from './learner.profile.myBookings';
+import { SessionCard } from '@/components/shared/session.card';
 
 export interface IProfileData {
   instructorId: string;
@@ -17,6 +20,11 @@ const ProfessionalDirectory = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const { data: sessions, isLoading: isSessionsLoading } = useGetSessions();
+  
+    // 1. SAFE DATA ACCESS
+    // Fallback to empty arrays if data is still loading or undefined
+    const upcoming: SessionBooking[] = sessions?.data?.upcoming || [];
 
   // Debounce logic: Don't spam the API on every keypress
   useEffect(() => {
@@ -95,7 +103,7 @@ const ProfessionalDirectory = () => {
 
         {/* SIDEBAR */}
         <aside className="lg:col-span-3 space-y-6">
-          <SidebarBox title="Active Requests" />
+          <SidebarBox title="Active Requests" sessionData={upcoming} />
           <SidebarBox title="Top-Rated" />
         </aside>
       </div>
@@ -113,10 +121,18 @@ const SkeletonCard = () => (
   </div>
 );
 
-const SidebarBox = ({ title }: { title: string }) => (
+const SidebarBox = ({ title, sessionData }: { title: string, sessionData?: SessionBooking[] }) => (
   <div className="p-5 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50">
     <h2 className="text-xs font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-tighter opacity-70">{title}</h2>
-    <div className="py-8 text-center text-[10px] text-slate-400 italic font-medium uppercase">Empty Space</div>
+    {sessionData && sessionData.length > 0 ? (
+      <div className="space-y-3">
+        {sessionData.map((session) => (
+          <SessionCard key={session.id} {...session} />
+        ))}
+      </div>
+    ) : (
+      <div className="py-8 text-center text-[10px] text-slate-400 italic font-medium uppercase">No Active Sessions</div>
+    )}
   </div>
 );
 
