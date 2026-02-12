@@ -139,42 +139,54 @@ export class SessionBookingService implements ISessionBookingService {
     sessionBookingId: string,
     userId: string,
   ): Promise<{ hasPermission: boolean; roomId: string }> {
-    const booking = await this._sessionBookingRepo.findById(sessionBookingId);
-
-    if (!booking) {
-      throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-    if (booking.status !== BOOKING_STATUS.CONFIRMED) {
-      throw new AppError(Messages.SESSION_IS_NOT_CONFIRM, HttpStatus.BAD_REQUEST);
-    }
-    const isLearner = booking.learnerId.toString() === userId;
-    const isInstructor = booking.instructorId.toString() === userId;
-
-    if (!isLearner && !isInstructor) {
-      throw new AppError(Messages.NO_PERMISSION_TO_JOIN, HttpStatus.FORBIDDEN);
-    }
-    const [startHour, startMinute] = booking.startTime.split(":").map(Number);
-    const sessionStart = new Date(booking.date);
-    sessionStart.setHours(startHour, startMinute, 0, 0);
-
-    // Build session end datetime
-    const [endHour, endMinute] = booking.endTime.split(":").map(Number);
-    const sessionEnd = new Date(booking.date);
-    sessionEnd.setHours(endHour, endMinute, 0, 0);
-
-    const now = new Date();
-
-    // Allow join 5 minutes before and 5 minutes after
-    const earlyJoin = new Date(sessionStart.getTime() - 5 * 60 * 1000);
-    const lateLeave = new Date(sessionEnd.getTime() + 5 * 60 * 1000);
-
-    if (now < earlyJoin || now > lateLeave) {
-      throw new AppError(Messages.SESSION_NOT_AVAILABLE_AT_THIS_TIME, HttpStatus.FORBIDDEN);
-    }
-
     return {
       hasPermission: true,
       roomId: `session_${sessionBookingId}`,
     };
+    // const booking = await this._sessionBookingRepo.findById(sessionBookingId);
+
+    // if (!booking) {
+    //   throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
+    // }
+    // if (booking.status !== BOOKING_STATUS.CONFIRMED) {
+    //   throw new AppError(Messages.SESSION_IS_NOT_CONFIRM, HttpStatus.BAD_REQUEST);
+    // }
+    // const isLearner = booking.learnerId.toString() === userId;
+    // const isInstructor = booking.instructorId.toString() === userId;
+
+    // if (!isLearner && !isInstructor) {
+    //   throw new AppError(Messages.NO_PERMISSION_TO_JOIN, HttpStatus.FORBIDDEN);
+    // }
+    // const [startHour, startMinute] = booking.startTime.split(":").map(Number);
+    // const sessionStart = new Date(booking.date);
+    // sessionStart.setHours(startHour, startMinute, 0, 0);
+
+    // // Build session end datetime
+    // const [endHour, endMinute] = booking.endTime.split(":").map(Number);
+    // const sessionEnd = new Date(booking.date);
+    // sessionEnd.setHours(endHour, endMinute, 0, 0);
+
+    // const now = new Date();
+
+    // // Allow join 5 minutes before and 5 minutes after
+    // const earlyJoin = new Date(sessionStart.getTime() - 5 * 60 * 1000);
+    // const lateLeave = new Date(sessionEnd.getTime() + 5 * 60 * 1000);
+
+    // if (now < earlyJoin || now > lateLeave) {
+    //   throw new AppError(Messages.SESSION_NOT_AVAILABLE_AT_THIS_TIME, HttpStatus.FORBIDDEN);
+    // }
+
+    // return {
+    //   hasPermission: true,
+    //   roomId: `session_${sessionBookingId}`,
+    // };
+  }
+
+  async MarkSessionAsCompleted(sessionBookingId: string): Promise<void> {
+    const booking = await this._sessionBookingRepo.findById(sessionBookingId);
+    if (!booking) {
+      throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this._sessionBookingRepo.updateSessionStatusToCompleted(sessionBookingId);
   }
 }

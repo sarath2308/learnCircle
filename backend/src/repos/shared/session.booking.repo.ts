@@ -63,10 +63,12 @@ export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISe
     );
   }
   async getAllUpcomingBookingsForUser(userId: string): Promise<ISessionBooking[]> {
-    return await this._sessionBookingModel.find({
-      learnerId: userId,
-      status: BOOKING_STATUS.CONFIRMED,
-    });
+    return await this._sessionBookingModel
+      .find({
+        learnerId: userId,
+        status: BOOKING_STATUS.CONFIRMED,
+      })
+      .sort({ date: 1, startTime: 1 });
   }
 
   async getAllCompletedBookingsForUser(userId: string): Promise<ISessionBooking[]> {
@@ -76,15 +78,23 @@ export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISe
     });
   }
   async getAllUpcomingBookingsForInstructor(instructorId: string): Promise<ISessionBooking[]> {
-    return await this._sessionBookingModel.find({
-      instructorId: instructorId,
-      status: BOOKING_STATUS.CONFIRMED,
-    });
+    return await this._sessionBookingModel
+      .find({
+        instructorId: instructorId,
+        status: BOOKING_STATUS.CONFIRMED,
+      })
+      .sort({ date: 1, startTime: 1 });
   }
   async getAllCompletedBookingsForInstructor(instructorId: string): Promise<ISessionBooking[]> {
     return await this._sessionBookingModel.find({
       instructorId: instructorId,
       status: BOOKING_STATUS.COMPLETED,
     });
+  }
+  async updateSessionStatusToCompleted(bookingId: string): Promise<void> {
+    await this._sessionBookingModel.updateOne(
+      { _id: bookingId },
+      { $set: { status: BOOKING_STATUS.COMPLETED } },
+    );
   }
 }

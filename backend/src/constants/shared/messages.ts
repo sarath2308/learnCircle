@@ -101,4 +101,5 @@ export const Messages = {
   NO_PERMISSION_TO_JOIN: "You do not have permission to join this session",
   SESSION_NOT_AVAILABLE_AT_THIS_TIME:
     "Session is not available at this time. You can join 5 minutes before and leave 5 minutes after the scheduled time.",
+  SESSION_MARKED_COMPLETED: "Session marked as completed successfully",
 };

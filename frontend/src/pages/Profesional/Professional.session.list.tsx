@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { SessionCard } from "@/components/shared/session.card";
 import { useGetSessions } from '@/hooks/learner/session-booking/learner.session.get.hook';
 import { Inbox, Loader2 } from 'lucide-react';
+import { useGetProf } from '@/hooks/profesional/useGetProf';
+import { useGetProfessionalSessions } from '@/hooks/profesional/session-booking/professionsl.get.session';
+import { useMarkSessionAsCompleted } from '@/hooks/profesional/session-booking/professional.mark.completed.hook';
 
 export enum BookingStatus {
   COMPLETED = "completed",
@@ -23,7 +26,13 @@ export interface SessionBooking {
 
 const BookingsPage: React.FC = () => {
   const [tab, setTab] = useState<'upcoming' | 'completed'>('upcoming');
-  const { data: sessions, isLoading } = useGetSessions();
+  const { data: sessions, isLoading } = useGetProfessionalSessions();
+ const completeMutation = useMarkSessionAsCompleted();
+
+  const handleCompletion = async(sessionId: string) => {
+
+    await completeMutation.mutateAsync(sessionId);
+  }
 
   // 1. SAFE DATA ACCESS
   // Fallback to empty arrays if data is still loading or undefined
@@ -73,7 +82,8 @@ const BookingsPage: React.FC = () => {
             <SessionCard 
               key={booking.id}
               {...booking} 
-              varient='learner'
+              varient='professional'
+              handleCompletion={() => handleCompletion(booking.id)}
             />
           ))}
         </div>

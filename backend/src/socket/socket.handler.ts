@@ -111,6 +111,22 @@ export class SocketHandler implements ISocketHandler {
       socket.leave(roomId);
     });
 
+    //WEBRTC SIGNALING
+    socket.on("webrtc:offer", ({ roomId, offer }: { roomId: string; offer: any }) => {
+      socket.to(roomId).emit("webrtc:offer", { offer });
+    });
+
+    socket.on("webrtc:answer", ({ roomId, answer }: { roomId: string; answer: any }) => {
+      socket.to(roomId).emit("webrtc:answer", { answer });
+    });
+
+    socket.on(
+      "webrtc:ice-candidate",
+      ({ roomId, candidate }: { roomId: string; candidate: any }) => {
+        socket.to(roomId).emit("webrtc:ice-candidate", { candidate });
+      },
+    );
+
     // 🔌 DISCONNECT DEBUG
     socket.on("disconnect", (reason: unknown) => {
       console.warn("🔌 SOCKET DISCONNECTED");

@@ -24,7 +24,7 @@ import {
 const adminLinks = [
   { label: "Dashboard", path: "/professional/dashboard", icon: IconBrandTabler },
   { label: "Courses", path: "/professional/my-courses", icon: IconBook },
-  { label: "Sessions", path: "/professional/reports", icon: IconChartBar },
+  { label: "Sessions", path: "/professional/sessions", icon: IconChartBar },
   { label: "Schedule", path: "/professional/schedule", icon: IconCalendar },
   { label: "Earnings", path: "/professional/payments", icon: IconCreditCard },
   { label: "Reviews", path: "/professional/reviews", icon: IconMessageCircle },

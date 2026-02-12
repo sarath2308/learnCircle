@@ -10,6 +10,8 @@ const ProfessionalLayout = lazy(() => import("@/pages/Profesional/ProfesionalLay
 const ProfessionalMyCourse = lazy(()=> import("@/pages/Profesional/professional.course"));
 const ProfessionalCreateCourse = lazy(()=> import("@/pages/Profesional/professional.create.course"))
 const ProfessionalViewCourse = lazy(()=> import("@/pages/Profesional/professional.view.course")) 
+const ProfessionalSessionBooking = lazy(()=> import("@/pages/Profesional/Professional.session.list"));
+const VideoCallPage = lazy(() => import("@/pages/shared/video.room.page"));
 const professionalRoutes: RouteObject[] = [
   {
     element: <ProtectedProfessionalRoute />,
@@ -49,6 +51,14 @@ const professionalRoutes: RouteObject[] = [
            {
             path: "create-course",
             element: <ProfessionalCreateCourse />,
+          },
+          {
+            path: "sessions",
+            element: <ProfessionalSessionBooking />,
+          },
+           {
+            path: "video-call/:roomId",
+            element: <VideoCallPage />,
           },
         ],
       },

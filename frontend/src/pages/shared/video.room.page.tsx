@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, 
   Maximize2, Send, ShieldCheck, Hand, Share2, X
@@ -8,22 +8,281 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, useParams } from 'react-router-dom';
+import type { Socket } from 'socket.io-client';
+import { getSocket } from '@/socket/socket';
+import toast from 'react-hot-toast';
+
+
 
 export interface VideoRoomProps {
   instructorName: string;
    typeOfSession: string;
 }
 const VideoRoom = () => {
-    const {roomId} = useParams<string>();
-    const navigate = useNavigate();
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(true);
-  const [message, setMessage] = useState("");
+   const { roomId } = useParams<string>();
+const navigate = useNavigate();
 
-  if(!roomId){
-    navigate(-1);
+const [isMuted, setIsMuted] = useState(false);
+const [isVideoOff, setIsVideoOff] = useState(false);
+const [isChatOpen, setIsChatOpen] = useState(true);
+const [message, setMessage] = useState("");
+const [status, setStatus] = useState("joining"); // joining | joined | error
+const [peerConnected, setPeerConnected] = useState(false);
+
+const localVideoRef = useRef<HTMLVideoElement | null>(null);
+const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+const pcRef = useRef<RTCPeerConnection | null>(null);
+const socketRef = useRef<Socket | null>(null);
+
+// Buffers for production safety
+const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
+const pendingOffer = useRef<RTCSessionDescriptionInit | null>(null);
+const pendingAnswer = useRef<RTCSessionDescriptionInit | null>(null);
+
+if (!roomId) {
+  navigate(-1);
+}
+
+// ✅ Single setup function (source of truth)
+const setupWithStream = async (stream: MediaStream) => {
+  // Show local preview
+  if (localVideoRef.current) {
+    localVideoRef.current.srcObject = stream;
   }
+
+  const pc = createPeerConnection();
+
+  // Add tracks
+  stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+  // Flush buffered ICE
+  pendingIceCandidates.current.forEach((c) =>
+    pc.addIceCandidate(new RTCIceCandidate(c))
+  );
+  pendingIceCandidates.current = [];
+
+  // Flush buffered offer
+  if (pendingOffer.current) {
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(pendingOffer.current)
+    );
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socketRef.current?.emit("webrtc:answer", { roomId, answer });
+    pendingOffer.current = null;
+  }
+
+  // Flush buffered answer
+  if (pendingAnswer.current) {
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(pendingAnswer.current)
+    );
+    pendingAnswer.current = null;
+  }
+
+  // Now safe to join
+  socketRef.current?.emit("join-room", { roomId });
+
+  console.log("✅ Media ready, tracks added & joined room");
+};
+
+// 1️⃣ Init socket once
+useEffect(() => {
+  socketRef.current = getSocket();
+
+  socketRef.current?.on("connect", () => {
+    console.log("🔌 Socket connected");
+    if (pcRef.current && roomId) {
+      socketRef.current?.emit("join-room", { roomId });
+    }
+  });
+
+  return () => {
+    socketRef.current?.off("connect");
+  };
+}, [roomId]);
+
+// 2️⃣ Socket listeners
+useEffect(() => {
+  if (!roomId) return;
+
+  const onIceCandidate = async ({ candidate }: { candidate: RTCIceCandidateInit }) => {
+    const pc = pcRef.current;
+    if (!pc) {
+      pendingIceCandidates.current.push(candidate);
+      return;
+    }
+    try {
+      await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      console.log("🧊 ICE candidate added");
+    } catch (e) {
+      console.error("❌ Error adding ICE candidate", e);
+    }
+  };
+
+  const onJoinedRoom = ({ roomId }: { roomId: string }) => {
+    console.log("✅ Joined room:", roomId);
+    setStatus("joined");
+  };
+
+  const onPeerJoined = async () => {
+    console.log("👤 Peer joined → creating offer");
+    setPeerConnected(true);
+
+    const pc = pcRef.current;
+    if (!pc) return;
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socketRef.current?.emit("webrtc:offer", { roomId, offer });
+    console.log("📤 Offer sent");
+  };
+
+  const handleOffer = async (offer: RTCSessionDescriptionInit) => {
+    const pc = pcRef.current!;
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socketRef.current?.emit("webrtc:answer", { roomId, answer });
+    console.log("📤 Answer sent");
+  };
+
+  const onOffer = async ({ offer }: { offer: RTCSessionDescriptionInit }) => {
+    console.log("📥 Offer received");
+    const pc = pcRef.current;
+    if (!pc) {
+      pendingOffer.current = offer;
+      return;
+    }
+    await handleOffer(offer);
+  };
+
+  const onAnswer = async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
+    console.log("📥 Answer received");
+    const pc = pcRef.current;
+    if (!pc) {
+      pendingAnswer.current = answer;
+      return;
+    }
+    await pc.setRemoteDescription(new RTCSessionDescription(answer));
+    console.log("✅ Handshake complete (offer/answer)");
+  };
+
+  const onJoinError = ({ message }: { message: string }) => {
+    alert(message);
+    navigate(-1);
+  };
+
+  const s = socketRef.current;
+  s?.on("webrtc:ice-candidate", onIceCandidate);
+  s?.on("joined-room", onJoinedRoom);
+  s?.on("peer-joined", onPeerJoined);
+  s?.on("webrtc:offer", onOffer);
+  s?.on("webrtc:answer", onAnswer);
+  s?.on("join-error", onJoinError);
+
+  return () => {
+    s?.off("webrtc:ice-candidate", onIceCandidate);
+    s?.off("joined-room", onJoinedRoom);
+    s?.off("peer-joined", onPeerJoined);
+    s?.off("webrtc:offer", onOffer);
+    s?.off("webrtc:answer", onAnswer);
+    s?.off("join-error", onJoinError);
+  };
+}, [roomId, navigate]);
+
+// 3️⃣ Media + PC setup (WITH FALLBACK)
+useEffect(() => {
+  const start = async () => {
+    try {
+      // Try video + audio
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      await setupWithStream(stream);
+    } catch (err: any) {
+      console.error("Failed to start video+audio:", err);
+
+      if (err?.name === "NotReadableError" || err?.name === "NotFoundError") {
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            video: false,
+            audio: true,
+          });
+          toast.error("Camera not available. Joined with audio only.");
+          await setupWithStream(audioStream);
+        } catch (audioErr) {
+          console.error("Failed to start audio-only:", audioErr);
+          toast.error("Could not start microphone.");
+        }
+      } else if (err?.name === "NotAllowedError") {
+        toast.error("Please allow camera and microphone access.");
+      } else {
+        toast.error("Could not start media devices.");
+      }
+    }
+  };
+
+  start();
+
+  return () => {
+    if (pcRef.current) {
+      pcRef.current.close();
+      pcRef.current = null;
+    }
+    if (localVideoRef.current?.srcObject) {
+      const stream = localVideoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((t) => t.stop());
+      localVideoRef.current.srcObject = null;
+    }
+    if (remoteVideoRef.current?.srcObject) {
+      const stream = remoteVideoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((t) => t.stop());
+      remoteVideoRef.current.srcObject = null;
+    }
+  };
+}, [roomId]);
+
+// 4️⃣ PeerConnection factory
+const createPeerConnection = () => {
+  const pc = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      // ⚠️ Add TURN in production
+    ],
+  });
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socketRef.current?.emit("webrtc:ice-candidate", {
+        roomId,
+        candidate: event.candidate,
+      });
+      console.log("🧊 ICE candidate generated:", event.candidate);
+    }
+  };
+
+  pc.ontrack = (event) => {
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = event.streams[0];
+    }
+    console.log("🎥 Remote track received", event.streams);
+  };
+
+  pc.onconnectionstatechange = () => {
+    console.log("🔗 Connection state:", pc.connectionState);
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    console.log("🧊 ICE state:", pc.iceConnectionState);
+  };
+
+  pcRef.current = pc;
+  console.log("✅ PeerConnection created");
+  return pc;
+};
+
 
   return (
     <div className="flex h-screen w-full bg-slate-50 dark:bg-[#020202] text-slate-900 dark:text-slate-50 overflow-hidden font-sans">
@@ -46,25 +305,30 @@ const VideoRoom = () => {
 
         {/* MAIN VIDEO BOX - Locked Aspect Ratio */}
         <div className="relative w-full max-w-5xl aspect-video rounded-3xl overflow-hidden bg-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-none border border-slate-200 dark:border-white/5">
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&auto=format&fit=crop" 
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            muted={false}
+            playsInline
             className="w-full h-full object-cover select-none"
-            alt="Mentor"
           />
 
           {/* Floating Self-View (PiP) */}
           <div className="absolute top-4 right-4 w-32 md:w-48 aspect-video bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-2xl border-2 border-white dark:border-white/10">
-            {isVideoOff ? (
-              <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800">
-                <VideoOff size={20} className="text-slate-400" />
-              </div>
-            ) : (
-              <img 
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop" 
-                className="w-full h-full object-cover"
-                alt="Your Stream"
-              />
-            )}
+           {isVideoOff ? (
+  <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+    <VideoOff size={20} className="text-slate-400" />
+  </div>
+) : (
+  <video
+    ref={localVideoRef}
+    autoPlay
+    muted
+    playsInline
+    className="w-full h-full object-cover"
+  />
+)}
+
           </div>
 
           {/* Mentor Name Overlay */}

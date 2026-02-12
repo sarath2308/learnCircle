@@ -16,4 +16,6 @@ export interface ISessionBookingService {
     sessionBookingId: string,
     userId: string,
   ) => Promise<{ hasPermission: boolean; roomId: string }>;
+
+  MarkSessionAsCompleted: (sessionBookingId: string) => Promise<void>;
 }

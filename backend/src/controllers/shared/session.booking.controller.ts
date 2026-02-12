@@ -1,4 +1,5 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
+import { Messages } from "@/constants/shared/messages";
 import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { ISessionBookingController } from "@/interface/shared/session-booking/booking/session.booking.controller";
 import { ISessionBookingService } from "@/interface/shared/session-booking/booking/session.booking.service.interface";
@@ -39,5 +40,11 @@ export class SessionBookingController implements ISessionBookingController {
     const { bookingId } = req.params;
     const permissionData = await this._sessionBookingService.checkJoinPermission(bookingId, userId);
     res.status(HttpStatus.OK).json({ success: true, data: permissionData });
+  }
+
+  async markSessionAsCompleted(req: IAuthRequest, res: Response): Promise<void> {
+    const { sessionId } = req.params;
+    await this._sessionBookingService.MarkSessionAsCompleted(sessionId);
+    res.status(HttpStatus.OK).json({ success: true, message: Messages.SESSION_MARKED_COMPLETED });
   }
 }
