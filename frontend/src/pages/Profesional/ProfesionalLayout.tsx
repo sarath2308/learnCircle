@@ -27,6 +27,7 @@ const adminLinks = [
   { label: "Sessions", path: "/professional/sessions", icon: IconChartBar },
   { label: "Schedule", path: "/professional/schedule", icon: IconCalendar },
   { label: "Earnings", path: "/professional/payments", icon: IconCreditCard },
+   { label: "Chat", path: "/professional/chat", icon: IconMessageCircle },
   { label: "Reviews", path: "/professional/reviews", icon: IconMessageCircle },
   { label: "Settings", path: "/professional/settings", icon: IconSettings },
 ];

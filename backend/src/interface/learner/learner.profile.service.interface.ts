@@ -1,4 +1,5 @@
 import { LearnerProfileDTOType } from "@/schema/learner/profile.response.dto";
+import { UploadedFile } from "../shared/uploadFile.interface";
 export interface ILearnerProfileService {
   /**
    *
@@ -10,10 +11,7 @@ export interface ILearnerProfileService {
    * @param userId
    * @param fileBuffer
    */
-  updateProfilePhoto(
-    userId: string,
-    data: { originalName: string; mimeType: string; fileBuffer: Buffer },
-  ): Promise<string | null>;
+  updateProfilePhoto(userId: string, file: UploadedFile): Promise<string | null>;
   /**
    *
    * @param userId

@@ -24,7 +24,7 @@ export const profileApi = {
   requestChangeEmailOtp: (payload: { newEmail: string }) =>
     api.post(PROFILE_API.EMAIL_REQUEST_OTP, payload).then((res) => res.data),
 
-  resendChangeEmailOtp: () => api.get(PROFILE_API.EMAIL_RESEND_OTP).then((res) => res.data),
+  resendChangeEmailOtp: () => api.post(PROFILE_API.EMAIL_RESEND_OTP).then((res) => res.data),
 
   verifyAndChangeEmail: (payload: { otp: string }) =>
     api.post(PROFILE_API.EMAIL_VERIFY_OTP, payload).then((res) => res.data),

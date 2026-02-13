@@ -1,12 +1,15 @@
 import { LearnerProfessionalProfileResponseType } from "@/schema/learner/professional-profile/learner.professional.profile.response.schema";
 import { ProfessionalProfileDTOType } from "@/schema/professional/profile.request.schema";
-import { UploadFiles } from "@/services/professional/profesional.profile.service";
+import { UploadedFile } from "../shared/uploadFile.interface";
 
 export interface IProfessionalProfileService {
   uploadData: (
     userId: string,
     data: ProfessionalProfileDTOType,
-    files: UploadFiles,
+    files: {
+      avatar: UploadedFile;
+      resume: UploadedFile;
+    },
   ) => Promise<void>;
 
   getAllProfilesForUser: (

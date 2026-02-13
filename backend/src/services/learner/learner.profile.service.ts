@@ -6,6 +6,7 @@ import { ILearnerProfileMapperService } from "@/interface/learner/learner.profil
 import { ILearnerProfileRepo } from "@/interface/learner/learner.profile.repo.interface";
 import { ILearnerProfileService } from "@/interface/learner/learner.profile.service.interface";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
+import { UploadedFile } from "@/interface/shared/uploadFile.interface";
 import { IRedisRepository } from "@/repos/shared/redisRepo";
 import { IUserRepo } from "@/repos/shared/user.repo";
 import { LearnerProfileDTOType } from "@/schema/learner/profile.response.dto";
@@ -86,10 +87,7 @@ export class LearnerProfileService implements ILearnerProfileService {
    * @param userId
    * @param fileBuffer
    */
-  async updateProfilePhoto(
-    userId: string,
-    data: { originalName: string; mimeType: string; fileBuffer: Buffer },
-  ) {
+  async updateProfilePhoto(userId: string, file: UploadedFile) {
     const user = await this._userRepo.findById(userId);
 
     if (!user) throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -105,11 +103,12 @@ export class LearnerProfileService implements ILearnerProfileService {
       });
     }
 
-    const key = await this._s3Service.generateS3Key(userId, data.originalName);
-    const uploadUrl = await this._s3Service.uploadFileFromBuffer(
-      data.fileBuffer,
+    const key = await this._s3Service.generateS3Key(userId, file.originalName);
+    const uploadUrl = await this._s3Service.uploadFileFromStream(
+      file.path,
       key,
-      data.mimeType,
+      file.mimeType,
+      3600,
     );
 
     await this._profileRepo.storeProfileKey(userId, key);

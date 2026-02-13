@@ -19,17 +19,17 @@ export class ProfessionalProfileController implements IProfessionalProfileContro
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const { userId } = req.user;
-
-    if (!req.avatar && !req.resume) {
+    if (!req.files || (!req.files["avatar"] && !req.files["resume"])) {
       res.status(400).json({ message: "Avatar or resume file is required." });
+      return;
     }
 
-    const avatarBuffer = req.avatar;
-    const resumeBuffer = req.resumeFile;
+    const avatarStream = req.files["avatar"];
+    const resumeStream = req.files["resume"];
 
     await this._service.uploadData(userId, req.body, {
-      avatar: avatarBuffer,
-      resume: resumeBuffer,
+      avatar: avatarStream,
+      resume: resumeStream,
     });
 
     res.status(HttpStatus.CREATED).json({ message: Messages.PROFILE_UPDATED });

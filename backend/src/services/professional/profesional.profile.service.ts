@@ -14,19 +14,7 @@ import {
   LearnerProfessionalProfileResponseType,
 } from "@/schema/learner/professional-profile/learner.professional.profile.response.schema";
 import { LearnerProfessionalProfileResponseSchema } from "@/schema/learner/professional-profile/learner.professional.profile.response";
-
-export interface UploadFiles {
-  avatar?: {
-    buffer?: Buffer;
-    mimeType?: string;
-    originalName?: string;
-  };
-  resume?: {
-    buffer?: Buffer;
-    mimeType?: string;
-    originalName?: string;
-  };
-}
+import { UploadedFile } from "@/interface/shared/uploadFile.interface";
 
 @injectable()
 export class ProfessionalProfileService implements IProfessionalProfileService {
@@ -41,7 +29,11 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
    * @param data
    * @param files
    */
-  async uploadData(userId: string, data: ProfessionalProfileDTOType, files: UploadFiles) {
+  async uploadData(
+    userId: string,
+    data: ProfessionalProfileDTOType,
+    files: { avatar: UploadedFile; resume: UploadedFile },
+  ): Promise<void> {
     const user = await this._userRepo.findById(userId);
 
     if (!user) {
@@ -74,27 +66,25 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
       await profileData.save(); // Save updated fields
     }
 
-    if (files.avatar?.buffer && files.avatar.mimeType && files.avatar.originalName) {
-      const profile_key = await this._s3Service.generateS3Key(userId, files.avatar.originalName);
-      await this._s3Service.uploadFileFromBuffer(
-        files.avatar.buffer,
-        profile_key,
-        files.avatar.mimeType,
-      );
-      profileData.profile_key = profile_key;
-      await profileData.save();
-    }
+    const profile_key = await this._s3Service.generateS3Key(userId, files.avatar.originalName);
+    await this._s3Service.uploadFileFromStream(
+      files.avatar.path,
+      profile_key,
+      files.avatar.mimeType,
+      3600,
+    );
+    profileData.profile_key = profile_key;
+    await profileData.save();
 
-    if (files.resume?.buffer && files.resume.mimeType && files.resume.originalName) {
-      const resume_key = await this._s3Service.generateS3Key(userId, files.resume.originalName);
-      await this._s3Service.uploadFileFromBuffer(
-        files.resume.buffer,
-        resume_key,
-        files.resume.mimeType,
-      );
-      profileData.resume_key = resume_key;
-      await profileData.save();
-    }
+    const resume_key = await this._s3Service.generateS3Key(userId, files.resume.originalName);
+    await this._s3Service.uploadFileFromStream(
+      files.resume.path,
+      resume_key,
+      files.resume.mimeType,
+      3600,
+    );
+    profileData.resume_key = resume_key;
+    await profileData.save();
   }
 
   async getAllProfilesForUser(

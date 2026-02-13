@@ -48,14 +48,14 @@ export class LearnerProfileController implements ILearnerProfileController {
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const { userId } = req?.user;
-    let file = req.avatar;
-    if (!file) {
+    if (!req.files || !req.files["avatar"]) {
       throw new AppError(Messages.PROFILE_NOT_UPDATED, HttpStatus.BAD_REQUEST);
     }
+    let file = req.files["avatar"];
     let result = await this._learnerProfileService.updateProfilePhoto(userId, {
-      originalName: file?.originalname,
-      mimeType: file?.mimetype,
-      fileBuffer: file?.buffer,
+      originalName: file.originalName,
+      mimeType: file.mimeType,
+      path: file?.path,
     });
     res
       .status(HttpStatus.OK)
