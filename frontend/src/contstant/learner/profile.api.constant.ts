@@ -7,4 +7,5 @@ export const PROFILE_API = {
   EMAIL_VERIFY_OTP: "/learner/profile/update-email/verify-otp",
   UPDATE_PASSWORD: "/learner/profile/update-password",
   UPDATE_USERNAME: "/learner/profile/update-username",
+  LOGOUT: "/learner/profile/logout",
 };

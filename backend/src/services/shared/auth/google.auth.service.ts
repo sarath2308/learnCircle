@@ -10,6 +10,7 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { Provider, Role } from "@/types";
+import { IS3Service } from "@/interface/shared/s3.service.interface";
 
 @injectable()
 export class GoogleAuthProvider implements IAuthProviderService {
@@ -18,6 +19,7 @@ export class GoogleAuthProvider implements IAuthProviderService {
     @inject(TYPES.ITokenService) private _tokenService: ITokenService,
     @inject(TYPES.IUserRepo) private _userRepo: IUserRepo,
     @inject(TYPES.IUserDtoMapper) private _userDtoMap: IUserDtoMapper,
+    @inject(TYPES.IS3Service) private _s3Service: IS3Service
   ) {}
   /**
    *
@@ -57,7 +59,6 @@ export class GoogleAuthProvider implements IAuthProviderService {
       }
     }
     let tokens = await this._tokenService.generateTokens({ userId: user.id, role: user.role });
-
     let userDto = await this._userDtoMap.toResponse(user);
 
     return { user: userDto, tokens };

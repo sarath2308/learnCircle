@@ -34,5 +34,5 @@ export const profileApi = {
 
   getProfileUrl: () => api.get(PROFILE_API.GET_PROFILE_URL).then((res) => res.data),
 
-  logout: () => api.get("/auth/logout").then((res) => res.data),
+  logout: () => api.post(PROFILE_API.LOGOUT).then((res) => res.data),
 };
