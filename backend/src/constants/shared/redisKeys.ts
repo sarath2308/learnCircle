@@ -4,4 +4,6 @@ export const RedisKeys = {
   RESET_TOKEN: "reset-token:",
   REFRESH: "refresh:",
   EMAIL: "email",
+  BLACKLIST: "blacklist:",
+  USER_TOKENS: "user-tokens:",
 };

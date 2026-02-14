@@ -128,6 +128,14 @@ export class AdminUserManagementService implements IAdminUserManagementService {
 
     userData.isBlocked = true;
     await this._redisRepo.delete(`${RedisKeys.REFRESH}:${userId}`);
+    const jti = await this._redisRepo.get(`${RedisKeys.USER_TOKENS}${userId}`);
+    if (jti) {
+      await this._redisRepo.set(
+        `${RedisKeys.BLACKLIST}:${jti}`,
+        "true",
+        Number(process.env.JTI_EXPIRES_IN) || 900,
+      );
+    }
     await userData.save();
   }
   /**

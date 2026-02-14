@@ -282,4 +282,18 @@ export class LearnerProfileService implements ILearnerProfileService {
 
     return { profileUrl };
   }
+
+  async logout(userId: string, jti: string): Promise<void> {
+    let user = await this._userRepo.findById(userId);
+
+    if (!user) {
+      throw new AppError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    await this._redisRepo.set(
+      `${RedisKeys.BLACKLIST}:${jti}`,
+      "true",
+      Number(process.env.JTI_EXPIRES_IN) || 900,
+    );
+  }
 }

@@ -1,19 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Mic,
   MicOff,
   Video,
   VideoOff,
   PhoneOff,
-  MessageSquare,
-  Send,
-  Hand,
-  Share2,
-  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Socket } from "socket.io-client";

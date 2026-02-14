@@ -26,6 +26,6 @@ export class UserRepo extends BaseRepo<IUser> implements IUserRepo {
     );
   }
   async findByEmail(email: string): Promise<IUser | null> {
-    return await this._model.findOne({ email: email, isBlocked: false });
+    return await this._model.findOne({ email: email });
   }
 }

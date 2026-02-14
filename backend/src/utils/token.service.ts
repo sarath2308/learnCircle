@@ -5,13 +5,14 @@ import { injectable, inject } from "inversify";
 import { IRedisRepository } from "@/repos/shared/redisRepo";
 import { TYPES } from "../types/shared/inversify/types";
 import { RedisKeys } from "@/constants/shared/redisKeys";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
 type Tpayload = { userId: string; role?: string; type?: string };
 
 export interface ITokenService {
-  signAccessToken(payload: Tpayload, expiresIn?: string): string;
+  signAccessToken(payload: Tpayload, expiresIn?: string): Promise<string>;
   signTempToken(payload: Tpayload, expiresIn?: string): string;
   generateRefreshToken(payload: Tpayload): string;
   verifyAccessToken(token: string): JwtPayload | null;
@@ -37,17 +38,25 @@ export class TokenService implements ITokenService {
 
   // ---------------- TEMP TOKEN ----------------
   signTempToken(payload: Tpayload): string {
+    const jti = uuidv4();
     const options: SignOptions = { expiresIn: "5m" as any };
-    return jwt.sign(payload, AuthConfig.accessTokenSecret, options);
+    return jwt.sign({ ...payload, jti }, AuthConfig.accessTokenSecret, options);
   }
 
   // ---------------- ACCESS TOKEN ----------------
-  signAccessToken(payload: Tpayload): string {
+  async signAccessToken(payload: Tpayload): Promise<string> {
+    const jti = uuidv4();
     const options: SignOptions = {
       expiresIn: AuthConfig.accessTokenExpiresIn as any,
     };
 
-    return jwt.sign(payload, AuthConfig.accessTokenSecret, options);
+    await this.redisService.set(
+      `${RedisKeys.USER_TOKENS}${payload.userId}`,
+      jti,
+      Number(process.env.JTI_EXPIRES_IN) || 900,
+    );
+
+    return jwt.sign({ ...payload, jti }, AuthConfig.accessTokenSecret, options);
   }
 
   // ---------------- REFRESH TOKEN ----------------
@@ -92,7 +101,7 @@ export class TokenService implements ITokenService {
   // ---------------- GENERATE BOTH TOKENS ----------------
   async generateTokens(payload: Tpayload): Promise<ITokens> {
     return {
-      accessToken: this.signAccessToken(payload),
+      accessToken: await this.signAccessToken(payload),
       refreshToken: this.generateRefreshToken(payload),
     };
   }

@@ -8,4 +8,5 @@ export const PROFILE_ROUTES = {
   EMAIL_VERIFY_OTP: "/update-email/verify-otp",
   UPDATE_PASSWORD: "/update-password",
   UPDATE_USERNAME: "/update-username",
+  LOGOUT: "/logout",
 };

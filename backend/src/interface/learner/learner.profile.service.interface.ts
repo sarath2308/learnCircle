@@ -55,4 +55,6 @@ export interface ILearnerProfileService {
    */
 
   getProfileUrl: (userId: string) => Promise<{ profileUrl: string } | null>;
+
+  logout: (userId: string, jti: string) => Promise<void>;
 }

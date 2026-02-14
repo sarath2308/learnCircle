@@ -1,4 +1,4 @@
-import { IAuthRequest } from "./authorization";
+import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { HttpStatus } from "../constants/shared/httpStatus";
 import { Messages } from "../constants/shared/messages";
 import { Response, NextFunction } from "express";

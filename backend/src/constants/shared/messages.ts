@@ -7,6 +7,7 @@ export const Messages = {
   FORBIDDEN: "Access forbidden - insufficient permissions",
   TOKEN_EXPIRED: "Token has expired, please login again",
   TOKEN_INVALID: "Invalid token",
+  TOKEN_REVOKED: "Token has been revoked",
   OTP_REQUIRED: "OTP verification is required",
   OTP_INVALID: "Invalid OTP",
   OTP_EXPIRED: "OTP has expired, request a new one",

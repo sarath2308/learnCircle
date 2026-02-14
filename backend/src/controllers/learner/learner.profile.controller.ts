@@ -159,4 +159,11 @@ export class LearnerProfileController implements ILearnerProfileController {
       profileUrl: result?.profileUrl,
     });
   }
+
+  async logout(req: IAuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const jti = req.user?.jti as string;
+    await this._learnerProfileService.logout(userId, jti);
+    res.status(HttpStatus.OK).json({ success: true, message: Messages.LOGOUT_SUCCESS });
+  }
 }

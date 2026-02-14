@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { busboyUpload } from "../../middleware/multiFileUpload.middleware";
-import { ILearnerProfileController } from "../../interface/learner/ILearnerProfileController";
+import { ILearnerProfileController } from "@/interface/learner/learner.profile.controller.interface";
 import { LearnerProfileSchemas } from "../../schema/learner/profile.request.dto";
 import { validateRequest } from "@/middleware/zodValidation.middlevare";
 import { PROFILE_ROUTES } from "../../constants/learner/learner.profile.route.constant";
+
 export function learnerProfileRoute(controller: ILearnerProfileController) {
   const router = Router();
   router.get(PROFILE_ROUTES.DEFAULT, controller.getProfile.bind(controller));
@@ -42,6 +43,7 @@ export function learnerProfileRoute(controller: ILearnerProfileController) {
     validateRequest(LearnerProfileSchemas.updateName),
     controller.updateName.bind(controller),
   );
-  // router.post("/")
+
+  router.post(PROFILE_ROUTES.LOGOUT, controller.logout.bind(controller));
   return router;
 }
