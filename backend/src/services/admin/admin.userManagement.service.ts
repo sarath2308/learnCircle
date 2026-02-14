@@ -19,30 +19,10 @@ import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { RedisKeys } from "@/constants/shared/redisKeys";
-
-export type LearnerData = {
-  _id: string;
-  userId: string;
-  name: string;
-  email: string;
-  isBlocked: boolean;
-  profile_key?: string | null;
-  role: string;
-};
-
-export type ProfessionalData = {
-  _id: string;
-  userId: string;
-  email: string;
-  name: string;
-  status?: string | null;
-  rating?: number | null;
-  totalSessions?: number | null;
-  profile_key?: string | null;
-  resume_key?: string | null;
-  role: string;
-  isBlocked: boolean;
-};
+import {
+  LearnerDataForUserManagement,
+  ProfessionalDataForUserManagement,
+} from "@/types/admin/user-management/admin.user.management.type";
 
 @injectable()
 export class AdminUserManagementService implements IAdminUserManagementService {
@@ -73,7 +53,7 @@ export class AdminUserManagementService implements IAdminUserManagementService {
     const learners = await this._learnerRepo.getAllProfile(page, search);
     const totalCount = await this._learnerRepo.countAll(search);
     const learnerData = await Promise.all(
-      learners.map(async (learner: LearnerData) => {
+      learners.map(async (learner: LearnerDataForUserManagement) => {
         const profileUrl = learner.profile_key
           ? await this._s3Service.getFileUrl(learner.profile_key)
           : null;
@@ -111,7 +91,7 @@ export class AdminUserManagementService implements IAdminUserManagementService {
     const totalCount = await this._professionalRepo.countAll(search);
 
     const professionalData = await Promise.all(
-      professionals.map(async (pro: ProfessionalData) => {
+      professionals.map(async (pro: ProfessionalDataForUserManagement) => {
         const profileUrl = pro.profile_key
           ? await this._s3Service.getFileUrl(pro.profile_key)
           : null;

@@ -2,14 +2,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  BookOpen, 
-  Clock, 
-  BarChart3, 
-  PlayCircle, 
-  MoreVertical, 
+import {
+  BookOpen,
+  Clock,
+  BarChart3,
+  PlayCircle,
+  MoreVertical,
   Calendar,
-  Layers
+  Layers,
 } from "lucide-react";
 
 type CourseStatus = "draft" | "published" | "pending" | "rejected";
@@ -31,7 +31,7 @@ interface Course {
 
 interface CourseCardProps {
   course: Course;
-  variant: 'admin' | 'user' | 'creator';
+  variant: "admin" | "user" | "creator";
   onEdit?: (id: string) => void;
   onPublish?: (id: string) => void;
   onView?: (id: string) => void;
@@ -44,7 +44,6 @@ export default function CourseCard({
   onPublish,
   onView,
 }: CourseCardProps) {
-  
   // Status Color Logic
   const statusConfig = {
     draft: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
@@ -54,7 +53,7 @@ export default function CourseCard({
   };
 
   return (
-    <div 
+    <div
       onClick={() => onView?.(course.id)}
       className="group relative flex flex-col bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 cursor-pointer"
     >
@@ -65,25 +64,32 @@ export default function CourseCard({
           alt={course.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        
+
         {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-           <Button size="sm" className="w-full bg-white/20 backdrop-blur-md border-white/30 text-white hover:bg-white hover:text-black font-bold rounded-lg transition-all">
-             Quick View
-           </Button>
+          <Button
+            size="sm"
+            className="w-full bg-white/20 backdrop-blur-md border-white/30 text-white hover:bg-white hover:text-black font-bold rounded-lg transition-all"
+          >
+            Quick View
+          </Button>
         </div>
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
-          <Badge className={`uppercase text-[10px] font-black tracking-wider px-2 border-none shadow-sm ${statusConfig[course.status || "draft"]}`}>
+          <Badge
+            className={`uppercase text-[10px] font-black tracking-wider px-2 border-none shadow-sm ${statusConfig[course.status || "draft"]}`}
+          >
             {course.status}
           </Badge>
         </div>
 
-        <Badge className={`absolute top-3 right-3 font-bold border-none shadow-md ${
-          course.type === "Free" ? "bg-blue-600 text-white" : "bg-amber-500 text-white"
-        }`}>
-          {course.type === "Paid" ? `$${course.price || '0'}` : "FREE"}
+        <Badge
+          className={`absolute top-3 right-3 font-bold border-none shadow-md ${
+            course.type === "Free" ? "bg-blue-600 text-white" : "bg-amber-500 text-white"
+          }`}
+        >
+          {course.type === "Paid" ? `$${course.price || "0"}` : "FREE"}
         </Badge>
       </div>
 
@@ -112,26 +118,35 @@ export default function CourseCard({
           <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
             <Calendar size={14} className="text-green-500" />
             <span className="text-xs font-medium">
-              {new Date(course.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+              {new Date(course.createdAt).toLocaleDateString(undefined, {
+                month: "short",
+                year: "numeric",
+              })}
             </span>
           </div>
         </div>
 
         {/* 3. Action Footer */}
-        {(variant === 'creator' || course.status === "draft") && (
+        {(variant === "creator" || course.status === "draft") && (
           <div className="mt-5 pt-4 flex gap-2">
             {course.status === "draft" && onPublish && (
-              <Button 
-                onClick={(e) => { e.stopPropagation(); onPublish(course.id); }}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPublish(course.id);
+                }}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl h-10 shadow-md shadow-green-100 dark:shadow-none"
               >
                 Publish
               </Button>
             )}
             {onEdit && (
-              <Button 
+              <Button
                 variant="outline"
-                onClick={(e) => { e.stopPropagation(); onEdit(course.id); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(course.id);
+                }}
                 className="flex-1 border-slate-200 dark:border-slate-700 font-bold rounded-xl h-10 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-white"
               >
                 Edit

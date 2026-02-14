@@ -64,7 +64,7 @@ const ProfesionalSign = () => {
         role,
         token: response.credential,
       });
-      navigate(`/professional/home`, { replace: true });
+      navigate("/professional/home", { replace: true });
     } catch (error) {
       console.error("Google login error:", error);
       toast.error("Login failed. Please try again.");

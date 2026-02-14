@@ -41,7 +41,6 @@ import { CourseService } from "@/services/shared/course/course.service";
 import { ICourseController } from "@/interface/shared/course/course.controller.interface";
 import { CourseController } from "@/controllers/shared/course.controller";
 import { ImageCompressor } from "@/utils/image.compress.service";
-import { VideoCompressor } from "@/utils/video.compress.service";
 import { Chapter, IChapter } from "@/model/shared/chapter.model";
 import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
 import { ChapterRepo } from "@/repos/shared/chapter.repo";
@@ -165,7 +164,6 @@ export const registerShared = (container: Container): void => {
   container.bind<IPasswordResetService>(TYPES.IPasswordResetService).to(PasswordResetService);
   container.bind<ICourseService>(TYPES.ICourseService).to(CourseService);
   container.bind(TYPES.ImageCompressService).to(ImageCompressor);
-  container.bind(TYPES.VideoCompressService).to(VideoCompressor);
   container.bind(TYPES.IUserDtoMapper).to(UserDtoMapper).inSingletonScope();
   container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
   container.bind<IAuthProviderService>(TYPES.IProviderAuth).to(GoogleAuthProvider);

@@ -6,21 +6,19 @@ import { connectSocket } from "./socket/socket";
 
 const App = () => {
   // App.tsx or Layout.tsx
-useEffect(() => {
-  connectSocket();
-}, [])
+  useEffect(() => {
+    connectSocket();
+  }, []);
 
-return(<>
-  <BrowserRouter>
-    <AppRoutes />
-    {/* ToastContainer*/}
-    <Toaster position="top-center" reverseOrder={false} />
-  </BrowserRouter>
-  </>)
-
-
-
-}
-
+  return (
+    <>
+      <BrowserRouter>
+        <AppRoutes />
+        {/* ToastContainer*/}
+        <Toaster position="top-center" reverseOrder={false} />
+      </BrowserRouter>
+    </>
+  );
+};
 
 export default App;

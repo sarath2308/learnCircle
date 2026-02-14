@@ -1,7 +1,7 @@
 import { useRef } from "react";
 
 export const createPeerConnection = () => {
-     const pcRef = useRef<RTCPeerConnection | null>(null);
+  const pcRef = useRef<RTCPeerConnection | null>(null);
   const pc = new RTCPeerConnection({
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
   });

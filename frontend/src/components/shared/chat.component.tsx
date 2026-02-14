@@ -5,15 +5,15 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  SendHorizontal, 
-  MessageCircle, 
-  MoreVertical, 
-  Circle, 
-  Hash, 
+import {
+  SendHorizontal,
+  MessageCircle,
+  MoreVertical,
+  Circle,
+  Hash,
   SmilePlus,
   Paperclip,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,8 +49,8 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
     socket.emit("chat:join", { conversationId });
 
     const onMessage = (newMessage: Message) => {
-      setLocalMessages(prev => 
-        prev.some(m => m.id === newMessage.id) ? prev : [...prev, newMessage]
+      setLocalMessages((prev) =>
+        prev.some((m) => m.id === newMessage.id) ? prev : [...prev, newMessage],
       );
     };
 
@@ -99,12 +99,18 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
             </h3>
             <div className="flex items-center gap-1.5">
               <Circle className="h-2 w-2 fill-emerald-500 text-emerald-500 animate-pulse" />
-              <span className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Online</span>
+              <span className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">
+                Online
+              </span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="text-slate-400 hover:bg-slate-50 rounded-full">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-slate-400 hover:bg-slate-50 rounded-full"
+          >
             <MoreVertical className="h-5 w-5" />
           </Button>
         </div>
@@ -114,13 +120,13 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
       <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F8FAFC]">
         {localMessages.map((msg, idx) => {
           const isMe = String(msg.senderId) === String(currentUserId);
-          
+
           return (
-            <div 
-              key={msg.id || idx} 
+            <div
+              key={msg.id || idx}
               className={cn(
                 "flex w-full animate-in fade-in slide-in-from-bottom-3 duration-500",
-                isMe ? "justify-end" : "justify-start"
+                isMe ? "justify-end" : "justify-start",
               )}
             >
               <div className={cn("flex flex-col max-w-[70%]", isMe ? "items-end" : "items-start")}>
@@ -132,15 +138,18 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
                 <div
                   className={cn(
                     "relative px-4 py-3 rounded-2xl text-[14.5px] leading-relaxed shadow-sm transition-all border",
-                    isMe 
-                      ? "bg-indigo-600 text-white border-indigo-500 rounded-tr-none shadow-indigo-100 shadow-md" 
-                      : "bg-white text-slate-700 border-slate-200 rounded-tl-none"
+                    isMe
+                      ? "bg-indigo-600 text-white border-indigo-500 rounded-tr-none shadow-indigo-100 shadow-md"
+                      : "bg-white text-slate-700 border-slate-200 rounded-tl-none",
                   )}
                 >
                   <p className="break-words font-medium">{msg.content}</p>
                 </div>
                 <span className="text-[10px] text-slate-400 mt-2 px-1 font-semibold tracking-wide">
-                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(msg.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
               </div>
             </div>
@@ -154,11 +163,16 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
         <form onSubmit={handleSend} className="relative max-w-5xl mx-auto flex gap-3 items-center">
           <div className="relative flex-1 group">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
-               <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
-                  <Paperclip className="h-5 w-5" />
-               </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+              >
+                <Paperclip className="h-5 w-5" />
+              </Button>
             </div>
-            
+
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -167,15 +181,20 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
             />
 
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-amber-500">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-slate-400 hover:text-amber-500"
+              >
                 <SmilePlus className="h-5 w-5" />
               </Button>
             </div>
           </div>
 
-          <Button 
-            type="submit" 
-            disabled={!input.trim()} 
+          <Button
+            type="submit"
+            disabled={!input.trim()}
             className="h-[52px] w-[52px] rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5 active:scale-95 shrink-0"
           >
             <SendHorizontal className="h-6 w-6" />

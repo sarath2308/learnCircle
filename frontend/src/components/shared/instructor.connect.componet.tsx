@@ -7,13 +7,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  SendHorizontal, 
-  UserCircle2, 
-  MoreHorizontal, 
-  GraduationCap,
-  Circle
-} from "lucide-react";
+import { SendHorizontal, UserCircle2, MoreHorizontal, GraduationCap, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -52,8 +46,8 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
 
     const onMessage = (newMessage: Message) => {
       // Logic check: only add if it's not already there
-      setLocalMessages((prev) => 
-        prev.some(m => m.id === newMessage.id) ? prev : [...prev, newMessage]
+      setLocalMessages((prev) =>
+        prev.some((m) => m.id === newMessage.id) ? prev : [...prev, newMessage],
       );
     };
 
@@ -103,7 +97,9 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
             <h3 className="font-bold text-slate-800 leading-none">Instructor Connect</h3>
             <div className="flex items-center gap-1.5 mt-1">
               <Circle className="h-2 w-2 fill-emerald-500 text-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Support Active</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Support Active
+              </span>
             </div>
           </div>
         </div>
@@ -122,29 +118,37 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
               key={msg.id || idx}
               className={cn(
                 "flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300",
-                isMe ? "justify-end" : "justify-start"
+                isMe ? "justify-end" : "justify-start",
               )}
             >
-              <div className={cn("flex items-end gap-2 max-w-[80%]", isMe ? "flex-row-reverse" : "flex-row")}>
+              <div
+                className={cn(
+                  "flex items-end gap-2 max-w-[80%]",
+                  isMe ? "flex-row-reverse" : "flex-row",
+                )}
+              >
                 {!isMe && (
                   <div className="h-8 w-8 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center">
                     <UserCircle2 className="w-5 h-5 text-slate-500" />
                   </div>
                 )}
-                
+
                 <div className={cn("flex flex-col", isMe ? "items-end" : "items-start")}>
                   <div
                     className={cn(
                       "px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm border transition-all",
                       isMe
                         ? "bg-indigo-600 text-white border-indigo-500 rounded-tr-none shadow-indigo-100"
-                        : "bg-white text-slate-700 border-slate-200 rounded-tl-none"
+                        : "bg-white text-slate-700 border-slate-200 rounded-tl-none",
                     )}
                   >
                     {msg.content}
                   </div>
                   <span className="text-[10px] text-slate-400 mt-1.5 px-1 font-semibold tracking-tighter">
-                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               </div>

@@ -7,10 +7,14 @@ import AvailabilityManager from "@/pages/Profesional/Professional.schedule.page"
 
 const ProfessionalDashboard = lazy(() => import("@/pages/Profesional/profesionalDashboard"));
 const ProfessionalLayout = lazy(() => import("@/pages/Profesional/ProfesionalLayout"));
-const ProfessionalMyCourse = lazy(()=> import("@/pages/Profesional/professional.course"));
-const ProfessionalCreateCourse = lazy(()=> import("@/pages/Profesional/professional.create.course"))
-const ProfessionalViewCourse = lazy(()=> import("@/pages/Profesional/professional.view.course")) 
-const ProfessionalSessionBooking = lazy(()=> import("@/pages/Profesional/Professional.session.list"));
+const ProfessionalMyCourse = lazy(() => import("@/pages/Profesional/professional.course"));
+const ProfessionalCreateCourse = lazy(
+  () => import("@/pages/Profesional/professional.create.course"),
+);
+const ProfessionalViewCourse = lazy(() => import("@/pages/Profesional/professional.view.course"));
+const ProfessionalSessionBooking = lazy(
+  () => import("@/pages/Profesional/Professional.session.list"),
+);
 const VideoCallPage = lazy(() => import("@/pages/shared/video.room.page"));
 const ChatPage = lazy(() => import("@/components/shared/chat.component"));
 const professionalRoutes: RouteObject[] = [
@@ -37,11 +41,11 @@ const professionalRoutes: RouteObject[] = [
             path: "verification",
             element: <Verification />,
           },
-           {
+          {
             path: "my-courses",
             element: <ProfessionalMyCourse />,
           },
-           {
+          {
             path: "my-courses/:id",
             element: <ProfessionalViewCourse />,
           },
@@ -49,7 +53,7 @@ const professionalRoutes: RouteObject[] = [
             path: "schedule",
             element: <AvailabilityManager />,
           },
-           {
+          {
             path: "create-course",
             element: <ProfessionalCreateCourse />,
           },
@@ -57,7 +61,7 @@ const professionalRoutes: RouteObject[] = [
             path: "sessions",
             element: <ProfessionalSessionBooking />,
           },
-           {
+          {
             path: "video-call/:roomId",
             element: <VideoCallPage />,
           },

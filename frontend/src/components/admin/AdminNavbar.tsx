@@ -26,9 +26,7 @@ function AdminNavbar({ adminName, onLogout }: AdminNavbarProps) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback>
-                {adminName.charAt(0)}
-              </AvatarFallback>
+              <AvatarFallback>{adminName.charAt(0)}</AvatarFallback>
             </Avatar>
             <span className="hidden md:block text-sm">{adminName}</span>
           </Button>
@@ -45,10 +43,7 @@ function AdminNavbar({ adminName, onLogout }: AdminNavbarProps) {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            onClick={onLogout}
-            className="text-destructive focus:text-destructive"
-          >
+          <DropdownMenuItem onClick={onLogout} className="text-destructive focus:text-destructive">
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </DropdownMenuItem>

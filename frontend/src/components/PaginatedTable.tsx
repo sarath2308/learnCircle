@@ -1,18 +1,6 @@
-import React from 'react';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Inbox, 
-  Loader2 
-} from "lucide-react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "./ui/table";
+import React from "react";
+import { ChevronLeft, ChevronRight, Inbox, Loader2 } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Button } from "./ui/button";
 
 export interface Column<T> {
@@ -65,8 +53,8 @@ export default function DataTable<T>({
               </TableHead>
 
               {columns.map((col) => (
-                <TableHead 
-                  key={col.header} 
+                <TableHead
+                  key={col.header}
                   className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 py-4"
                 >
                   {col.header}
@@ -104,8 +92,8 @@ export default function DataTable<T>({
               </TableRow>
             ) : (
               data.map((row, rowIndex) => (
-                <TableRow 
-                  key={rowKey(row)} 
+                <TableRow
+                  key={rowKey(row)}
                   className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition-colors border-none"
                 >
                   {/* SL NO */}
@@ -121,9 +109,9 @@ export default function DataTable<T>({
                       <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         {col.cell
                           ? col.cell(row[col.accessor], row)
-                          : (row[col.accessor] as React.ReactNode) ?? (
+                          : ((row[col.accessor] as React.ReactNode) ?? (
                               <span className="text-slate-300 dark:text-slate-700">—</span>
-                            )}
+                            ))}
                       </div>
                     </TableCell>
                   ))}
@@ -168,21 +156,22 @@ export default function DataTable<T>({
           {/* Simple Page Indicator for Mobile */}
           <div className="flex gap-1">
             {[...Array(totalPages)].map((_, i) => {
-               // Show limited pages if totalPages is high (Logical optimization)
-               if (totalPages > 5 && Math.abs(i + 1 - page) > 1 && i !== 0 && i !== totalPages - 1) return null;
-               return (
+              // Show limited pages if totalPages is high (Logical optimization)
+              if (totalPages > 5 && Math.abs(i + 1 - page) > 1 && i !== 0 && i !== totalPages - 1)
+                return null;
+              return (
                 <button
                   key={i}
                   onClick={() => onPageChange(i + 1)}
                   className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${
-                    page === i + 1 
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none" 
-                    : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    page === i + 1
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none"
+                      : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
                   {i + 1}
                 </button>
-               )
+              );
             })}
           </div>
 

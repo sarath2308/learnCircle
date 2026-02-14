@@ -19,7 +19,7 @@ const initialState: CourseDetailsState = {
   category: "",
   subCategory: "",
   skillLevel: "", // force user to pick a valid level
-  thumbnailUrl:"",
+  thumbnailUrl: "",
   thumbnailChanged: false,
 };
 

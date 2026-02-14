@@ -27,7 +27,7 @@ export const store = configureStore({
     currentUser: persistedCurrentUserReducer,
     chapter: chapterReducer,
     courseDetails: courseDetailsReducer,
-    priceDetails: priceDetailsReducer
+    priceDetails: priceDetailsReducer,
   },
 });
 

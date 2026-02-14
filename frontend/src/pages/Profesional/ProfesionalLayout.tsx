@@ -11,14 +11,14 @@ import { Bell, Menu, X, LogOut, Search } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { 
-  IconBook, 
-  IconBrandTabler, 
-  IconCalendar, 
-  IconChartBar, 
-  IconCreditCard, 
-  IconMessageCircle, 
-  IconSettings 
+import {
+  IconBook,
+  IconBrandTabler,
+  IconCalendar,
+  IconChartBar,
+  IconCreditCard,
+  IconMessageCircle,
+  IconSettings,
 } from "@tabler/icons-react";
 
 const adminLinks = [
@@ -27,7 +27,7 @@ const adminLinks = [
   { label: "Sessions", path: "/professional/sessions", icon: IconChartBar },
   { label: "Schedule", path: "/professional/schedule", icon: IconCalendar },
   { label: "Earnings", path: "/professional/payments", icon: IconCreditCard },
-   { label: "Chat", path: "/professional/chat", icon: IconMessageCircle },
+  { label: "Chat", path: "/professional/chat", icon: IconMessageCircle },
   { label: "Reviews", path: "/professional/reviews", icon: IconMessageCircle },
   { label: "Settings", path: "/professional/settings", icon: IconSettings },
 ];
@@ -37,7 +37,8 @@ export default function ProfesionalLayout() {
 
   if (isLoading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
   if (userData?.status === "processing") return <Processing />;
-  if (userData?.status === "rejected") return <Rejected reason={userData.rejectReason || "No reason Provided"} />;
+  if (userData?.status === "rejected")
+    return <Rejected reason={userData.rejectReason || "No reason Provided"} />;
   if (userData?.status === "pending") return <Verification />;
 
   const NavItems = () => (
@@ -48,9 +49,11 @@ export default function ProfesionalLayout() {
           to={item.path}
           className={({ isActive }) => `
             flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all
-            ${isActive 
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
-              : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900"}
+            ${
+              isActive
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900"
+            }
           `}
         >
           <item.icon size={20} />
@@ -66,15 +69,20 @@ export default function ProfesionalLayout() {
       <aside className="hidden md:flex flex-col w-64 fixed inset-y-0 z-50 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">
         <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800">
           <span className="text-xl font-black tracking-tighter text-blue-600">learnCircle.</span>
-          <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-600 uppercase">Pro</span>
+          <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-600 uppercase">
+            Pro
+          </span>
         </div>
-        
+
         <nav className="flex-1 p-4 space-y-1">
           <NavItems />
         </nav>
 
         <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <Button variant="ghost" className="w-full justify-start gap-3 text-red-500 hover:bg-red-50 font-bold rounded-xl">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-red-500 hover:bg-red-50 font-bold rounded-xl"
+          >
             <LogOut size={20} /> Logout
           </Button>
         </div>
@@ -95,12 +103,14 @@ export default function ProfesionalLayout() {
               <SheetContent side="left" className="p-0 w-72">
                 <div className="p-6 border-b font-black text-xl text-blue-600">learnCircle</div>
                 <nav className="p-4 space-y-1">
-                   <NavItems />
+                  <NavItems />
                 </nav>
               </SheetContent>
             </Sheet>
-            
-            <h2 className="hidden sm:block text-sm font-bold text-slate-400">Welcome back, {userData?.user.name}</h2>
+
+            <h2 className="hidden sm:block text-sm font-bold text-slate-400">
+              Welcome back, {userData?.user.name}
+            </h2>
           </div>
 
           <div className="flex items-center gap-3">
@@ -112,16 +122,16 @@ export default function ProfesionalLayout() {
             <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-800 mx-1" />
 
             <div className="flex items-center gap-3 pl-2">
-               <div className="text-right hidden lg:block">
-                  <p className="text-sm font-bold leading-none">{userData?.user.name}</p>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Instructor</p>
-               </div>
-               <Avatar className="h-9 w-9 border-2 border-blue-600/10">
-                 <AvatarImage src={userData?.user.profileImg} />
-                 <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">
-                   {userData?.user.name?.charAt(0)}
-                 </AvatarFallback>
-               </Avatar>
+              <div className="text-right hidden lg:block">
+                <p className="text-sm font-bold leading-none">{userData?.user.name}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Instructor</p>
+              </div>
+              <Avatar className="h-9 w-9 border-2 border-blue-600/10">
+                <AvatarImage src={userData?.user.profileImg} />
+                <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">
+                  {userData?.user.name?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
             </div>
           </div>
         </header>

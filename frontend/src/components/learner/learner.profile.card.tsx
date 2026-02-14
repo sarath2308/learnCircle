@@ -1,8 +1,8 @@
-import React from 'react';
-import { Star } from 'lucide-react';
+import React from "react";
+import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface ProfileProps {
   instructorId: string;
@@ -12,19 +12,38 @@ interface ProfileProps {
   profileUrl: string;
 }
 
-const ProfessionalProfileCard = ({ instructorId, name, title, rating, profileUrl }: ProfileProps) => {
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+const ProfessionalProfileCard = ({
+  instructorId,
+  name,
+  title,
+  rating,
+  profileUrl,
+}: ProfileProps) => {
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
   const navigate = useNavigate();
 
-
   return (
-    <Card onClick={()=>navigate(`/learner/professionals/${instructorId}`)} className="relative group overflow-hidden transition-all duration-300 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-500 shadow-sm">
+    <Card
+      onClick={() => navigate(`/learner/professionals/${instructorId}`)}
+      className="relative group overflow-hidden transition-all duration-300 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-500 shadow-sm"
+    >
       <CardContent className="p-4 flex flex-col items-center">
         {/* Smaller Avatar for 4-col compatibility */}
         <div className="relative mb-3">
           <div className="absolute -inset-1 bg-gradient-to-tr from-blue-600 to-cyan-400 rounded-full blur opacity-20 group-hover:opacity-50 transition duration-300" />
           <Avatar className="h-16 w-16 border-2 border-white dark:border-slate-800 shadow-md">
-            <AvatarImage src={profileUrl ?? "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1200" } alt={name} className="object-cover" />
+            <AvatarImage
+              src={
+                profileUrl ??
+                "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1200"
+              }
+              alt={name}
+              className="object-cover"
+            />
             <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold">
               {initials}
             </AvatarFallback>

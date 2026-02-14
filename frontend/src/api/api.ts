@@ -2,7 +2,6 @@ import { clearCurrentUser } from "@/redux/slice/currentUserSlice";
 import axios from "axios";
 import { store } from "@/redux/store";
 
-
 const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL_API,
   withCredentials: true,
@@ -46,7 +45,7 @@ api.interceptors.response.use(
       return api(originalRequest); // Retry original request
     } catch (refreshError) {
       // Refresh failed (maybe expired), redirect to login
-      store.dispatch(clearCurrentUser())
+      store.dispatch(clearCurrentUser());
       window.location.href = "/";
       return Promise.reject(refreshError);
     }

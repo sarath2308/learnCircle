@@ -60,7 +60,6 @@ export default function CoursePricingForm() {
       });
       toast.success(`Course ${status === "published" ? "published" : "saved as draft"}!`);
       navigate(-1);
-      
     } catch (error) {
       toast.error("Failed to update pricing.");
     }
@@ -81,7 +80,9 @@ export default function CoursePricingForm() {
         <CardContent className="space-y-8 pt-8">
           {/* Toggle Type */}
           <div className="space-y-4">
-            <Label className="text-sm font-bold uppercase tracking-wider text-slate-500">Access Type</Label>
+            <Label className="text-sm font-bold uppercase tracking-wider text-slate-500">
+              Access Type
+            </Label>
             <RadioGroup
               value={isFree ? "free" : "paid"}
               onValueChange={(val) => {
@@ -97,7 +98,9 @@ export default function CoursePricingForm() {
               <Label
                 htmlFor="r-free"
                 className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  isFree ? "border-blue-600 bg-blue-50/10" : "border-slate-100 dark:border-slate-800"
+                  isFree
+                    ? "border-blue-600 bg-blue-50/10"
+                    : "border-slate-100 dark:border-slate-800"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -109,7 +112,9 @@ export default function CoursePricingForm() {
               <Label
                 htmlFor="r-paid"
                 className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  !isFree ? "border-blue-600 bg-blue-50/10" : "border-slate-100 dark:border-slate-800"
+                  !isFree
+                    ? "border-blue-600 bg-blue-50/10"
+                    : "border-slate-100 dark:border-slate-800"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -123,11 +128,15 @@ export default function CoursePricingForm() {
           <Separator className="dark:bg-slate-800" />
 
           {/* Pricing Grid */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all ${isFree ? "grayscale opacity-30 pointer-events-none" : ""}`}>
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all ${isFree ? "grayscale opacity-30 pointer-events-none" : ""}`}
+          >
             <div className="space-y-2">
               <Label className="font-bold">Base Price (₹)</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                  ₹
+                </span>
                 <Input
                   type="number"
                   {...register("price", { valueAsNumber: true })}
@@ -136,13 +145,17 @@ export default function CoursePricingForm() {
                   placeholder="0.00"
                 />
               </div>
-              {errors.price && <p className="text-xs font-bold text-red-500 mt-1">{errors.price.message}</p>}
+              {errors.price && (
+                <p className="text-xs font-bold text-red-500 mt-1">{errors.price.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label className="font-bold">Incentive Discount (%)</Label>
               <div className="relative">
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                  %
+                </span>
                 <Input
                   type="number"
                   {...register("discount", { valueAsNumber: true })}
@@ -151,7 +164,9 @@ export default function CoursePricingForm() {
                   placeholder="0"
                 />
               </div>
-              {errors.discount && <p className="text-xs font-bold text-red-500 mt-1">{errors.discount.message}</p>}
+              {errors.discount && (
+                <p className="text-xs font-bold text-red-500 mt-1">{errors.discount.message}</p>
+              )}
             </div>
           </div>
 
@@ -169,8 +184,12 @@ export default function CoursePricingForm() {
               <Separator className="my-2" />
               <div className="flex justify-between items-end">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-tighter text-slate-400">Student Pays</p>
-                  <p className="text-3xl font-black text-slate-900 dark:text-white">₹{finalPrice.toLocaleString()}</p>
+                  <p className="text-xs font-black uppercase tracking-tighter text-slate-400">
+                    Student Pays
+                  </p>
+                  <p className="text-3xl font-black text-slate-900 dark:text-white">
+                    ₹{finalPrice.toLocaleString()}
+                  </p>
                 </div>
                 {!isFree && discount > 0 && (
                   <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-none px-3 py-1">
@@ -196,7 +215,11 @@ export default function CoursePricingForm() {
               disabled={isSubmitting}
               onClick={() => setValue("status", "published")}
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle2 size={18} />}
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <CheckCircle2 size={18} />
+              )}
               Confirm & Publish
             </Button>
           </div>

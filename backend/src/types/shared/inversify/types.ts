@@ -1,5 +1,3 @@
-import { symbol } from "zod";
-
 export const TYPES = {
   ILearnerProfileModel: Symbol.for("ILearnerProfileModel"),
   IUserModel: Symbol.for("IUserModel"), //models
@@ -58,7 +56,6 @@ export const TYPES = {
   ISubCategoryController: Symbol.for("ISubCategoryController"),
   ICourseService: Symbol.for("ICourseService"),
   ICourseController: Symbol.for("ICourseController"),
-  VideoCompressService: Symbol.for("VideoCompressService"),
   ImageCompressService: Symbol.for("ImageCompressService"),
   IChapterModel: Symbol.for("IChapterModel"),
   IChapterRepo: Symbol.for("IChapterRepo"),

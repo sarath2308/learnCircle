@@ -54,9 +54,9 @@ type SubCategory = {
 
 type Category = {
   id: string;
-  name: string; 
+  name: string;
   isBlocked: boolean;
-}
+};
 
 /* ---------------- COMPONENT ---------------- */
 
@@ -105,7 +105,7 @@ const AdminSubCategoryManagement = () => {
     categoryId: filterCategoryId,
   });
 
- const { data: categories, isLoading: categoriesLoading } = useGetCategory();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategory();
 
   const createSubCategory = useCreateSubCategory();
   const updateSubCategory = useUpdateSubCategory();
@@ -147,9 +147,7 @@ const AdminSubCategoryManagement = () => {
       cell: (value) => (
         <span
           className={`px-2 py-1 rounded text-sm font-medium ${
-            value
-              ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-700"
+            value ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
           }`}
         >
           {value ? "Blocked" : "Active"}
@@ -163,14 +161,10 @@ const AdminSubCategoryManagement = () => {
   const renderActions = (item: SubCategory) => (
     <div className="flex gap-2">
       <Button
-      className={item.isBlocked ? "bg-yellow-400" : "bg-red-600"}
+        className={item.isBlocked ? "bg-yellow-400" : "bg-red-600"}
         size="sm"
         variant={item.isBlocked ? "outline" : "destructive"}
-        disabled={
-          item.isBlocked
-            ? unblockSubCategory.isPending
-            : blockSubCategory.isPending
-        }
+        disabled={item.isBlocked ? unblockSubCategory.isPending : blockSubCategory.isPending}
         onClick={() =>
           setConfirmDialog({
             open: true,
@@ -256,9 +250,7 @@ const AdminSubCategoryManagement = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold dark:text-white">Sub Category Management</h1>
-            <p className="text-gray-500">
-              Manage subcategories and their parent categories
-            </p>
+            <p className="text-gray-500">Manage subcategories and their parent categories</p>
           </div>
 
           <div className="flex gap-3">
@@ -268,22 +260,25 @@ const AdminSubCategoryManagement = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-sm"
             />
-               <select
+            <select
               className="border rounded px-3 py-2"
               value={filterCategoryId}
               onChange={(e) => setFilterCategoryId(e.target.value)}
             >
               <option value="">Select Category</option>
-              {categories && categories.map((c: any) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              {categories &&
+                categories.map((c: any) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
             </select>
 
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-green-500  dark:text-white dark:bg-blue-500">Create Sub Category</Button>
+                <Button className="bg-green-500  dark:text-white dark:bg-blue-500">
+                  Create Sub Category
+                </Button>
               </DialogTrigger>
 
               <DialogContent className="bg-white dark:bg-blue-50">
@@ -303,11 +298,12 @@ const AdminSubCategoryManagement = () => {
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  {categories && categories.map((c: any) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  {categories &&
+                    categories.map((c: any) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                 </select>
 
                 <DialogFooter>
@@ -333,9 +329,7 @@ const AdminSubCategoryManagement = () => {
           onPageChange={setPage}
           renderActions={renderActions}
           isLoading={isLoading}
-          emptyState={
-            <p className="text-center py-10">No subcategories found</p>
-          }
+          emptyState={<p className="text-center py-10">No subcategories found</p>}
         />
 
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -352,11 +346,12 @@ const AdminSubCategoryManagement = () => {
               onChange={(e) => setCategoryId(e.target.value)}
             >
               <option value="">Select Category</option>
-              {categories && categories.map((c: any) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              {categories &&
+                categories.map((c: any) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
             </select>
 
             <DialogFooter>
@@ -372,15 +367,12 @@ const AdminSubCategoryManagement = () => {
 
         <AlertDialog
           open={confirmDialog.open}
-          onOpenChange={(o) =>
-            setConfirmDialog((p) => ({ ...p, open: o }))
-          }
+          onOpenChange={(o) => setConfirmDialog((p) => ({ ...p, open: o }))}
         >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {confirmDialog.action === "block" ? "Block" : "Unblock"} Sub
-                Category
+                {confirmDialog.action === "block" ? "Block" : "Unblock"} Sub Category
               </AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to {confirmDialog.action}{" "}
@@ -390,9 +382,7 @@ const AdminSubCategoryManagement = () => {
 
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleBlockUnblock}>
-                Confirm
-              </AlertDialogAction>
+              <AlertDialogAction onClick={handleBlockUnblock}>Confirm</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

@@ -1,17 +1,16 @@
-import { LEARNER_COURSE_API } from "@/api/learner/learner.course.api"
+import { LEARNER_COURSE_API } from "@/api/learner/learner.course.api";
 import { useQuery } from "@tanstack/react-query";
 
-export interface LearnerLessonResponseType
-{
-    id: string;
+export interface LearnerLessonResponseType {
+  id: string;
   chapterId: string;
   title: string;
   description: string;
-  type: "Video"|"PDF"| "Article"| "YouTube"| "Blog";
+  type: "Video" | "PDF" | "Article" | "YouTube" | "Blog";
   fileUrl?: string;
   link?: string;
-  thumbnailUrl: string
-  order: number
+  thumbnailUrl: string;
+  order: number;
 }
 
 export interface LearnerChapterResponse {
@@ -49,11 +48,9 @@ export interface LearnerCourseData {
   lessonCount: number;
 }
 
-
-export const useGetLearnerCourse = (courseId: string)=>
-{
-    return useQuery({
-        queryKey:["get-learner-course"],
-        queryFn:()=> LEARNER_COURSE_API.getLearnerCourse(courseId),
-    })
-}
+export const useGetLearnerCourse = (courseId: string) => {
+  return useQuery({
+    queryKey: ["get-learner-course"],
+    queryFn: () => LEARNER_COURSE_API.getLearnerCourse(courseId),
+  });
+};

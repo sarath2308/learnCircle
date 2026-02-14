@@ -17,17 +17,16 @@ import { useApproveProfessional } from "@/hooks/admin/users/useApproveProfession
 import { useRejectProfessional } from "@/hooks/admin/users/useRejectProfessional";
 
 type UserType = {
-  id:string,
-  name: string,
-  email: string,
-  role: string,
-  isBlocked: boolean,
-  status: string,
-  resumeUrl?: string,
-  totalSessions?: number,
-  state?: string,
-
-}
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  isBlocked: boolean;
+  status: string;
+  resumeUrl?: string;
+  totalSessions?: number;
+  state?: string;
+};
 const Users = () => {
   const [role, setRole] = useState<"learner" | "professional">("learner");
   const [search, setSearch] = useState("");
@@ -70,58 +69,66 @@ const Users = () => {
   const handleViewCV = (url: string) => window.open(url, "_blank");
 
   // Headers
-  const columns:Column<UserType>[] = role === "learner"
-      ? [{
-        header: "Name",
-        accessor: "name",
-      }, {
-        header: "Email",
-        accessor: "email",
-      }, {
-      header: "Status",
-      accessor: "isBlocked",
-      cell: (value) => (
-        <span
-          className={`px-2 py-1 rounded text-sm font-medium ${
-            value
-              ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-700"
-          }`}
-        >
-          {value ? "Blocked" : "Active"}
-        </span>
-      ),
-    },]
-      : [{
-        header: "Name",
-        accessor: "name",
-      }, {
-        header: "Email",
-        accessor: "email",
-      }, {
-        header: "Status",
-        accessor: "status",
-      }, {
-        header: "Total Sessions",
-        accessor: "totalSessions",
-      }, {
-        header: "Role",
-        accessor: "role",
-      }, {
-        header: "State",
-        accessor: "state",
-          cell: (value) => (
-        <span
-          className={`px-2 py-1 rounded text-sm font-medium ${
-            value === "Blocked"
-              ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-700"
-          }`}
-        >
-          {value === "Blocked" ? "Blocked" : "Active"}
-        </span>
-      ),
-      }];
+  const columns: Column<UserType>[] =
+    role === "learner"
+      ? [
+          {
+            header: "Name",
+            accessor: "name",
+          },
+          {
+            header: "Email",
+            accessor: "email",
+          },
+          {
+            header: "Status",
+            accessor: "isBlocked",
+            cell: (value) => (
+              <span
+                className={`px-2 py-1 rounded text-sm font-medium ${
+                  value ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+                }`}
+              >
+                {value ? "Blocked" : "Active"}
+              </span>
+            ),
+          },
+        ]
+      : [
+          {
+            header: "Name",
+            accessor: "name",
+          },
+          {
+            header: "Email",
+            accessor: "email",
+          },
+          {
+            header: "Status",
+            accessor: "status",
+          },
+          {
+            header: "Total Sessions",
+            accessor: "totalSessions",
+          },
+          {
+            header: "Role",
+            accessor: "role",
+          },
+          {
+            header: "State",
+            accessor: "state",
+            cell: (value) => (
+              <span
+                className={`px-2 py-1 rounded text-sm font-medium ${
+                  value === "Blocked" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+                }`}
+              >
+                {value === "Blocked" ? "Blocked" : "Active"}
+              </span>
+            ),
+          },
+        ];
   // Action Renderer
   const renderActions = (user: any) => {
     const isBlocked = user.isBlocked;
@@ -131,7 +138,12 @@ const Users = () => {
     return (
       <div className="flex items-center gap-2">
         {!isBlocked ? (
-          <Button variant="destructive"  className="bg-red-600" size="sm" onClick={() => handleBlock(user.userId)}>
+          <Button
+            variant="destructive"
+            className="bg-red-600"
+            size="sm"
+            onClick={() => handleBlock(user.userId)}
+          >
             Block
           </Button>
         ) : (
@@ -214,18 +226,18 @@ const Users = () => {
         </Select>
       </div>
 
-            <DataTable 
-            columns={columns}  
-            page={page}
-             total={totalPages}
-              pageSize={10} 
-              rowKey={(value)=> value.id}
-               data={users} 
-               isLoading={isLoading} 
-               emptyState={<p className="text-center py-10">No users found</p>}
-               renderActions={renderActions} 
-               onPageChange={setPage} />
-
+      <DataTable
+        columns={columns}
+        page={page}
+        total={totalPages}
+        pageSize={10}
+        rowKey={(value) => value.id}
+        data={users}
+        isLoading={isLoading}
+        emptyState={<p className="text-center py-10">No users found</p>}
+        renderActions={renderActions}
+        onPageChange={setPage}
+      />
     </div>
   );
 };

@@ -66,14 +66,16 @@ function renderResource(type: string, url?: string) {
               <FileText size={14} className="text-blue-500" />
               Document Viewer
             </div>
-            <Button variant="ghost" size="sm" className="h-7 text-[10px] gap-1" onClick={() => window.open(url, "_blank")}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-[10px] gap-1"
+              onClick={() => window.open(url, "_blank")}
+            >
               <ExternalLink size={12} /> Open in New Tab
             </Button>
           </div>
-          <iframe
-            src={url}
-            className="w-full h-[70vh] bg-white"
-          />
+          <iframe src={url} className="w-full h-[70vh] bg-white" />
         </div>
       );
 
@@ -94,17 +96,22 @@ export function ResourceViewerModal({ open, onClose, data }: ResourceViewerModal
   return (
     <Modal open={open} onClose={onClose} title="">
       <div className="relative -mt-4 flex flex-col gap-5">
-        
         {/* Header Section */}
         <div className="flex items-start gap-4">
-          <div className={`p-3 rounded-2xl shrink-0 ${
-            type === LESSON_TYPES.VIDEO || type === LESSON_TYPES.YOUTUBE 
-            ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600" 
-            : "bg-orange-100 dark:bg-orange-900/30 text-orange-600"
-          }`}>
-            {type === LESSON_TYPES.VIDEO || type === LESSON_TYPES.YOUTUBE ? <PlayCircle size={24} /> : <FileText size={24} />}
+          <div
+            className={`p-3 rounded-2xl shrink-0 ${
+              type === LESSON_TYPES.VIDEO || type === LESSON_TYPES.YOUTUBE
+                ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600"
+                : "bg-orange-100 dark:bg-orange-900/30 text-orange-600"
+            }`}
+          >
+            {type === LESSON_TYPES.VIDEO || type === LESSON_TYPES.YOUTUBE ? (
+              <PlayCircle size={24} />
+            ) : (
+              <FileText size={24} />
+            )}
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">

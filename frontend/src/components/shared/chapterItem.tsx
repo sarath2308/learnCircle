@@ -1,18 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Pencil, 
-  Trash2, 
-  Plus, 
-  LayoutList 
-} from "lucide-react";
+import { Pencil, Trash2, Plus, LayoutList } from "lucide-react";
 
-import { 
-  AccordionItem, 
-  AccordionTrigger, 
-  AccordionContent 
-} from "@/components/ui/accordion";
+import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 
 import LessonItem from "./lessonItem";
@@ -26,13 +17,12 @@ import { useUploadToS3 } from "@/hooks/shared/upload.s3.hook";
 import { useLessonFinalize } from "@/hooks/shared/lesson/lesson.finalize";
 import { useLessonCreate } from "@/hooks/shared/lesson/lesson.create";
 import type { ILessons } from "@/interface/lesson.response.interface";
-export interface IChapter
-{
-    id: string;
-    title: string;
-    description: string;
-    order: number;
-    lessons: ILessons[];
+export interface IChapter {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  lessons: ILessons[];
 }
 
 interface ChapterItemProps {
@@ -53,7 +43,12 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
   const [lessonSubmitting, setLessonSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState<"idle" | "compress" | "upload" | "finalize">("idle");
-  const [modalData, setModalData] = useState<{ type: string; url?: string, title?:string, description?: string } | null>(null);
+  const [modalData, setModalData] = useState<{
+    type: string;
+    url?: string;
+    title?: string;
+    description?: string;
+  } | null>(null);
 
   // Hooks
   const createLessonWithVideo = useLessonCreateWithVideo();
@@ -95,7 +90,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
           payload: lesson,
         });
       }
-      
+
       setIsModalOpen(false);
     } catch (err) {
       console.error("Lesson creation failed:", err);
@@ -108,14 +103,10 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
 
   return (
     <div className="mb-4 group">
-      <ResourceViewerModal
-        open={!!modalData}
-        onClose={() => setModalData(null)}
-        data={modalData}
-      />
-      
+      <ResourceViewerModal open={!!modalData} onClose={() => setModalData(null)} data={modalData} />
+
       {stage !== "idle" && <UploadStatus progress={progress} stage={stage} />}
-      
+
       <LessonFormModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -123,8 +114,8 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
         isSubmitting={lessonSubmitting}
       />
 
-      <AccordionItem 
-        value={chapter.id} 
+      <AccordionItem
+        value={chapter.id}
         className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-950 px-4 transition-all hover:shadow-md"
       >
         <div className="flex items-center gap-2">
@@ -152,9 +143,9 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-400 hover:text-blue-600"
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  onEdit?.(chapter); 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.(chapter);
                 }}
               >
                 <Pencil className="h-4 w-4" />
@@ -163,9 +154,9 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600"
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  onRemove?.(chapter.id); 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove?.(chapter.id);
                 }}
               >
                 <Trash2 className="h-4 w-4" />
@@ -183,10 +174,10 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
               </div>
             ) : (
               chapter.lessons.map((lesson) => (
-                <LessonItem 
-                  key={lesson.id} 
-                  lesson={lesson} 
-                  setModalData={setModalData} 
+                <LessonItem
+                  key={lesson.id}
+                  lesson={lesson}
+                  setModalData={setModalData}
                   variant={variant}
                 />
               ))
@@ -194,7 +185,7 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
 
             {variant === "creator" && (
               <div className="pt-4">
-                <Button 
+                <Button
                   onClick={() => setIsModalOpen(true)}
                   className="w-full h-12 border-2 border-dashed border-slate-200 dark:border-slate-800 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/10 text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:border-blue-200 font-bold rounded-xl transition-all flex gap-2"
                 >
@@ -206,7 +197,6 @@ const ChapterItem = ({ chapter, variant, onEdit, onRemove }: ChapterItemProps) =
           </div>
         </AccordionContent>
       </AccordionItem>
-      
     </div>
   );
 };

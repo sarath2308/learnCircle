@@ -4,13 +4,17 @@ import { Button } from "@mui/material";
 import { ArrowLeft } from "lucide-react";
 
 export default function AdminCourseCreatePage() {
-  return <div>
+  return (
     <div>
-      <Button className="btn btn-ghost" onClick={() => history.back()}><ArrowLeft />Back</Button>
+      <div>
+        <Button className="btn btn-ghost" onClick={() => history.back()}>
+          <ArrowLeft />
+          Back
+        </Button>
+      </div>
+      <div>
+        <CreateCourseStepper />
+      </div>
     </div>
-     <div>
-      <CreateCourseStepper />
-      
-     </div>
-    </div>;
+  );
 }

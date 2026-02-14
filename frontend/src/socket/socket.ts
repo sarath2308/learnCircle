@@ -33,7 +33,6 @@ export const getSocket = () => {
   return socket;
 };
 
-
 export const connectSocket = () => {
   const s = getSocket();
   if (!s.connected) s.connect();

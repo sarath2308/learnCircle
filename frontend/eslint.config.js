@@ -42,29 +42,27 @@ export default defineConfig([
 
     // 🔥 RULE ORDER MATTERS — recommended FIRST, custom NEXT
     rules: {
-      // Recommended rules (first so your custom rules override them)
+      // Recommended rules
       ...js.configs.recommended.rules,
       ...tsPlugin.configs.recommended.rules,
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
 
-      // ========= CUSTOM RULES (your real config) =========
+      // ========= CUSTOM RULES =========
 
-      // Prettier formatting
       "prettier/prettier": "warn",
 
-      // JS / TS basics
       semi: ["error", "always"],
       quotes: ["error", "double"],
-      "no-unused-vars": "warn", // keeps code clean
-      "@typescript-eslint/no-unused-vars": "warn", // TS version of above
+
+      "no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
+
+      "@typescript-eslint/no-explicit-any": "warn", // 👈 THIS IS WHAT YOU WANT
       "@typescript-eslint/explicit-function-return-type": "off",
 
-      // React modern JSX (React 17+)
-      "react/react-in-jsx-scope": "off", // NO need for import React
-
-      // React best practices
-      "react/prop-types": "off", // not needed in TS
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
     },
 
     settings: {

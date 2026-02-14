@@ -18,7 +18,8 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
       description: "Access courses, track progress, and book sessions with experts.",
       icon: <GraduationCap className="w-7 h-7" />,
       // Explicit styles to avoid Tailwind JIT issues
-      activeStyles: "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 shadow-[0_0_20px_rgba(59,130,246,0.15)]",
+      activeStyles:
+        "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 shadow-[0_0_20px_rgba(59,130,246,0.15)]",
       iconStyles: "bg-blue-600 text-white",
       hoverStyles: "hover:border-blue-300 dark:hover:border-blue-800",
     },
@@ -27,7 +28,8 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
       title: "Professional",
       description: "Manage your availability, host sessions, and mentor learners.",
       icon: <Briefcase className="w-7 h-7" />,
-      activeStyles: "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-[0_0_20px_rgba(99,102,241,0.15)]",
+      activeStyles:
+        "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-[0_0_20px_rgba(99,102,241,0.15)]",
       iconStyles: "bg-indigo-600 text-white",
       hoverStyles: "hover:border-indigo-300 dark:hover:border-indigo-800",
     },
@@ -66,14 +68,18 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
                   {/* Selection Indicator */}
                   {isSelected && (
                     <div className="absolute top-4 right-4 animate-in zoom-in duration-300">
-                      <CheckCircle2 className={`w-6 h-6 ${role.id === 'learner' ? 'text-blue-500' : 'text-indigo-500'}`} />
+                      <CheckCircle2
+                        className={`w-6 h-6 ${role.id === "learner" ? "text-blue-500" : "text-indigo-500"}`}
+                      />
                     </div>
                   )}
 
                   <div className="flex flex-col items-center text-center space-y-6">
-                    <div className={`p-4 rounded-2xl transition-all duration-500 transform group-hover:scale-110
+                    <div
+                      className={`p-4 rounded-2xl transition-all duration-500 transform group-hover:scale-110
                       ${isSelected ? role.iconStyles : "bg-slate-100 dark:bg-slate-800 text-slate-500"}
-                    `}>
+                    `}
+                    >
                       {role.icon}
                     </div>
 
@@ -99,9 +105,20 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
         </p>
         <p className="text-xs text-slate-400 max-w-xs mx-auto">
           By continuing, you agree to our{" "}
-          <a href="#" className="text-slate-600 dark:text-slate-300 underline font-bold hover:text-blue-500 transition-colors">Terms</a>
-          {" "}and{" "}
-          <a href="#" className="text-slate-600 dark:text-slate-300 underline font-bold hover:text-blue-500 transition-colors">Privacy Policy</a>.
+          <a
+            href="#"
+            className="text-slate-600 dark:text-slate-300 underline font-bold hover:text-blue-500 transition-colors"
+          >
+            Terms
+          </a>{" "}
+          and{" "}
+          <a
+            href="#"
+            className="text-slate-600 dark:text-slate-300 underline font-bold hover:text-blue-500 transition-colors"
+          >
+            Privacy Policy
+          </a>
+          .
         </p>
       </div>
     </div>

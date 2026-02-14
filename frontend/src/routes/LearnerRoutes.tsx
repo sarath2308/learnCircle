@@ -4,10 +4,10 @@ import ProtectedLearnerRoute from "./protected/protected.learner.routes";
 
 const LearnerHomeLayout = lazy(() => import("@/components/learner/LearnerHomeLayout"));
 const LearnerProfile = lazy(() => import("@/pages/Learner/LearnerProfile"));
-const Homepage = lazy(()=> import("@/pages/Learner/LearnerHome"));
-const LearnerCoursePage = lazy(()=>import("@/pages/Learner/learner.course.page"));
-const LearnerAllCoursePage = lazy(()=> import("@/pages/Learner/learner.all.course"));
-const Professionals = lazy(()=> import("@/pages/Learner/learner.professionals.page"))
+const Homepage = lazy(() => import("@/pages/Learner/LearnerHome"));
+const LearnerCoursePage = lazy(() => import("@/pages/Learner/learner.course.page"));
+const LearnerAllCoursePage = lazy(() => import("@/pages/Learner/learner.all.course"));
+const Professionals = lazy(() => import("@/pages/Learner/learner.professionals.page"));
 const LearnerSlotPage = lazy(() => import("@/pages/Learner/learner.slot.page"));
 const LearnerProfileLayout = lazy(() => import("@/components/learner/learner.profile.layout"));
 const LearnerBookingsPage = lazy(() => import("@/pages/Learner/learner.profile.myBookings"));
@@ -31,11 +31,11 @@ const learnerRoutes: RouteObject[] = [
               { path: "settings", element: <LearnerProfile /> },
             ],
           },
-            { path: "course/:courseId", element: <LearnerCoursePage /> },
-             { path: "courses", element: <LearnerAllCoursePage /> },
-              { path: "professionals", element: <Professionals /> },
-               { path: "professionals/:instructorId", element: <LearnerSlotPage /> },
-               { path: "video-call/:roomId", element: <VideoCallPage /> },
+          { path: "course/:courseId", element: <LearnerCoursePage /> },
+          { path: "courses", element: <LearnerAllCoursePage /> },
+          { path: "professionals", element: <Professionals /> },
+          { path: "professionals/:instructorId", element: <LearnerSlotPage /> },
+          { path: "video-call/:roomId", element: <VideoCallPage /> },
         ],
       },
     ],

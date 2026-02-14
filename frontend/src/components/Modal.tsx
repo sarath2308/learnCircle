@@ -5,7 +5,7 @@ interface ModalProps {
   open: boolean;
   onClose: () => void;
   title?: string;
-  // eslint-disable-next-line no-undef
+
   children: React.ReactNode;
 }
 
@@ -52,32 +52,30 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
       <div
         ref={modalRef}
         className="w-full max-w-lg max-h-[90vh] overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-2xl transition-all duration-300 ease-out animate-in fade-in zoom-in-95"
-        tabIndex={-1}  // Make it focusable for initial focus
+        tabIndex={-1} // Make it focusable for initial focus
         onClick={(e) => e.stopPropagation()}
       >
-       {/* Header - always shown for close button */}
-<div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-  {title ? (
-    <h2 id="modal-title" className="text-xl font-semibold text-gray-900 dark:text-white">
-      {title}
-    </h2>
-  ) : (
-    // Optional: invisible spacer so close button stays right-aligned
-    <div className="w-0 h-0" />
-  )}
-  <button
-    onClick={onClose}
-    className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-    aria-label="Close modal"
-  >
-    {/* SVG */}
-  </button>
-</div>
-
-    {/* Body - scrollable if content is long */}
-        <div className="px-6 py-5 overflow-y-auto">
-          {children}
+        {/* Header - always shown for close button */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          {title ? (
+            <h2 id="modal-title" className="text-xl font-semibold text-gray-900 dark:text-white">
+              {title}
+            </h2>
+          ) : (
+            // Optional: invisible spacer so close button stays right-aligned
+            <div className="w-0 h-0" />
+          )}
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Close modal"
+          >
+            {/* SVG */}
+          </button>
         </div>
+
+        {/* Body - scrollable if content is long */}
+        <div className="px-6 py-5 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

@@ -3,15 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  ArrowRight, 
-  CheckCircle2, 
-  PlayCircle, 
-  Star, 
-  Zap, 
-  ShieldCheck, 
-  Globe 
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, PlayCircle, Star, Zap, ShieldCheck, Globe } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -19,17 +11,23 @@ export default function LandingPage() {
       {/* --- MODERN NAVBAR --- */}
       <nav className="fixed top-0 w-full z-[100] bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b">
         <div className="container mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="text-2xl font-black tracking-tighter text-blue-600">
-            learnCircle.
-          </div>
+          <div className="text-2xl font-black tracking-tighter text-blue-600">learnCircle.</div>
           <div className="hidden md:flex gap-8 text-sm font-bold text-slate-600 dark:text-slate-400">
-            <a href="#features" className="hover:text-blue-600">Features</a>
-            <a href="#testimonials" className="hover:text-blue-600">Success Stories</a>
-            <a href="#pricing" className="hover:text-blue-600">Pricing</a>
+            <a href="#features" className="hover:text-blue-600">
+              Features
+            </a>
+            <a href="#testimonials" className="hover:text-blue-600">
+              Success Stories
+            </a>
+            <a href="#pricing" className="hover:text-blue-600">
+              Pricing
+            </a>
           </div>
           <div className="flex items-center space-x-3">
             <Link to="/auth">
-              <Button variant="ghost" className="font-bold">Log in</Button>
+              <Button variant="ghost" className="font-bold">
+                Log in
+              </Button>
             </Link>
             <Link to="/auth">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 font-bold shadow-lg shadow-blue-500/20">
@@ -50,36 +48,44 @@ export default function LandingPage() {
           >
             <Zap size={14} /> The Future of Education
           </motion.div>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8"
           >
-            DON'T JUST LEARN.<br />
+            DON'T JUST LEARN.
+            <br />
             <span className="text-blue-600 italic">EVOLVE.</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 font-medium mb-10"
           >
-            The only platform where industry experts mentor you in real-time. 
-            Build production-ready projects and get hired by top tech companies.
+            The only platform where industry experts mentor you in real-time. Build production-ready
+            projects and get hired by top tech companies.
           </motion.p>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link to="/auth">
-              <Button size="lg" className="h-16 px-10 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-black font-black text-lg">
+              <Button
+                size="lg"
+                className="h-16 px-10 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-black font-black text-lg"
+              >
                 Get Started Now <ArrowRight className="ml-2" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="h-16 px-8 rounded-2xl border-2 font-bold">
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-16 px-8 rounded-2xl border-2 font-bold"
+            >
               <PlayCircle className="mr-2" /> Watch Demo
             </Button>
           </motion.div>
@@ -96,8 +102,10 @@ export default function LandingPage() {
             Trusted by teams at
           </p>
           <div className="flex flex-wrap justify-center gap-12 opacity-40 grayscale contrast-125">
-            {['Stripe', 'Linear', 'Vercel', 'OpenAI', 'Meta'].map(brand => (
-              <span key={brand} className="text-2xl font-black">{brand}</span>
+            {["Stripe", "Linear", "Vercel", "OpenAI", "Meta"].map((brand) => (
+              <span key={brand} className="text-2xl font-black">
+                {brand}
+              </span>
             ))}
           </div>
         </div>
@@ -112,7 +120,8 @@ export default function LandingPage() {
             </div>
             <h3 className="text-4xl font-black tracking-tight mb-4">Live Worldwide Mentorship</h3>
             <p className="text-slate-400 max-w-md font-medium">
-              Join students from over 140 countries. Our mentors are available 24/7 across every time zone.
+              Join students from over 140 countries. Our mentors are available 24/7 across every
+              time zone.
             </p>
           </div>
           <div className="p-10 bg-blue-600 rounded-[3rem] text-white">
@@ -136,7 +145,8 @@ export default function LandingPage() {
             <div>
               <h3 className="text-3xl font-black mb-4 tracking-tight">AI-Powered Curriculums</h3>
               <p className="text-slate-500 font-medium">
-                Our AI analyzes your progress and adjusts the difficulty in real-time. No more boring lectures.
+                Our AI analyzes your progress and adjusts the difficulty in real-time. No more
+                boring lectures.
               </p>
             </div>
           </div>
@@ -149,10 +159,15 @@ export default function LandingPage() {
           <div className="bg-blue-600 rounded-[4rem] p-12 md:p-24 text-center text-white relative overflow-hidden">
             <div className="relative z-10">
               <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 leading-[0.9]">
-                READY TO SCALE YOUR<br />FUTURE?
+                READY TO SCALE YOUR
+                <br />
+                FUTURE?
               </h2>
               <Link to="/auth">
-                <Button size="lg" className="h-20 px-12 rounded-full bg-white text-black hover:bg-slate-100 font-black text-xl shadow-2xl">
+                <Button
+                  size="lg"
+                  className="h-20 px-12 rounded-full bg-white text-black hover:bg-slate-100 font-black text-xl shadow-2xl"
+                >
                   Get Started for Free
                 </Button>
               </Link>
@@ -166,7 +181,9 @@ export default function LandingPage() {
       {/* --- FOOTER --- */}
       <footer className="py-12 border-t">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm font-bold text-slate-400">© 2026 learnCircle. High Performance Education.</p>
+          <p className="text-sm font-bold text-slate-400">
+            © 2026 learnCircle. High Performance Education.
+          </p>
           <div className="flex gap-8 text-sm font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">
             <a href="#">Privacy</a>
             <a href="#">Terms</a>

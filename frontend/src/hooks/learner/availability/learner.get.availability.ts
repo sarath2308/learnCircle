@@ -7,8 +7,8 @@ export const useGetAvailability = (instructorId: string, date: string) => {
     queryFn: () => LEARNER_AVAILABILITY_API.GET_AVAILABILITY(instructorId, date),
     enabled: !!instructorId && !!date,
 
-    staleTime: 0,        // always stale
-    gcTime: 0,           // immediately garbage collect (v5)  // use cacheTime in v4
+    staleTime: 0, // always stale
+    gcTime: 0, // immediately garbage collect (v5)  // use cacheTime in v4
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

@@ -14,11 +14,11 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}></PersistGate>
-    
-      <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId={clientId!}>
-          <App />
-        </GoogleOAuthProvider>
-      </QueryClientProvider>
+
+    <QueryClientProvider client={queryClient}>
+      <GoogleOAuthProvider clientId={clientId!}>
+        <App />
+      </GoogleOAuthProvider>
+    </QueryClientProvider>
   </Provider>,
 );

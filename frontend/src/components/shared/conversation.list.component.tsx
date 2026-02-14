@@ -4,20 +4,18 @@ interface ListProps {
   openChat: (conversationId: string) => void;
   activeConversationId: string | null;
 }
-interface IConversationData
-{
- id: string;
- learnerId: string;
- instructorId: string;
- courseId: string;
- unreadCount: number
- courseName: string;
+interface IConversationData {
+  id: string;
+  learnerId: string;
+  instructorId: string;
+  courseId: string;
+  unreadCount: number;
+  courseName: string;
 }
 const ConversationListComponent = ({ openChat, activeConversationId }: ListProps) => {
   const { data, isLoading } = useGetAllConversation();
-  if(isLoading)
-  {
-    return <div>Loading...</div>
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
   const conversationData: IConversationData[] | [] = data.conversationData;
 
@@ -33,13 +31,15 @@ const ConversationListComponent = ({ openChat, activeConversationId }: ListProps
             key={chat.id}
             onClick={() => openChat(chat.id)} // Correctly using conversation ID
             className={`w-full flex items-center justify-between p-4 border-b border-gray-100 dark:border-slate-800 transition-all ${
-              activeConversationId === chat.id 
-                ? "bg-blue-50 dark:bg-slate-800 border-r-4 border-r-blue-600" 
+              activeConversationId === chat.id
+                ? "bg-blue-50 dark:bg-slate-800 border-r-4 border-r-blue-600"
                 : "hover:bg-gray-100 dark:hover:bg-slate-800/50"
             }`}
           >
             <div className="flex flex-col overflow-hidden">
-              <span className={`font-semibold truncate dark:text-slate-200 ${activeConversationId === chat.id ? "text-blue-600" : ""}`}>
+              <span
+                className={`font-semibold truncate dark:text-slate-200 ${activeConversationId === chat.id ? "text-blue-600" : ""}`}
+              >
                 {/* Fallback to Course ID as a label if no name exists */}
                 Course: {chat.courseName}
               </span>

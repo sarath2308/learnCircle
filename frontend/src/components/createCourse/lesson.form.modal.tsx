@@ -3,9 +3,15 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LESSON_TYPES } from "@/contstant/shared/lesson.type";
-import { 
-  Video, FileText, Youtube, Globe, 
-  Image as ImageIcon, X, UploadCloud, Loader2 
+import {
+  Video,
+  FileText,
+  Youtube,
+  Globe,
+  Image as ImageIcon,
+  X,
+  UploadCloud,
+  Loader2,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -27,21 +33,23 @@ interface Props {
     description?: string;
     type: LessonType;
     link?: string;
-    fileUrl?: string; 
+    fileUrl?: string;
     thumbnailUrl?: string;
   };
 }
 
-export default function LessonFormModal({ 
-  open, 
-  onClose, 
-  onSubmit, 
-  isSubmitting = false, 
-  initialData 
+export default function LessonFormModal({
+  open,
+  onClose,
+  onSubmit,
+  isSubmitting = false,
+  initialData,
 }: Props) {
   const isEditMode = !!initialData;
-  
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(initialData?.thumbnailUrl || null);
+
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(
+    initialData?.thumbnailUrl || null,
+  );
   const [fileSelected, setFileSelected] = useState(false);
   const [thumbnailSelected, setThumbnailSelected] = useState(false);
 
@@ -133,12 +141,12 @@ export default function LessonFormModal({
     formData.append("title", data.title);
     formData.append("description", data.description ?? "");
     formData.append("type", data.type);
-    
+
     // Only send files to API if they were actually changed by the user
     if (fileSelected && data.file) {
       formData.append("resource", data.file);
     }
-    
+
     if (thumbnailSelected && data.thumbnail) {
       formData.append("thumbnail", data.thumbnail);
     }
@@ -151,9 +159,10 @@ export default function LessonFormModal({
   return (
     <Modal onClose={onClose} open={open} title={isEditMode ? "Edit Lesson" : "Create New Lesson"}>
       <form onSubmit={handleProcessSubmit} className="space-y-6 max-h-[80vh] overflow-y-auto px-1">
-        
         <div className="space-y-3">
-          <Label className="text-xs font-black uppercase tracking-widest text-slate-500">Content Type</Label>
+          <Label className="text-xs font-black uppercase tracking-widest text-slate-500">
+            Content Type
+          </Label>
           <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
             {Object.values(LESSON_TYPES).map((type) => {
               const isActive = selectedType === type;
@@ -166,9 +175,9 @@ export default function LessonFormModal({
                     form.clearErrors(["file", "link"]);
                   }}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all gap-1.5 ${
-                    isActive 
-                    ? "border-blue-600 bg-blue-50/50 text-blue-600" 
-                    : "border-slate-100 dark:border-slate-800 text-slate-400 hover:border-slate-200"
+                    isActive
+                      ? "border-blue-600 bg-blue-50/50 text-blue-600"
+                      : "border-slate-100 dark:border-slate-800 text-slate-400 hover:border-slate-200"
                   }`}
                 >
                   {getIconForType(type)}
@@ -182,17 +191,36 @@ export default function LessonFormModal({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="font-bold">Lesson Title</Label>
-              <Input id="title" {...form.register("title")} className="h-12 rounded-xl" placeholder="Enter lesson title..." />
+              <Label htmlFor="title" className="font-bold">
+                Lesson Title
+              </Label>
+              <Input
+                id="title"
+                {...form.register("title")}
+                className="h-12 rounded-xl"
+                placeholder="Enter lesson title..."
+              />
               <ErrorMessage message={form.formState.errors.title?.message} />
             </div>
 
-            {[LESSON_TYPES.YOUTUBE, LESSON_TYPES.BLOG, LESSON_TYPES.ARTICLE].includes(selectedType) && (
+            {[LESSON_TYPES.YOUTUBE, LESSON_TYPES.BLOG, LESSON_TYPES.ARTICLE].includes(
+              selectedType,
+            ) && (
               <div className="space-y-2">
-                <Label htmlFor="link" className="font-bold">Resource URL</Label>
+                <Label htmlFor="link" className="font-bold">
+                  Resource URL
+                </Label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <Input id="link" {...form.register("link")} className="pl-10 h-12 rounded-xl" placeholder="https://..." />
+                  <Globe
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={16}
+                  />
+                  <Input
+                    id="link"
+                    {...form.register("link")}
+                    className="pl-10 h-12 rounded-xl"
+                    placeholder="https://..."
+                  />
                 </div>
                 <ErrorMessage message={form.formState.errors.link?.message} />
               </div>
@@ -204,20 +232,23 @@ export default function LessonFormModal({
                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-900/50 border-slate-200 hover:bg-slate-100 transition-all">
                   <UploadCloud className="text-slate-400 mb-2" size={24} />
                   <span className="text-xs font-bold text-slate-500 px-4 text-center truncate w-full">
-                    {form.watch("file")?.name || (isEditMode && !fileSelected ? "Using existing file" : `Upload ${selectedType}`)}
+                    {form.watch("file")?.name ||
+                      (isEditMode && !fileSelected
+                        ? "Using existing file"
+                        : `Upload ${selectedType}`)}
                   </span>
-                  <input 
-                    type="file" 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    className="hidden"
                     accept={selectedType === LESSON_TYPES.VIDEO ? "video/*" : ".pdf"}
                     onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if(file) {
-                            setFileSelected(true);
-                            form.setValue("file", file);
-                            form.clearErrors("file");
-                        }
-                    }} 
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setFileSelected(true);
+                        form.setValue("file", file);
+                        form.clearErrors("file");
+                      }
+                    }}
                   />
                 </label>
                 <ErrorMessage message={form.formState.errors.file?.message} />
@@ -231,13 +262,17 @@ export default function LessonFormModal({
               <div className="relative h-32 rounded-xl overflow-hidden border border-slate-200 group">
                 {thumbnailPreview ? (
                   <>
-                    <img src={thumbnailPreview} className="w-full h-full object-cover" alt="Preview" />
-                    <button 
+                    <img
+                      src={thumbnailPreview}
+                      className="w-full h-full object-cover"
+                      alt="Preview"
+                    />
+                    <button
                       type="button"
-                      onClick={() => { 
-                        setThumbnailPreview(null); 
+                      onClick={() => {
+                        setThumbnailPreview(null);
                         setThumbnailSelected(true);
-                        form.setValue("thumbnail", undefined); 
+                        form.setValue("thumbnail", undefined);
                       }}
                       className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                     >
@@ -247,8 +282,15 @@ export default function LessonFormModal({
                 ) : (
                   <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-slate-50 transition-all">
                     <ImageIcon className="text-slate-300" size={24} />
-                    <span className="text-[10px] uppercase font-black text-slate-400 mt-2">Upload Image</span>
-                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleThumbnailChange(e.target.files?.[0])} />
+                    <span className="text-[10px] uppercase font-black text-slate-400 mt-2">
+                      Upload Image
+                    </span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => handleThumbnailChange(e.target.files?.[0])}
+                    />
                   </label>
                 )}
               </div>
@@ -256,24 +298,39 @@ export default function LessonFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="font-bold">Summary</Label>
-              <Textarea id="description" rows={3} {...form.register("description")} className="rounded-xl resize-none" placeholder="What will students learn?" />
+              <Label htmlFor="description" className="font-bold">
+                Summary
+              </Label>
+              <Textarea
+                id="description"
+                rows={3}
+                {...form.register("description")}
+                className="rounded-xl resize-none"
+                placeholder="What will students learn?"
+              />
               <ErrorMessage message={form.formState.errors.description?.message} />
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
-          <Button type="button" variant="ghost" onClick={onClose} className="rounded-xl font-bold">Cancel</Button>
-          <Button 
-            type="submit" 
-            disabled={isSubmitting} 
+          <Button type="button" variant="ghost" onClick={onClose} className="rounded-xl font-bold">
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
             className="rounded-xl px-8 bg-blue-600 hover:bg-blue-700 font-bold"
           >
             {isSubmitting ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {isEditMode ? "Updating..." : "Creating..."}</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {isEditMode ? "Updating..." : "Creating..."}
+              </>
+            ) : isEditMode ? (
+              "Save Changes"
             ) : (
-              isEditMode ? "Save Changes" : "Create Lesson"
+              "Create Lesson"
             )}
           </Button>
         </div>
@@ -284,11 +341,16 @@ export default function LessonFormModal({
 
 function getIconForType(type: string) {
   switch (type) {
-    case LESSON_TYPES.VIDEO: return <Video size={20} />;
-    case LESSON_TYPES.YOUTUBE: return <Youtube size={20} />;
-    case LESSON_TYPES.PDF: return <FileText size={20} />;
-    case LESSON_TYPES.ARTICLE: return <Globe size={20} />;
-    default: return <FileText size={20} />;
+    case LESSON_TYPES.VIDEO:
+      return <Video size={20} />;
+    case LESSON_TYPES.YOUTUBE:
+      return <Youtube size={20} />;
+    case LESSON_TYPES.PDF:
+      return <FileText size={20} />;
+    case LESSON_TYPES.ARTICLE:
+      return <Globe size={20} />;
+    default:
+      return <FileText size={20} />;
   }
 }
 

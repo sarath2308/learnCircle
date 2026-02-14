@@ -17,12 +17,13 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
-    },
+    }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.de.ts"
-, "src/routes/admin/admin.course.manage.routes.ts"  ],
+    "src/**/*.de.ts",
+    "src/routes/admin/admin.course.manage.routes.ts"
+  ],
   "exclude": ["node_modules"]
 }
