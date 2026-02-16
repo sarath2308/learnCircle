@@ -5,6 +5,8 @@ import { useGetProfessionalProfile } from "@/hooks/learner/professionals/learner
 import { useGetAvailability } from "@/hooks/learner/availability/learner.get.availability";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useCreateSession } from "@/hooks/learner/session-booking/session.create";
+import { useGetInstructorReview } from "@/hooks/shared/instructor-review/instructor.review.get.hook";
+import type { IReviewType } from "@/types/shared/review.type";
 
 // Explicit interfaces based on your request
 export interface ISlot {
@@ -17,6 +19,8 @@ const InstructorBookingContainer = () => {
   const { instructorId } = useParams<{ instructorId: string }>();
   const [isBooking, setIsBooking] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toLocaleDateString("en-CA")); // "2026-02-23"
+  const { data: reviewData, isLoading } = useGetInstructorReview(instructorId || "");
+  const reviews: IReviewType[] = reviewData?.reviews ?? [];
 
   // 1. Data Fetching - Profile
   const {
@@ -118,6 +122,7 @@ const InstructorBookingContainer = () => {
       getPrice={getPriceForDate}
       isBookingLoading={isBooking}
       isSlotsLoading={availabilityLoading} // Pass this to show a loader in the slot grid
+      reviews={reviews}
     />
   );
 };

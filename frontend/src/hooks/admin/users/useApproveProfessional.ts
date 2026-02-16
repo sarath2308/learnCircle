@@ -1,5 +1,5 @@
 import { userManagementApi } from "@/api/admin/userManagementApi";
-import { useMutation} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 
@@ -9,7 +9,6 @@ export const useApproveProfessional = () => {
     mutationFn: userManagementApi.approveProfessional,
     onSuccess: (res) => {
       toast.success(res.message || "approved");
-     
     },
     onError: (err) => {
       if (err instanceof AxiosError) {

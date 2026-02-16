@@ -27,10 +27,7 @@ export class CourseReviewService implements ICourseReviewService {
     learnerId: string,
     data: CreateReviewBodyType,
   ): Promise<CourseReviewResponseType> {
-    const existingReview = await this._courseReviewRepo.findByCourseAndLearner?.(
-      courseId,
-      learnerId,
-    );
+    const existingReview = await this._courseReviewRepo.findByCourseAndLearner(courseId, learnerId);
     if (existingReview) {
       existingReview.rating = data.rating;
       existingReview.comment = data.comment ?? existingReview.comment;

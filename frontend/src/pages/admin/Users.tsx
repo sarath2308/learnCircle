@@ -10,9 +10,16 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import DataTable, { type Column } from "@/components/PaginatedTable";
-import { 
-  Search, ShieldAlert, ShieldCheck, FileText, 
-  UserCheck, UserX, Filter, AlertTriangle, Users as UsersIcon 
+import {
+  Search,
+  ShieldAlert,
+  ShieldCheck,
+  FileText,
+  UserCheck,
+  UserX,
+  Filter,
+  AlertTriangle,
+  Users as UsersIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -58,7 +65,9 @@ const Users = () => {
     return () => window.clearTimeout(handler);
   }, [search]);
 
-  useEffect(() => { setPage(1); }, [role, debouncedSearch]);
+  useEffect(() => {
+    setPage(1);
+  }, [role, debouncedSearch]);
 
   const { mutateAsync: blockUser } = useBlockUser();
   const { mutateAsync: unblockUser } = useUnblockUser();
@@ -114,13 +123,20 @@ const Users = () => {
             header: "Status",
             accessor: "isBlocked",
             cell: (value) => (
-              <div className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                value 
-                  ? "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-500/10 dark:border-rose-500/20" 
-                  : "bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:border-emerald-500/20"
-              )}>
-                <div className={cn("h-1.5 w-1.5 rounded-full", value ? "bg-rose-500" : "bg-emerald-500")} />
+              <div
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                  value
+                    ? "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-500/10 dark:border-rose-500/20"
+                    : "bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:border-emerald-500/20",
+                )}
+              >
+                <div
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-full",
+                    value ? "bg-rose-500" : "bg-emerald-500",
+                  )}
+                />
                 {value ? "Blocked" : "Active"}
               </div>
             ),
@@ -133,13 +149,17 @@ const Users = () => {
             header: "Status",
             accessor: "status",
             cell: (val) => (
-              <span className={cn(
-                "text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded border",
-                val === "approved" ? "text-indigo-600 bg-indigo-50 border-indigo-100" : "text-amber-600 bg-amber-50 border-amber-100"
-              )}>
+              <span
+                className={cn(
+                  "text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded border",
+                  val === "approved"
+                    ? "text-indigo-600 bg-indigo-50 border-indigo-100"
+                    : "text-amber-600 bg-amber-50 border-amber-100",
+                )}
+              >
                 {val}
               </span>
-            )
+            ),
           },
           { header: "Total Sessions", accessor: "totalSessions" },
           { header: "Role", accessor: "role" },
@@ -147,10 +167,14 @@ const Users = () => {
             header: "State",
             accessor: "state",
             cell: (value) => (
-              <span className={cn(
-                "px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest",
-                value === "Blocked" ? "bg-rose-100 text-rose-700" : "bg-emerald-100 text-emerald-700"
-              )}>
+              <span
+                className={cn(
+                  "px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest",
+                  value === "Blocked"
+                    ? "bg-rose-100 text-rose-700"
+                    : "bg-emerald-100 text-emerald-700",
+                )}
+              >
                 {value === "Blocked" ? "Blocked" : "Active"}
               </span>
             ),
@@ -165,7 +189,12 @@ const Users = () => {
     return (
       <div className="flex items-center gap-2">
         {role === "professional" && user.resumeUrl && (
-          <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-slate-200" onClick={() => window.open(user.resumeUrl, "_blank")}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-lg border-slate-200"
+            onClick={() => window.open(user.resumeUrl, "_blank")}
+          >
             <FileText size={14} className="text-slate-500" />
           </Button>
         )}
@@ -179,8 +208,8 @@ const Users = () => {
             <ShieldAlert size={14} className="mr-1.5" /> Block
           </Button>
         ) : (
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="h-8 px-3 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-50 rounded-lg"
             onClick={() => handleUnblock(user.userId)}
           >
@@ -200,8 +229,21 @@ const Users = () => {
               </div>
             ) : (
               <div className="flex gap-1">
-                <Button size="sm" className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black rounded-lg" onClick={() => handleApprove(user.userId)}>Approve</Button>
-                <Button variant="outline" size="sm" className="h-8 text-[10px] font-black rounded-lg border-rose-200 text-rose-600 hover:bg-rose-50" onClick={() => handleReject(user.userId)}>Reject</Button>
+                <Button
+                  size="sm"
+                  className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black rounded-lg"
+                  onClick={() => handleApprove(user.userId)}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-[10px] font-black rounded-lg border-rose-200 text-rose-600 hover:bg-rose-50"
+                  onClick={() => handleReject(user.userId)}
+                >
+                  Reject
+                </Button>
               </div>
             )}
           </div>
@@ -239,8 +281,12 @@ const Users = () => {
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="learner" className="text-[10px] font-black uppercase">Learners</SelectItem>
-              <SelectItem value="professional" className="text-[10px] font-black uppercase">Professionals</SelectItem>
+              <SelectItem value="learner" className="text-[10px] font-black uppercase">
+                Learners
+              </SelectItem>
+              <SelectItem value="professional" className="text-[10px] font-black uppercase">
+                Professionals
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -267,17 +313,29 @@ const Users = () => {
             <div className="h-16 w-16 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 animate-pulse">
               <AlertTriangle size={32} />
             </div>
-            <DialogTitle className="text-xl font-black tracking-tighter text-center">CONFIRM BLOCK</DialogTitle>
+            <DialogTitle className="text-xl font-black tracking-tighter text-center">
+              CONFIRM BLOCK
+            </DialogTitle>
             <DialogDescription className="text-center text-slate-500 text-xs font-bold leading-relaxed uppercase tracking-tighter">
-              Are you sure you want to restrict <span className="text-slate-900 font-black underline underline-offset-4">"{targetUser?.name}"</span>? 
-              This action prevents all platform access immediately.
+              Are you sure you want to restrict{" "}
+              <span className="text-slate-900 font-black underline underline-offset-4">
+                "{targetUser?.name}"
+              </span>
+              ? This action prevents all platform access immediately.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-col gap-2 mt-6 sm:flex-col">
-            <Button className="w-full h-12 bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] tracking-widest rounded-xl" onClick={handleConfirmBlock}>
+            <Button
+              className="w-full h-12 bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] tracking-widest rounded-xl"
+              onClick={handleConfirmBlock}
+            >
               RESTRICT ACCESS
             </Button>
-            <Button variant="ghost" className="w-full h-10 text-[10px] font-black tracking-widest text-slate-400" onClick={() => setIsConfirmOpen(false)}>
+            <Button
+              variant="ghost"
+              className="w-full h-10 text-[10px] font-black tracking-widest text-slate-400"
+              onClick={() => setIsConfirmOpen(false)}
+            >
               CANCEL
             </Button>
           </DialogFooter>

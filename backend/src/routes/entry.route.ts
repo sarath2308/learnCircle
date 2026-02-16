@@ -146,7 +146,7 @@ export function entryRoute() {
     CourseReviewRoutes(courseReviewController),
   );
   router.use(
-    "/instuctor-review",
+    "/instructor-review",
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     InstructorReviewRoutes(instructorReviewController),

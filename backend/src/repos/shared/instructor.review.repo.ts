@@ -58,4 +58,15 @@ export class InstructorReviewRepo
       averageRating: Number(result[0].averageRating.toFixed(1)), // optional rounding
     };
   }
+
+  async findByInstructorAndLearner(
+    instructorId: string,
+    learnerId: string,
+  ): Promise<IInstructorReview | null> {
+    return await this._instructorReviewModel.findOne({
+      instructorId: instructorId,
+      learnerId: learnerId,
+      isDeleted: false,
+    });
+  }
 }

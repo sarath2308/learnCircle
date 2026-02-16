@@ -2,7 +2,7 @@ import { IInstructorReview } from "@/model/shared/insturctor.review.mode";
 import { IBaseRepo } from "@/repos/shared/base";
 
 export interface IInstructorReviewRepo extends IBaseRepo<IInstructorReview> {
-  findByInstructorAndLearner?: (
+  findByInstructorAndLearner: (
     instructorId: string,
     learnerId: string,
   ) => Promise<IInstructorReview | null>;

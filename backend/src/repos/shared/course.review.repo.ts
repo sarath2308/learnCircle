@@ -12,7 +12,11 @@ export class CourseReviewRepo extends BaseRepo<ICourseReview> implements ICourse
   }
 
   async findByCourseAndLearner(courseId: string, learnerId: string): Promise<ICourseReview | null> {
-    return await this._courseReviewModel.findOne({ courseId: courseId, learnerId: learnerId });
+    return await this._courseReviewModel.findOne({
+      courseId: courseId,
+      learnerId: learnerId,
+      isDeleted: false,
+    });
   }
 
   async getAllReviewsAndAverageByCourseId(

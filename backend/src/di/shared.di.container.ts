@@ -129,6 +129,7 @@ import { InstructorReviewResponseType } from "@/schema/shared/review/instructor-
 import { InstructorReviewMapper } from "@/mapper/shared/instructor-review/instructor.review.mapper";
 import { CourseReviewMapper } from "@/mapper/shared/course-review/course.review.mapper";
 import { CourseReviewResponseType } from "@/schema/shared/review/course-review/course.review.response.schema";
+import { InstructorReviewController } from "@/controllers/shared/instructor.review.controller";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -222,7 +223,9 @@ export const registerShared = (container: Container): void => {
     .to(SessionBookingController);
 
   container.bind<ICourseReviewController>(TYPES.ICourseReviewController).to(CourseReviewController);
-  container.bind<IInstructorReviewController>(TYPES.IInstructorReviewController);
+  container
+    .bind<IInstructorReviewController>(TYPES.IInstructorReviewController)
+    .to(InstructorReviewController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);

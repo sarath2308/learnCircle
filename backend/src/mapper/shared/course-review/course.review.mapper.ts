@@ -26,6 +26,7 @@ export class CourseReviewMapper implements IMapper<ICourseReview, CourseReviewRe
       rating: input.rating,
       comment: input.comment,
       createdAt: formatDate(input.createdAt),
+      userId: String(input.learnerId),
     };
     return CourseReviewResponseSchema.parse(responseObj);
   }

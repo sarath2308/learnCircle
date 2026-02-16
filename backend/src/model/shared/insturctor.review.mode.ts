@@ -22,8 +22,6 @@ const InstructorReviewSchema = new Schema<IInstructorReview>(
   { timestamps: true },
 );
 
-InstructorReviewSchema.index({ instructorId: 1, learnerId: 1 }, { unique: true });
-
 export const InstructorReviewModel = model<IInstructorReview>(
   "InstructorReview",
   InstructorReviewSchema,

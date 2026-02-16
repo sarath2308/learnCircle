@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { SessionCard } from "@/components/shared/session.card";
 import { useGetSessions } from "@/hooks/learner/session-booking/learner.session.get.hook";
 import { Inbox, Loader2 } from "lucide-react";
+import { useInstructorReviewCreate } from "@/hooks/shared/instructor-review/instructor.review.create.hook";
 
 export enum BookingStatus {
   COMPLETED = "completed",
@@ -24,6 +25,7 @@ export interface SessionBooking {
 const BookingsPage: React.FC = () => {
   const [tab, setTab] = useState<"upcoming" | "completed">("upcoming");
   const { data: sessions, isLoading } = useGetSessions();
+  const reviewCreateMutation = useInstructorReviewCreate();
 
   // 1. SAFE DATA ACCESS
   // Fallback to empty arrays if data is still loading or undefined
@@ -32,6 +34,13 @@ const BookingsPage: React.FC = () => {
 
   // 2. DYNAMIC LIST SELECTION
   const displayList = tab === "upcoming" ? upcoming : completed;
+
+  const handleRating = async (
+    instructorId: string,
+    payload: { rating: number; feedback?: string },
+  ) => {
+    await reviewCreateMutation.mutateAsync({ instructorId, payload:{rating:payload.rating,comment: payload.feedback ?? ""} });
+  };
 
   if (isLoading) {
     return (
@@ -72,7 +81,7 @@ const BookingsPage: React.FC = () => {
       {displayList.length > 0 ? (
         <div className="grid gap-4">
           {displayList.map((booking: SessionBooking) => (
-            <SessionCard key={booking.id} {...booking} varient="learner" />
+            <SessionCard key={booking.id} {...booking} varient="learner" handleRating={handleRating}/>
           ))}
         </div>
       ) : (

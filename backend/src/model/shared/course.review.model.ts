@@ -22,6 +22,4 @@ const courseReviewSchema = new Schema<ICourseReview>(
   { timestamps: true },
 );
 
-courseReviewSchema.index({ courseId: 1, learnerId: 1 }, { unique: true });
-
 export const CourseReviewModel = model<ICourseReview>("CourseReview", courseReviewSchema);

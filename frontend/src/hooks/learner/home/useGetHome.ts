@@ -7,11 +7,11 @@ export const useGetHome = () => {
   const dispatch = useDispatch();
   const getHome = useQuery({
     queryKey: ["getHome"],
-    queryFn:async() => {
+    queryFn: async () => {
       const response = await learnerHomeApi.getHome();
       dispatch(setProfileImg(response.userData.profileImg));
       return response;
-    }
+    },
   });
   return getHome;
 };

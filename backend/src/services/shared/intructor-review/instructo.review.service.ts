@@ -30,6 +30,18 @@ export class InstructorReviewService implements IInstructorReviewService {
     const instuctorObjId = new mongoose.Types.ObjectId(instructorId);
     const learnerObjId = new mongoose.Types.ObjectId(userId);
 
+    const existingData = await this._instructorReviewRepo.findByInstructorAndLearner(
+      instructorId,
+      userId,
+    );
+
+    if (existingData) {
+      existingData.rating = data.rating ?? existingData.rating;
+      existingData.comment = data.comment ?? existingData.comment;
+      await existingData.save();
+      return this._instructorReviewMapper.map(existingData);
+    }
+
     const reviewData = await this._instructorReviewRepo.create({
       instructorId: instuctorObjId,
       learnerId: learnerObjId,

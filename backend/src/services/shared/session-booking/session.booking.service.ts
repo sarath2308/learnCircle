@@ -1,4 +1,3 @@
-import { BOOKING_STATUS } from "@/constants/shared/booking.status";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";

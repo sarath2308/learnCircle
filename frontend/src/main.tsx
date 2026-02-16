@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId={clientId!}>
         <ThemeProvider>
-        <App />
+          <App />
         </ThemeProvider>
       </GoogleOAuthProvider>
     </QueryClientProvider>
