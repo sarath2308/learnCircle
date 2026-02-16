@@ -19,7 +19,7 @@ export class GoogleAuthProvider implements IAuthProviderService {
     @inject(TYPES.ITokenService) private _tokenService: ITokenService,
     @inject(TYPES.IUserRepo) private _userRepo: IUserRepo,
     @inject(TYPES.IUserDtoMapper) private _userDtoMap: IUserDtoMapper,
-    @inject(TYPES.IS3Service) private _s3Service: IS3Service
+    @inject(TYPES.IS3Service) private _s3Service: IS3Service,
   ) {}
   /**
    *

@@ -23,6 +23,10 @@ import { exceptionRoutes } from "./shared/availability-exception/exception.route
 import { IAvailabilityExceptionController } from "@/interface/shared/session-booking/availability-exception/availability.exception.controller";
 import { ISessionBookingController } from "@/interface/shared/session-booking/booking/session.booking.controller";
 import { sessionBookingRoutes } from "./shared/session-booking/session.booking.routes";
+import { ICourseReviewController } from "@/interface/shared/course-review/course.review.controller.interface";
+import { CourseReviewRoutes } from "./shared/course-review/course.review.routes";
+import { InstructorReviewRoutes } from "./shared/instructor-review/instructor.review.routes";
+import { IInstructorReviewController } from "@/interface/shared/instuctor-review/instructor.review.controller";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -45,6 +49,13 @@ export function entryRoute() {
 
   const sessionBookingController = wrapAsyncController(
     container.get<ISessionBookingController>(TYPES.ISessionBookingController),
+  );
+
+  const courseReviewController = wrapAsyncController(
+    container.get<ICourseReviewController>(TYPES.ICourseReviewController),
+  );
+  const instructorReviewController = wrapAsyncController(
+    container.get<IInstructorReviewController>(TYPES.IInstructorReviewController),
   );
 
   const router = Router();
@@ -126,6 +137,19 @@ export function entryRoute() {
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     sessionBookingRoutes(sessionBookingController),
+  );
+
+  router.use(
+    "/course-review",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.LEARNER),
+    CourseReviewRoutes(courseReviewController),
+  );
+  router.use(
+    "/instuctor-review",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
+    InstructorReviewRoutes(instructorReviewController),
   );
 
   return router;

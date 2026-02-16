@@ -291,7 +291,7 @@ export class CourseService implements ICourseService {
             },
 
             chapterCount: chapters.length ?? 0,
-            averageRating: 4,
+            averageRating: course.averageRating ?? 0,
           };
 
           // final runtime validation
@@ -374,7 +374,7 @@ export class CourseService implements ICourseService {
             },
 
             chapterCount: chapters.length ?? 0,
-            averageRating: 4,
+            averageRating: course.averageRating ?? 0,
           };
 
           // final runtime validation
@@ -743,5 +743,9 @@ export class CourseService implements ICourseService {
       chapterCount: chapterResponses.length,
       lessonCount: totalLessons,
     };
+  }
+
+  async updateAverageRating(courseId: string, rating: number): Promise<void> {
+    await this._courseRepo.updateRating(courseId, rating);
   }
 }

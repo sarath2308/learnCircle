@@ -103,4 +103,8 @@ export const Messages = {
   SESSION_NOT_AVAILABLE_AT_THIS_TIME:
     "Session is not available at this time. You can join 5 minutes before and leave 5 minutes after the scheduled time.",
   SESSION_MARKED_COMPLETED: "Session marked as completed successfully",
+
+  //Review
+  REVIEW_NOT_CREATED: "Review Not Created",
+  REVIEW_NOT_FOUND: "Review Not Found",
 };

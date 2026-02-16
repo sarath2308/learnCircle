@@ -41,4 +41,5 @@ export default interface ICourseService {
   getCourseById: (courseId: string) => Promise<courseResponseType>;
   getCourseDataForCreatorView: (courseId: string) => Promise<CreatorCourseViewResponse>;
   getCourseDataForLearner: (courseId: string) => Promise<LearnerCourseResponse>;
+  updateAverageRating: (courseId: string, rating: number) => Promise<void>;
 }

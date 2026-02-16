@@ -16,4 +16,5 @@ export interface IProfessionalProfileRepo extends IBaseRepo<IProfessionalProfile
   ) => Promise<AggregatedProfessionalProfile[] | []>;
 
   getProfileOfInstructor: (instructorId: string) => Promise<IProfessionalDocumentResponse | null>;
+  updateRating: (instructorId: string, rating: number) => Promise<void>;
 }

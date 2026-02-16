@@ -4,13 +4,11 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 
 export const useBlockUser = () => {
-  const queryClient = useQueryClient();
-  const block = useMutation({
+  return useMutation({
     mutationKey: ["blockUser"],
     mutationFn: userManagementApi.blockUser,
     onSuccess: (res) => {
-      toast.success(res.message || "use blocked");
-      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+      toast.success(res.message || "user blocked");
     },
     onError: (err: unknown) => {
       if (err instanceof AxiosError) {
@@ -20,5 +18,5 @@ export const useBlockUser = () => {
       }
     },
   });
-  return block;
+
 };

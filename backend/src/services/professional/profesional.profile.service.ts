@@ -143,4 +143,8 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
 
     return LearnerProfessionalProfileResponseSchema.parse(reponseObj);
   }
+
+  async updateRating(instructorId: string, rating: number): Promise<void> {
+    await this._profileRepo.updateRating(instructorId, rating);
+  }
 }

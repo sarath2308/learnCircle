@@ -112,6 +112,23 @@ import { ISlotGenerator } from "@/interface/shared/ISlotGenerator";
 import { SlotGenerator } from "@/utils/slot.generator.service";
 import { SessionBookingResponseType } from "@/schema/learner/session.booking/session.booking.response.schema";
 import { SessionBookingMapper } from "@/mapper/shared/session-booking/session.booking.mapper";
+import { IInstructorReview, InstructorReviewModel } from "@/model/shared/insturctor.review.mode";
+import { CourseReviewModel, ICourseReview } from "@/model/shared/course.review.model";
+import { ICourseReviewService } from "@/interface/shared/course-review/course.review.service.interface";
+import { ICourseReviewRepo } from "@/interface/shared/course-review/course.review.interface";
+import { CourseReviewRepo } from "@/repos/shared/course.review.repo";
+import { IInstructorReviewRepo } from "@/interface/shared/instuctor-review/instructor.review.repo.interface";
+import { InstructorReviewRepo } from "@/repos/shared/instructor.review.repo";
+import { CourseReviewService } from "@/services/shared/course-review/course.review.service";
+import { IInstructorReviewService } from "@/interface/shared/instuctor-review/instructor.review.service.interface";
+import { InstructorReviewService } from "@/services/shared/intructor-review/instructo.review.service";
+import { ICourseReviewController } from "@/interface/shared/course-review/course.review.controller.interface";
+import { CourseReviewController } from "@/controllers/shared/course.review.controller";
+import { IInstructorReviewController } from "@/interface/shared/instuctor-review/instructor.review.controller";
+import { InstructorReviewResponseType } from "@/schema/shared/review/instructor-review/instructor.review.response.schema";
+import { InstructorReviewMapper } from "@/mapper/shared/instructor-review/instructor.review.mapper";
+import { CourseReviewMapper } from "@/mapper/shared/course-review/course.review.mapper";
+import { CourseReviewResponseType } from "@/schema/shared/review/course-review/course.review.response.schema";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -133,6 +150,11 @@ export const registerShared = (container: Container): void => {
   container
     .bind<Model<ISessionBooking>>(TYPES.ISessionBooking)
     .toConstantValue(SessionBookingModel);
+
+  container
+    .bind<Model<IInstructorReview>>(TYPES.IInstructorReviewModel)
+    .toConstantValue(InstructorReviewModel);
+  container.bind<Model<ICourseReview>>(TYPES.ICourseReviewModel).toConstantValue(CourseReviewModel);
   /*-------------------Repo-----------------------*/
 
   container.bind<ICourseRepo>(TYPES.ICourseRepo).to(CourseRepo);
@@ -152,6 +174,8 @@ export const registerShared = (container: Container): void => {
     .bind<IAvailabilityExceptionRepo>(TYPES.IAvailabilityExceptionRepo)
     .to(AvailabilityExceptionRepo);
   container.bind<ISessionBookingRepo>(TYPES.ISessionBookingRepo).to(SessionBookingRepo);
+  container.bind<ICourseReviewRepo>(TYPES.ICourseReviewRepo).to(CourseReviewRepo);
+  container.bind<IInstructorReviewRepo>(TYPES.IInstructorReviewRepo).to(InstructorReviewRepo);
 
   /*-------------------Service-----------------------*/
 
@@ -178,6 +202,10 @@ export const registerShared = (container: Container): void => {
     .to(AvailabilityExceptionService);
   container.bind<ISessionBookingService>(TYPES.ISessionBookingService).to(SessionBookingService);
   container.bind<ISlotGenerator>(TYPES.ISlotGenerator).to(SlotGenerator);
+  container.bind<ICourseReviewService>(TYPES.ICourseReviewService).to(CourseReviewService);
+  container
+    .bind<IInstructorReviewService>(TYPES.IInstructorReviewService)
+    .to(InstructorReviewService);
 
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
@@ -192,6 +220,9 @@ export const registerShared = (container: Container): void => {
   container
     .bind<ISessionBookingController>(TYPES.ISessionBookingController)
     .to(SessionBookingController);
+
+  container.bind<ICourseReviewController>(TYPES.ICourseReviewController).to(CourseReviewController);
+  container.bind<IInstructorReviewController>(TYPES.IInstructorReviewController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
@@ -208,6 +239,16 @@ export const registerShared = (container: Container): void => {
   container
     .bind<IMapper<ISessionBooking, SessionBookingResponseType>>(TYPES.ISessionBookingMapper)
     .to(SessionBookingMapper);
+
+  container
+    .bind<
+      IMapper<IInstructorReview, InstructorReviewResponseType>
+    >(TYPES.IInstructorReviewDtoMapper)
+    .to(InstructorReviewMapper);
+
+  container
+    .bind<IMapper<ICourseReview, CourseReviewResponseType>>(TYPES.ICourseReviewMapper)
+    .to(CourseReviewMapper);
 
   // Refresh token (shared)
   container.bind(TYPES.IRefreshService).toDynamicValue(() => {

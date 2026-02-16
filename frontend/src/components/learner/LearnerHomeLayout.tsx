@@ -7,17 +7,17 @@ import {
   ShoppingBag, Menu, X, BookOpen, Sun, Moon, 
   Video, Bell, Calendar, Info, ChevronRight, Zap 
 } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { RootState } from "@/redux/store";
+import { useTheme } from "@/context/theme.context";
 
 export default function LearnerHomeLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const {theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.currentUser.currentUser);
 
@@ -53,7 +53,6 @@ export default function LearnerHomeLayout() {
           {/* Brand - Minimalist & Sharp */}
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => navigate("/")}
           >
             <div className="relative">
               <div className="absolute -inset-1 bg-indigo-500 rounded-xl blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
@@ -117,7 +116,7 @@ export default function LearnerHomeLayout() {
             {/* Profile & Theme Toggle */}
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={toggleTheme}
                 className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
               >
                 {theme === "dark" ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} className="text-indigo-600" />}

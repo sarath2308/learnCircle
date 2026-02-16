@@ -157,4 +157,8 @@ export class ProfessionalProfileRepo
 
     return result[0] || null;
   }
+
+  async updateRating(instructorId: string, rating: number): Promise<void> {
+    await this._model.updateOne({ userId: instructorId }, { $set: { rating: rating } });
+  }
 }

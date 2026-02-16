@@ -18,4 +18,6 @@ export interface IProfessionalProfileService {
   ) => Promise<LearnerProfessionalProfileResponseType[]>;
 
   getProfessionalProfileForUser: (instructorId: string) => Promise<any>;
+
+  updateRating: (instructorId: string, rating: number) => Promise<void>;
 }

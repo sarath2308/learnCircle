@@ -171,4 +171,7 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
       .populate("createdBy", "name role")
       .lean<CoursePopulated[]>();
   }
+  async updateRating(courseId: string, rating: number): Promise<void> {
+    await this._model.updateOne({ _id: courseId }, { $set: { averageRating: rating } });
+  }
 }

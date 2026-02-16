@@ -13,9 +13,14 @@ export class LearnerHomeController implements ILearnerHomeController {
 
   async getHome(req: IAuthRequest, res: Response) {
     const userId = req.user?.userId!;
-    const { categoryData, courseCardData } = await this._lernerHomeService.getHome(userId);
-    res
-      .status(HttpStatus.OK)
-      .json({ success: true, message: Messages.HOME_RENDERED, categoryData, courseCardData });
+    const { categoryData, courseCardData, userData } =
+      await this._lernerHomeService.getHome(userId);
+    res.status(HttpStatus.OK).json({
+      success: true,
+      message: Messages.HOME_RENDERED,
+      categoryData,
+      courseCardData,
+      userData,
+    });
   }
 }
