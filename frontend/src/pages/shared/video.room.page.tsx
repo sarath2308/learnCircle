@@ -1,14 +1,18 @@
+/* eslint-disable no-undef */
 import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { Socket } from "socket.io-client";
 import { getSocket } from "@/socket/socket";
 import toast from "react-hot-toast";
 
 const VideoRoom = () => {
   const { roomId } = useParams<string>();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode"); // "match" or "session"
+
   const navigate = useNavigate();
 
   const [isMuted, setIsMuted] = useState(false);
@@ -43,74 +47,27 @@ const VideoRoom = () => {
     }
   };
 
-  // ✅ FIXED: Toggle Video (Correctly handles the boolean flip)
-  const turnCameraOff = () => {
+  const toggleVideo = () => {
     const stream = localStreamRef.current;
     if (!stream) return;
 
     const videoTrack = stream.getVideoTracks()[0];
     if (!videoTrack) return;
 
-    // Stop hardware (kills camera light)
-    videoTrack.stop();
+    // Flip enabled flag
+    const nextEnabled = !videoTrack.enabled;
+    videoTrack.enabled = nextEnabled;
 
-    // Remove from stream
-    stream.removeTrack(videoTrack);
-
-    // Remove from PeerConnection
-    const sender = pcRef.current?.getSenders().find((s) => s.track?.kind === "video");
-
-    if (sender) {
-      pcRef.current?.removeTrack(sender);
-    }
-
-    setIsVideoOff(true);
-  };
-
-  const turnCameraOn = async () => {
-    try {
-      // Re-acquire camera
-      const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const newVideoTrack = newStream.getVideoTracks()[0];
-      if (!newVideoTrack || !localStreamRef.current) return;
-
-      // Add to local stream
-      localStreamRef.current.addTrack(newVideoTrack);
-
-      // Update local preview
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = localStreamRef.current;
-        await localVideoRef.current.play().catch(() => {});
-      }
-
-      // Attach to PeerConnection
-      const sender = pcRef.current?.getSenders().find((s) => s.track?.kind === "video");
-
-      if (sender) {
-        await sender.replaceTrack(newVideoTrack);
-      } else {
-        pcRef.current?.addTrack(newVideoTrack, localStreamRef.current);
-      }
-
-      setIsVideoOff(false);
-    } catch (err) {
-      console.error("Failed to turn camera on:", err);
-      toast.error("Could not turn camera back on");
-    }
-  };
-
-  const toggleVideo = async () => {
-    if (isVideoOff) {
-      await turnCameraOn();
-    } else {
-      turnCameraOff();
-    }
+    // Update UI state (isVideoOff = opposite of enabled)
+    setIsVideoOff(!nextEnabled);
   };
 
   const setupWithStream = async (stream: MediaStream) => {
     localStreamRef.current = stream; // Store for cleanup
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = stream;
+      localVideoRef.current.muted = true;
+      localVideoRef.current.play().catch(() => {});
     }
 
     const pc = createPeerConnection();
@@ -132,18 +89,33 @@ const VideoRoom = () => {
       pendingAnswer.current = null;
     }
 
-    socketRef.current?.emit("join-room", { roomId });
+    if (mode === "match") {
+      socketRef.current?.emit("join-match-room", { roomId });
+    } else {
+      socketRef.current?.emit("join-room", { roomId });
+    }
   };
 
   useEffect(() => {
     socketRef.current = getSocket();
-    socketRef.current?.on("connect", () => {
-      if (pcRef.current && roomId) socketRef.current?.emit("join-room", { roomId });
-    });
-    return () => {
-      socketRef.current?.off("connect");
+    const s = socketRef.current;
+
+    const onConnect = () => {
+      if (!roomId) return;
+
+      if (mode === "match") {
+        s?.emit("join-match-room", { roomId });
+      } else {
+        s?.emit("join-room", { roomId });
+      }
     };
-  }, [roomId]);
+
+    s?.on("connect", onConnect);
+
+    return () => {
+      s?.off("connect", onConnect);
+    };
+  }, [roomId, mode]);
 
   useEffect(() => {
     if (!roomId) return;
@@ -161,6 +133,11 @@ const VideoRoom = () => {
     };
     const onJoinedRoom = () => setStatus("joined");
     const onPeerJoined = async () => {
+      // Triggered when someone else enters your room
+      toast.success("Stranger joined", {
+        position: "bottom-right",
+      });
+
       setPeerConnected(true);
       const pc = pcRef.current;
       if (!pc) return;
@@ -193,12 +170,28 @@ const VideoRoom = () => {
       await pc.setRemoteDescription(new RTCSessionDescription(answer));
     };
 
+    const onPeerLeft = () => {
+      // Triggered when the other person disconnects
+      toast.error("Stranger left the chat", {
+        position: "bottom-right",
+      });
+
+      if (pcRef.current) {
+        pcRef.current.close();
+        pcRef.current = null;
+      }
+
+      setPeerConnected(false);
+      setStatus("joined");
+    };
+
     const s = socketRef.current;
     s?.on("webrtc:ice-candidate", onIceCandidate);
     s?.on("joined-room", onJoinedRoom);
     s?.on("peer-joined", onPeerJoined);
     s?.on("webrtc:offer", onOffer);
     s?.on("webrtc:answer", onAnswer);
+    s?.on("peer-left", onPeerLeft);
 
     return () => {
       s?.off("webrtc:ice-candidate", onIceCandidate);
@@ -206,6 +199,7 @@ const VideoRoom = () => {
       s?.off("peer-joined", onPeerJoined);
       s?.off("webrtc:offer", onOffer);
       s?.off("webrtc:answer", onAnswer);
+      s?.off("peer-left", onPeerLeft);
     };
   }, [roomId]);
 
@@ -214,14 +208,24 @@ const VideoRoom = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         await setupWithStream(stream);
-      } catch (err) {
-        toast.error("Media access denied.");
+      } catch (err: any) {
+        if (err.name === "NotAllowedError") {
+          toast.error("Permission denied");
+        } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
+          toast.error("Camera is already in use by another app");
+        } else {
+          toast.error("Failed to access media devices");
+        }
       }
     };
     start();
 
     // ✅ HARD CLEANUP: Stop tracks immediately on unmount
     return () => {
+      if (mode === "match" && roomId) {
+        socketRef.current?.emit("leave-match-room", { roomId });
+      }
+
       if (pcRef.current) {
         pcRef.current.close();
         pcRef.current = null;
@@ -282,20 +286,28 @@ const VideoRoom = () => {
           )}
           <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
 
-          <div className="absolute top-4 right-4 w-32 md:w-48 aspect-video bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-2xl border-2 border-white dark:border-white/10">
-            {isVideoOff ? (
-              <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800">
-                <VideoOff size={20} className="text-slate-400" />
-              </div>
-            ) : (
-              <video
-                ref={localVideoRef}
-                autoPlay
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            )}
+          <div className="absolute top-4 right-4 w-32 md:w-48 aspect-video ...">
+            {/* The placeholder UI */}
+            <div
+              className={cn(
+                "absolute inset-0 w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 transition-opacity duration-300",
+                isVideoOff ? "opacity-100 z-10" : "opacity-0 -z-1",
+              )}
+            >
+              <VideoOff size={20} className="text-slate-400" />
+            </div>
+
+            {/* The video element remains ALWAYS present in the DOM */}
+            <video
+              ref={localVideoRef}
+              autoPlay
+              muted
+              playsInline
+              className={cn(
+                "w-full h-full object-cover",
+                isVideoOff && "invisible", // Keep it in DOM, just hide it
+              )}
+            />
           </div>
         </div>
 
@@ -340,18 +352,18 @@ const ControlButton = ({ icon, active, onClick }: any) => (
   </button>
 );
 
-const ChatMessage = ({ user, message, isMe }: any) => (
-  <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
-    <span className="text-[10px] font-black uppercase text-slate-400">{user}</span>
-    <div
-      className={cn(
-        "max-w-[85%] p-3 rounded-2xl text-sm",
-        isMe ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-slate-900",
-      )}
-    >
-      {message}
-    </div>
-  </div>
-);
+// const ChatMessage = ({ user, message, isMe }: any) => (
+//   <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
+//     <span className="text-[10px] font-black uppercase text-slate-400">{user}</span>
+//     <div
+//       className={cn(
+//         "max-w-[85%] p-3 rounded-2xl text-sm",
+//         isMe ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-slate-900",
+//       )}
+//     >
+//       {message}
+//     </div>
+//   </div>
+// );
 
 export default VideoRoom;

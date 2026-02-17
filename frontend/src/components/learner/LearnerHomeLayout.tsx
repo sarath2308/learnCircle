@@ -102,6 +102,7 @@ export default function LearnerHomeLayout() {
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-1">
               <Button
+                onClick={() => navigate("/learner/random-match")}
                 variant="ghost"
                 size="icon"
                 className="hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-full transition-colors group"

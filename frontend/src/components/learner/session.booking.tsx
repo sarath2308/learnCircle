@@ -22,6 +22,8 @@ import type { IReviewType } from "@/types/shared/review.type";
 import { ReviewItem } from "../shared/review.card";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
+import { useInstructorReviewUpdate } from "@/hooks/shared/instructor-review/instructor.review.update.hook";
+import { useInstructorReviewDelete } from "@/hooks/shared/instructor-review/instructor.review.delete.hook";
 
 interface InstructorBookingPageProps {
   instructor: {
@@ -52,7 +54,7 @@ const InstructorBookingPage = ({
   isBookingLoading,
   reviews,
 }: InstructorBookingPageProps) => {
-  const currentUser = useSelector((state: RootState) => state.currentUser.currentUser);
+  const currentUser = useSelector((state: RootState) => state.currentUser.currentUser?.id);
   const today = React.useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -64,6 +66,8 @@ const InstructorBookingPage = ({
   const [selectedSlot, setSelectedSlot] = useState<string>("");
   const [selectedSessionType, setSelectedSessionType] = useState<string>("");
 
+  const instructorReviewEditMutation = useInstructorReviewUpdate();
+  const instructorReviewDelete = useInstructorReviewDelete();
   const availableSlots = getSlots(date);
   const hasSlots = availableSlots && availableSlots.length > 0;
 
@@ -77,12 +81,15 @@ const InstructorBookingPage = ({
       }).format(currentPrice)
     : null;
 
-  const handleUpdateReview = (id: string, data: { rating: number; comment: string }) => {
-    console.log("Update Review Action:", id, data);
+  const handleUpdateReview = async (id: string, data: { rating: number; comment: string }) => {
+    await instructorReviewEditMutation.mutateAsync({
+      reviewId: id,
+      payload: { rating: data.rating, comment: data.comment ?? "" },
+    });
   };
 
-  const handleDeleteReview = (id: string) => {
-    console.log("Delete Review Action:", id);
+  const handleDeleteReview = async (id: string) => {
+    await instructorReviewDelete.mutateAsync(id);
   };
 
   return (
@@ -180,7 +187,7 @@ const InstructorBookingPage = ({
                       <ReviewItem
                         key={rev.id}
                         review={rev}
-                        variant={rev.userId === currentUser?.id ? "author" : "viewer"}
+                        variant={rev.userId === currentUser ? "author" : "viewer"}
                         onUpdate={handleUpdateReview}
                         onDelete={handleDeleteReview}
                       />

@@ -10,9 +10,9 @@ export const useInstructorReviewCreate = () => {
       instructorId,
       payload,
     }: {
-       instructorId: string;
+      instructorId: string;
       payload: { rating: number; comment?: string };
-    }) => INSTRUCTOR_REVIEW_API.CREATE(instructorId,payload),
+    }) => INSTRUCTOR_REVIEW_API.CREATE(instructorId, payload),
     onSuccess: () => {
       toast.success("Review Added");
     },

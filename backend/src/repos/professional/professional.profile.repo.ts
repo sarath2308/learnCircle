@@ -161,4 +161,8 @@ export class ProfessionalProfileRepo
   async updateRating(instructorId: string, rating: number): Promise<void> {
     await this._model.updateOne({ userId: instructorId }, { $set: { rating: rating } });
   }
+
+  async increaseSessionCount(instructorId: string): Promise<void> {
+    await this._model.updateOne({ userId: instructorId }, { $inc: { totalSessions: 1 } });
+  }
 }

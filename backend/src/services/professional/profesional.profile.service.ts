@@ -147,4 +147,8 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
   async updateRating(instructorId: string, rating: number): Promise<void> {
     await this._profileRepo.updateRating(instructorId, rating);
   }
+
+  async updateSessions(instructorId: string): Promise<void> {
+    await this._profileRepo.increaseSessionCount(instructorId);
+  }
 }

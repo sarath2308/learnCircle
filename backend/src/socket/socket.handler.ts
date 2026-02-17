@@ -4,6 +4,8 @@ import { ISocketHandler } from "@/interface/shared/socket/socket.handler.interfa
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 
+const categoryQueues: Record<string, string[]> = {};
+
 @injectable()
 export class SocketHandler implements ISocketHandler {
   constructor(
@@ -127,8 +129,53 @@ export class SocketHandler implements ISocketHandler {
       },
     );
 
+    //Random video matching set up ---
+
+    socket.on("match:join-queue", ({ category }: { category: string }) => {
+      const socketId = socket.id;
+
+      // Remove from any existing queue (safety)
+      for (const key in categoryQueues) {
+        categoryQueues[key] = categoryQueues[key].filter((id) => id !== socketId);
+      }
+
+      if (!categoryQueues[category]) {
+        categoryQueues[category] = [];
+      }
+
+      const queue = categoryQueues[category];
+
+      if (queue.length > 0) {
+        const otherSocketId = queue.shift()!;
+        const roomId = `match_${Date.now()}`;
+
+        socket.emit("match:matched", { roomId });
+        io.to(otherSocketId).emit("match:matched", { roomId });
+
+        console.log(`✅ Matched ${socketId} with ${otherSocketId} in ${roomId}`);
+      } else {
+        queue.push(socketId);
+        socket.emit("match:waiting");
+        console.log(`⏳ ${socketId} waiting in ${category}`);
+      }
+    });
+
+    socket.on("join-match-room", ({ roomId }: { roomId: string }) => {
+      socket.join(roomId);
+
+      socket.emit("joined-room", { roomId });
+      socket.to(roomId).emit("peer-joined");
+
+      console.log(`🎯 Match user joined ${roomId}`);
+    });
+
     // 🔌 DISCONNECT DEBUG
     socket.on("disconnect", (reason: unknown) => {
+      // Remove from queues on disconnect
+      for (const key in categoryQueues) {
+        categoryQueues[key] = categoryQueues[key].filter((id) => id !== socket.id);
+      }
+
       console.warn("🔌 SOCKET DISCONNECTED");
       console.warn("socket.id:", socket.id);
       console.warn("reason:", reason);

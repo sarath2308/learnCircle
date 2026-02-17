@@ -115,7 +115,7 @@ const InstructorBookingContainer = () => {
       instructor={{
         ...profileData,
         // Mapping profile_key to profileUrl if that's your field naming
-        profileUrl: profileData.profile_key,
+        profileUrl: profileData.profileUrl,
       }}
       onBook={handleBooking}
       getSlots={getSlotsForDate}

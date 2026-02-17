@@ -74,7 +74,7 @@ export const SessionCard = ({
   const handleJoinClick = async () => {
     try {
       const response = await checkJoinPermissionMutation.mutateAsync(id);
-      navigate(`/${varient}/video-call/${response.data.roomId}`);
+      navigate(`/${varient}/video-call/${response.data.roomId}?mode=session`);
     } catch (err) {
       console.error("Join error:", err);
     }

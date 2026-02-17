@@ -39,7 +39,10 @@ const BookingsPage: React.FC = () => {
     instructorId: string,
     payload: { rating: number; feedback?: string },
   ) => {
-    await reviewCreateMutation.mutateAsync({ instructorId, payload:{rating:payload.rating,comment: payload.feedback ?? ""} });
+    await reviewCreateMutation.mutateAsync({
+      instructorId,
+      payload: { rating: payload.rating, comment: payload.feedback ?? "" },
+    });
   };
 
   if (isLoading) {
@@ -81,7 +84,12 @@ const BookingsPage: React.FC = () => {
       {displayList.length > 0 ? (
         <div className="grid gap-4">
           {displayList.map((booking: SessionBooking) => (
-            <SessionCard key={booking.id} {...booking} varient="learner" handleRating={handleRating}/>
+            <SessionCard
+              key={booking.id}
+              {...booking}
+              varient="learner"
+              handleRating={handleRating}
+            />
           ))}
         </div>
       ) : (

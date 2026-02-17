@@ -1,6 +1,7 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
+import { IProfessionalProfileService } from "@/interface/professional/professional.profile.service.interface";
 import { IMapper } from "@/interface/shared/mapper/mapper.interface";
 import { IAvailabilityRepo } from "@/interface/shared/session-booking/availabillity/availability.repo.interface";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
@@ -19,6 +20,8 @@ export class SessionBookingService implements ISessionBookingService {
     @inject(TYPES.ISessionBookingMapper)
     private _sessionBookingMapper: IMapper<ISessionBooking, SessionBookingResponseType>,
     @inject(TYPES.IAvailabilityRepo) private _avilabilityRepo: IAvailabilityRepo,
+    @inject(TYPES.IProfessionalProfileService)
+    private _professionalProfileService: IProfessionalProfileService,
   ) {}
   /**
    *
@@ -187,5 +190,6 @@ export class SessionBookingService implements ISessionBookingService {
       throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     await this._sessionBookingRepo.updateSessionStatusToCompleted(sessionBookingId);
+    await this._professionalProfileService.updateSessions(String(booking.instructorId));
   }
 }

@@ -12,6 +12,7 @@ const LearnerSlotPage = lazy(() => import("@/pages/Learner/learner.slot.page"));
 const LearnerProfileLayout = lazy(() => import("@/components/learner/learner.profile.layout"));
 const LearnerBookingsPage = lazy(() => import("@/pages/Learner/learner.profile.myBookings"));
 const VideoCallPage = lazy(() => import("@/pages/shared/video.room.page"));
+const RandomMatchPage = lazy(() => import("@/pages/Learner/learner.random.match.page"));
 
 const learnerRoutes: RouteObject[] = [
   {
@@ -36,6 +37,7 @@ const learnerRoutes: RouteObject[] = [
           { path: "professionals", element: <Professionals /> },
           { path: "professionals/:instructorId", element: <LearnerSlotPage /> },
           { path: "video-call/:roomId", element: <VideoCallPage /> },
+          { path: "random-match", element: <RandomMatchPage /> },
         ],
       },
     ],

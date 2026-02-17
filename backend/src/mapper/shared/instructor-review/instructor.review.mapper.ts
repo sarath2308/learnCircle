@@ -29,6 +29,7 @@ export class InstructorReviewMapper
       rating: input.rating,
       comment: input.comment ?? "",
       createdAt: formatDate(input.createdAt),
+      userId: String(input.learnerId),
     };
 
     return InstructorReviewResponseSchema.parse(responseObj);

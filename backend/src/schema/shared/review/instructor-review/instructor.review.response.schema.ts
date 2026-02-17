@@ -5,6 +5,7 @@ export const InstructorReviewResponseSchema = z.object({
   rating: z.number(),
   comment: z.string().optional(),
   createdAt: z.string(),
+  userId: z.string(),
 });
 
 export type InstructorReviewResponseType = z.infer<typeof InstructorReviewResponseSchema>;
