@@ -107,4 +107,8 @@ export const Messages = {
   //Review
   REVIEW_NOT_CREATED: "Review Not Created",
   REVIEW_NOT_FOUND: "Review Not Found",
+
+  //Chat bot
+
+  CHATBOT_REPLY_NOT_FOUND : "No reply for this message",
 };

@@ -108,4 +108,6 @@ export const TYPES = {
   ICourseReviewController: Symbol.for("ICourseReviewController"),
   IInstructorReviewDtoMapper: Symbol.for("IInstructorReviewMapper"),
   ICourseReviewMapper: Symbol.for("ICourseReviewMapper"),
+  IChatBotService: Symbol.for("IChatBotService"),
+  IChatBotController: Symbol.for("IChatBotController"),
 };

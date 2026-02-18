@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { RootState } from "@/redux/store";
 import { useTheme } from "@/context/theme.context";
+import Chatbot from "../shared/chatbot.component";
 
 export default function LearnerHomeLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -219,7 +220,7 @@ export default function LearnerHomeLayout() {
           <Outlet />
         </div>
       </main>
-
+      <Chatbot />
       {/* --- FOOTER (Minimalist & Clean) --- */}
       <footer className="py-20 bg-transparent relative overflow-hidden">
         <div className="container mx-auto px-6 border-t border-slate-100 dark:border-white/5 pt-10">

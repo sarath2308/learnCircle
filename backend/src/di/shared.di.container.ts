@@ -130,6 +130,10 @@ import { InstructorReviewMapper } from "@/mapper/shared/instructor-review/instru
 import { CourseReviewMapper } from "@/mapper/shared/course-review/course.review.mapper";
 import { CourseReviewResponseType } from "@/schema/shared/review/course-review/course.review.response.schema";
 import { InstructorReviewController } from "@/controllers/shared/instructor.review.controller";
+import { IChatBotService } from "@/interface/shared/chatbot/chatbot.service.interface";
+import { ChatBotService } from "@/utils/chatBot.service";
+import { IChatBotController } from "@/interface/shared/chatbot/chatbot.controller.interface";
+import { ChatBotController } from "@/controllers/shared/chatbot.controller";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -208,6 +212,8 @@ export const registerShared = (container: Container): void => {
     .bind<IInstructorReviewService>(TYPES.IInstructorReviewService)
     .to(InstructorReviewService);
 
+    container.bind<IChatBotService>(TYPES.IChatBotService).to(ChatBotService);
+
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
   container.bind<ICourseController>(TYPES.ICourseController).to(CourseController);
@@ -226,6 +232,8 @@ export const registerShared = (container: Container): void => {
   container
     .bind<IInstructorReviewController>(TYPES.IInstructorReviewController)
     .to(InstructorReviewController);
+
+    container.bind<IChatBotController>(TYPES.IChatBotController).to(ChatBotController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);

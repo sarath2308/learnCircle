@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useGetHome } from "@/hooks/learner/home/useGetHome";
 import { CourseDiscoveryCard } from "@/components/learner/learner.course.card";
+import Chatbot from "@/components/shared/chatbot.component";
 
 export interface ILearnerHomeCourseType {
   id: string;
@@ -135,6 +136,7 @@ const HomePage = () => {
           </div>
         </section>
       </div>
+      <Chatbot />
     </div>
   );
 };
