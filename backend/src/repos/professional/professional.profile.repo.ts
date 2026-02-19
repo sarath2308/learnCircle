@@ -165,4 +165,8 @@ export class ProfessionalProfileRepo
   async increaseSessionCount(instructorId: string): Promise<void> {
     await this._model.updateOne({ userId: instructorId }, { $inc: { totalSessions: 1 } });
   }
+
+  async getProfileByInstructorId(instructorId: string): Promise<IProfessionalProfile | null> {
+    return await this._model.findOne({ userId: instructorId });
+  }
 }

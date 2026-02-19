@@ -7,14 +7,12 @@ import { Response } from "express";
 import { inject, injectable } from "inversify";
 
 @injectable()
-export class ChatBotController implements IChatBotController
-{
-    constructor(@inject(TYPES.IChatBotService) private _chatBotService: IChatBotService){}
+export class ChatBotController implements IChatBotController {
+  constructor(@inject(TYPES.IChatBotService) private _chatBotService: IChatBotService) {}
 
-    async getReply(req: IAuthRequest, res: Response): Promise<void>
-    {
-        const message = req.body.message as string;
-        const reply = await this._chatBotService.getReply(message);
-        res.status(HttpStatus.OK).json({success:true, reply})
-    }
+  async getReply(req: IAuthRequest, res: Response): Promise<void> {
+    const message = req.body.message as string;
+    const reply = await this._chatBotService.getReply(message);
+    res.status(HttpStatus.OK).json({ success: true, reply });
+  }
 }

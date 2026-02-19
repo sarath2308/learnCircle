@@ -11,7 +11,7 @@ import { ProfileRequest } from "@/types/professional/profile.request";
 @injectable()
 export class ProfessionalProfileController implements IProfessionalProfileController {
   constructor(
-    @inject(TYPES.IProfessionalProfileService) private _service: IProfessionalProfileService,
+    @inject(TYPES.IProfessionalProfileService) private _profileService: IProfessionalProfileService,
   ) {}
 
   async uploadProfile(req: ProfileRequest, res: Response): Promise<void> {
@@ -27,11 +27,57 @@ export class ProfessionalProfileController implements IProfessionalProfileContro
     const avatarStream = req.files["avatar"];
     const resumeStream = req.files["resume"];
 
-    await this._service.uploadData(userId, req.body, {
+    await this._profileService.uploadData(userId, req.body, {
       avatar: avatarStream,
       resume: resumeStream,
     });
 
     res.status(HttpStatus.CREATED).json({ message: Messages.PROFILE_UPDATED });
+  }
+
+  async updateProfile(req: ProfileRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    await this._profileService.updateProfile(userId, req.body);
+    res.status(HttpStatus.OK).json({ success: true });
+  }
+
+  async getProfile(req: ProfileRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const profileData = await this._profileService.getProfessionalProfileForUser(userId);
+    res.status(HttpStatus.OK).json({ success: true, profileData });
+  }
+
+  async updatePassword(req: ProfileRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const newPassword = req.body.newPassword as string;
+    const oldPassword = req.body.oldPassword as string;
+    await this._profileService.updatePassword(userId, oldPassword, newPassword);
+    res.status(HttpStatus.OK).json({ success: true });
+  }
+  async updateProfileImage(req: ProfileRequest, res: Response): Promise<void> {
+    if (!req.files || !req.files["avatar"]) {
+      throw new AppError(Messages.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+    }
+    const userId = req.user?.userId as string;
+    const profileImg = req.files["avatar"];
+    await this._profileService.updateProfilePicture(userId, profileImg);
+    res.status(HttpStatus.OK).json({ success: true });
+  }
+  async logOut(req: ProfileRequest, res: Response): Promise<void> {
+    const jti = req.user?.jti as string;
+    const userId = req.user?.userId as string;
+    await this._profileService.logout(userId, jti);
+    res.status(HttpStatus.OK).json({ success: true });
+  }
+
+  async reqEmailOtp(req: ProfileRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    await this._profileService.requestChangeEmail(userId, req.body.newEmail);
+    res.status(HttpStatus.OK).json({ success: true });
+  }
+  async verifyAndUpdateEmail(req: ProfileRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    await this._profileService.verifyAndUpdateEmail(userId, req.body.otp);
+    res.status(HttpStatus.OK).json({ success: true });
   }
 }

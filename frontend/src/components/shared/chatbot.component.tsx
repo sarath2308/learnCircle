@@ -79,7 +79,7 @@ const Chatbot = () => {
               </div>
               <div>
                 <h4 className="text-white font-black text-xs uppercase tracking-widest leading-none">
-                  Agent Alpha
+                  LearnCircle Agent
                 </h4>
                 <p className="text-blue-100 text-[10px] font-bold mt-1 uppercase tracking-tighter">
                   Secure Link Active
@@ -141,7 +141,7 @@ const Chatbot = () => {
           <div className="shrink-0 p-5 bg-white dark:bg-[#050505] border-t border-slate-100 dark:border-white/5">
             <div className="flex flex-wrap gap-2 mb-4">
               <QuickBtn
-                label="How to book?"
+                label="How to book Session ?"
                 onClick={() => sendMessage("SESSION_BOOK", "How do I book a session?")}
               />
               <QuickBtn

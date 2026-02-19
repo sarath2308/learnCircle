@@ -1,4 +1,3 @@
-export interface IChatBotService
-{
-    getReply:(userMessage: string) => Promise<string>;
+export interface IChatBotService {
+  getReply: (userMessage: string) => Promise<string>;
 }

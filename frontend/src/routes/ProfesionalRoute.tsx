@@ -16,7 +16,14 @@ const ProfessionalSessionBooking = lazy(
   () => import("@/pages/Profesional/Professional.session.list"),
 );
 const VideoCallPage = lazy(() => import("@/pages/shared/video.room.page"));
-const ChatPage = lazy(() => import("@/components/shared/chat.component"));
+const ChatPage = lazy(() => import("@/pages/shared/chat.page"));
+
+const ProfessionalProfileLayout = lazy(
+  () => import("@/components/professional/professional.profile.component"),
+);
+
+const ProfessionalProfilePage = lazy(() => import("@/pages/Profesional/professional.profile.page"));
+
 const professionalRoutes: RouteObject[] = [
   {
     element: <ProtectedProfessionalRoute />,
@@ -36,6 +43,10 @@ const professionalRoutes: RouteObject[] = [
                 <ProfessionalDashboard />
               </Suspense>
             ),
+          },
+          {
+            path: "profile",
+            element: <ProfessionalProfilePage />,
           },
           {
             path: "verification",
@@ -67,7 +78,7 @@ const professionalRoutes: RouteObject[] = [
           },
           {
             path: "chat",
-            element: <VideoCallPage />,
+            element: <ChatPage />,
           },
         ],
       },

@@ -97,6 +97,7 @@ export class ChatService implements IChatService {
   }
   async getMessages(userId: string, conversationId: string): Promise<MessageResponseType[]> {
     let messages = await this._messageRepo.getMessagesFromConversation(conversationId);
+    await this._conversationParticipantRepo.updateLastRead(userId, conversationId);
     const responseArray = messages.map((msg) => {
       const responseObj = {
         id: String(msg._id),

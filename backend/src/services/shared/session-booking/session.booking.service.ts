@@ -1,8 +1,10 @@
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
+import { NotificationTemplates, NotificationType } from "@/constants/shared/notification.constant";
 import { AppError } from "@/errors/app.error";
 import { IProfessionalProfileService } from "@/interface/professional/professional.profile.service.interface";
 import { IMapper } from "@/interface/shared/mapper/mapper.interface";
+import { INotificationService } from "@/interface/shared/notification/notification.service.interface";
 import { IAvailabilityRepo } from "@/interface/shared/session-booking/availabillity/availability.repo.interface";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
 import { ISessionBookingService } from "@/interface/shared/session-booking/booking/session.booking.service.interface";
@@ -22,6 +24,7 @@ export class SessionBookingService implements ISessionBookingService {
     @inject(TYPES.IAvailabilityRepo) private _avilabilityRepo: IAvailabilityRepo,
     @inject(TYPES.IProfessionalProfileService)
     private _professionalProfileService: IProfessionalProfileService,
+    @inject(TYPES.INotificationService) private _notificationService: INotificationService,
   ) {}
   /**
    *
@@ -100,6 +103,8 @@ export class SessionBookingService implements ISessionBookingService {
       throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     await this._sessionBookingRepo.confirmSessionBooking(sessionBookingId);
+    const tpl = NotificationTemplates[NotificationType.SESSION_BOOKED];
+    await this._notificationService.notifyUser(String(booking.learnerId), tpl.title, tpl.message);
     return this._sessionBookingMapper.map(booking);
   }
 

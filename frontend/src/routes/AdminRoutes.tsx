@@ -13,7 +13,7 @@ const AdminMyCourse = lazy(() => import("@/pages/admin/admin.mycourse"));
 const AdminCourseCreatePage = lazy(() => import("@/pages/admin/admin.course.create"));
 const AdminCourseQuickView = lazy(() => import("@/pages/admin/admin.course.quick.view"));
 const AdminEditCouse = lazy(() => import("@/pages/shared/course.edit.page"));
-const AdminChatPage = lazy(() => import("@/pages/admin/admin.chat.page"));
+const AdminChatPage = lazy(() => import("@/pages/shared/chat.page"));
 const AdminRoutes: RouteObject[] = [
   // PUBLIC: Admin Login
   {

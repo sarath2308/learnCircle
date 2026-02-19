@@ -2,7 +2,7 @@ import ChatComponent from "@/components/shared/chat.component";
 import ConversationListComponent from "@/components/shared/conversation.list.component";
 import { useState } from "react";
 
-const AdminChatPage = () => {
+const ChatPage = () => {
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   const handleConversation = (convId: string) => {
@@ -32,4 +32,4 @@ const AdminChatPage = () => {
   );
 };
 
-export default AdminChatPage;
+export default ChatPage;

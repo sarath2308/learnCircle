@@ -8,12 +8,12 @@ export interface IProfessionalProfile extends Document {
   bio?: string;
   companyName?: string;
   experience?: number;
-  profile_key?: string;
+  profile_key: string;
   rating?: number;
   resume_key?: string;
   sessionPrice?: number;
   skills?: string[];
-  title?: string;
+  title: string;
   totalSessions?: number;
   typesOfSessions?: string[];
 }

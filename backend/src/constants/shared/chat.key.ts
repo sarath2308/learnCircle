@@ -6,4 +6,4 @@ export const CHAT_KEY = {
   COURSE_RECOMMENDATION: "COURSE_RECOMMENDATION",
 } as const;
 
-export type ChatKey = typeof CHAT_KEY[keyof typeof CHAT_KEY];
+export type ChatKey = (typeof CHAT_KEY)[keyof typeof CHAT_KEY];

@@ -7,9 +7,10 @@ import {
 import { injectable } from "inversify";
 
 @injectable()
-export class InstructorReviewMapper
-  implements IMapper<IInstructorReview, InstructorReviewResponseType>
-{
+export class InstructorReviewMapper implements IMapper<
+  IInstructorReview,
+  InstructorReviewResponseType
+> {
   map(input: IInstructorReview): InstructorReviewResponseType {
     function formatDate(date: Date): string {
       const d = new Date(date);

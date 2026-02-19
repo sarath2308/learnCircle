@@ -110,5 +110,5 @@ export const Messages = {
 
   //Chat bot
 
-  CHATBOT_REPLY_NOT_FOUND : "No reply for this message",
+  CHATBOT_REPLY_NOT_FOUND: "No reply for this message",
 };

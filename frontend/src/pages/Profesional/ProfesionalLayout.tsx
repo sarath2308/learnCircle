@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useGetDashboard } from "@/hooks/profesional/useGetDashboard";
 import { Processing } from "./Processing";
 import { Rejected } from "./Rejected";
@@ -20,6 +20,9 @@ import {
   IconMessageCircle,
   IconSettings,
 } from "@tabler/icons-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { useProfessionalLogout } from "@/hooks/profesional/professional-profile/professional.profile.logout.hook";
 
 const adminLinks = [
   { label: "Dashboard", path: "/professional/dashboard", icon: IconBrandTabler },
@@ -33,13 +36,21 @@ const adminLinks = [
 ];
 
 export default function ProfesionalLayout() {
+  const navigate = useNavigate();
+  const currentUser = useSelector((state: RootState) => state.currentUser.currentUser);
   const { data: userData, isLoading } = useGetDashboard();
+  const logoutMutation = useProfessionalLogout();
 
   if (isLoading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
   if (userData?.status === "processing") return <Processing />;
   if (userData?.status === "rejected")
     return <Rejected reason={userData.rejectReason || "No reason Provided"} />;
   if (userData?.status === "pending") return <Verification />;
+
+  const handleLogout = async() =>
+  {
+    await logoutMutation.mutateAsync();
+  }
 
   const NavItems = () => (
     <>
@@ -80,6 +91,7 @@ export default function ProfesionalLayout() {
 
         <div className="p-4 border-t border-slate-100 dark:border-slate-800">
           <Button
+          onClick={handleLogout}
             variant="ghost"
             className="w-full justify-start gap-3 text-red-500 hover:bg-red-50 font-bold rounded-xl"
           >
@@ -109,7 +121,7 @@ export default function ProfesionalLayout() {
             </Sheet>
 
             <h2 className="hidden sm:block text-sm font-bold text-slate-400">
-              Welcome back, {userData?.user.name}
+              Welcome back, {currentUser?.name}
             </h2>
           </div>
 
@@ -126,8 +138,16 @@ export default function ProfesionalLayout() {
                 <p className="text-sm font-bold leading-none">{userData?.user.name}</p>
                 <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Instructor</p>
               </div>
-              <Avatar className="h-9 w-9 border-2 border-blue-600/10">
-                <AvatarImage src={userData?.user.profileImg} />
+              <Avatar
+                onClick={() => navigate("/professional/profile")}
+                className="h-9 w-9 border-2 border-blue-600/10"
+              >
+                <AvatarImage
+                  src={
+                    currentUser?.profileImg ??
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                  }
+                />
                 <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">
                   {userData?.user.name?.charAt(0)}
                 </AvatarFallback>

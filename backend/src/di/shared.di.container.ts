@@ -131,9 +131,18 @@ import { CourseReviewMapper } from "@/mapper/shared/course-review/course.review.
 import { CourseReviewResponseType } from "@/schema/shared/review/course-review/course.review.response.schema";
 import { InstructorReviewController } from "@/controllers/shared/instructor.review.controller";
 import { IChatBotService } from "@/interface/shared/chatbot/chatbot.service.interface";
-import { ChatBotService } from "@/utils/chatBot.service";
 import { IChatBotController } from "@/interface/shared/chatbot/chatbot.controller.interface";
 import { ChatBotController } from "@/controllers/shared/chatbot.controller";
+import { ISocketEmitService } from "@/interface/shared/socket/socket.emit.interface";
+import { SocketEmitService } from "@/socket/socket.emit";
+import { ChatBotService } from "@/utils/chatbot.service";
+import { INotification, NotificationModel } from "@/model/shared/notification.model";
+import { INotificationRepo } from "@/interface/shared/notification/notification.repo.interface";
+import { NotificationRepo } from "@/repos/shared/notification.repo";
+import { INotificationService } from "@/interface/shared/notification/notification.service.interface";
+import { NotificationService } from "@/services/shared/notification/notification.service";
+import { INotificationController } from "@/interface/shared/notification/notification.controller.interface";
+import { NotificationController } from "@/controllers/shared/notification.controller";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -160,6 +169,7 @@ export const registerShared = (container: Container): void => {
     .bind<Model<IInstructorReview>>(TYPES.IInstructorReviewModel)
     .toConstantValue(InstructorReviewModel);
   container.bind<Model<ICourseReview>>(TYPES.ICourseReviewModel).toConstantValue(CourseReviewModel);
+  container.bind<Model<INotification>>(TYPES.INotificationModel).toConstantValue(NotificationModel);
   /*-------------------Repo-----------------------*/
 
   container.bind<ICourseRepo>(TYPES.ICourseRepo).to(CourseRepo);
@@ -181,6 +191,7 @@ export const registerShared = (container: Container): void => {
   container.bind<ISessionBookingRepo>(TYPES.ISessionBookingRepo).to(SessionBookingRepo);
   container.bind<ICourseReviewRepo>(TYPES.ICourseReviewRepo).to(CourseReviewRepo);
   container.bind<IInstructorReviewRepo>(TYPES.IInstructorReviewRepo).to(InstructorReviewRepo);
+  container.bind<INotificationRepo>(TYPES.INotificationRepo).to(NotificationRepo);
 
   /*-------------------Service-----------------------*/
 
@@ -212,8 +223,9 @@ export const registerShared = (container: Container): void => {
     .bind<IInstructorReviewService>(TYPES.IInstructorReviewService)
     .to(InstructorReviewService);
 
-    container.bind<IChatBotService>(TYPES.IChatBotService).to(ChatBotService);
-
+  container.bind<IChatBotService>(TYPES.IChatBotService).to(ChatBotService);
+  container.bind<ISocketEmitService>(TYPES.ISocketEmitService).to(SocketEmitService);
+  container.bind<INotificationService>(TYPES.INotificationService).to(NotificationService);
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
   container.bind<ICourseController>(TYPES.ICourseController).to(CourseController);
@@ -233,7 +245,8 @@ export const registerShared = (container: Container): void => {
     .bind<IInstructorReviewController>(TYPES.IInstructorReviewController)
     .to(InstructorReviewController);
 
-    container.bind<IChatBotController>(TYPES.IChatBotController).to(ChatBotController);
+  container.bind<IChatBotController>(TYPES.IChatBotController).to(ChatBotController);
+  container.bind<INotificationController>(TYPES.INotificationController).to(NotificationController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);

@@ -29,6 +29,8 @@ import { InstructorReviewRoutes } from "./shared/instructor-review/instructor.re
 import { IInstructorReviewController } from "@/interface/shared/instuctor-review/instructor.review.controller";
 import { IChatBotController } from "@/interface/shared/chatbot/chatbot.controller.interface";
 import { ChatBotRoutes } from "./shared/chatbot/chatbot.routes";
+import { INotificationController } from "@/interface/shared/notification/notification.controller.interface";
+import { NotificationRoutes } from "./shared/notification/notification.routes";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -60,8 +62,13 @@ export function entryRoute() {
     container.get<IInstructorReviewController>(TYPES.IInstructorReviewController),
   );
 
-  const chatBotController = wrapAsyncController(container.get<IChatBotController>(TYPES.IChatBotController));
+  const chatBotController = wrapAsyncController(
+    container.get<IChatBotController>(TYPES.IChatBotController),
+  );
 
+  const notificationController = wrapAsyncController(
+    container.get<INotificationController>(TYPES.INotificationController),
+  );
   const router = Router();
 
   router.use("/auth", authEntryRoute());
@@ -155,11 +162,17 @@ export function entryRoute() {
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     InstructorReviewRoutes(instructorReviewController),
   );
-    router.use(
+  router.use(
     "/chat-bot",
     authenticate.handle.bind(authenticate),
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     ChatBotRoutes(chatBotController),
+  );
+  router.use(
+    "/notification",
+    authenticate.handle.bind(authenticate),
+    authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
+    NotificationRoutes(notificationController),
   );
 
   return router;
