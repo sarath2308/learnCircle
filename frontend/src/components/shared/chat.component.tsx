@@ -31,46 +31,65 @@ interface ChatComponentProps {
 }
 
 const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComponentProps) => {
-  const [input, setInput] = useState("");
-  const [localMessages, setLocalMessages] = useState<Message[]>([]);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const currentUserId = useSelector((state: RootState) => state.currentUser.currentUser?.id);
+ const [input, setInput] = useState("");
+const [localMessages, setLocalMessages] = useState<Message[]>([]);
+const scrollRef = useRef<HTMLDivElement>(null);
+const currentUserId = useSelector((state: RootState) => state.currentUser.currentUser?.id);
 
-  const { data: messageRes } = useGetMessages(conversationId);
+// 👇 Single socket instance for this component
+const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
 
-  useEffect(() => {
-    if (messageRes?.messageData) setLocalMessages(messageRes.messageData);
-    else if (!conversationId) setLocalMessages([]);
-  }, [messageRes, conversationId]);
+const { data: messageRes } = useGetMessages(conversationId);
 
-  useEffect(() => {
-    if (!conversationId) return;
-    const socket = getSocket();
-    socket.emit("chat:join", { conversationId });
+// Load initial messages
+useEffect(() => {
+  if (messageRes?.messageData) {
+    setLocalMessages(messageRes.messageData);
+  } else if (!conversationId) {
+    setLocalMessages([]);
+  }
+}, [messageRes, conversationId]);
 
-    const onMessage = (newMessage: Message) => {
-      setLocalMessages((prev) =>
-        prev.some((m) => m.id === newMessage.id) ? prev : [...prev, newMessage],
-      );
-    };
+// Setup socket join + listener
+useEffect(() => {
+  if (!conversationId) return;
 
-    socket.on("chat:message", onMessage);
-    return () => {
-      socket.emit("chat:leave", { conversationId });
-      socket.off("chat:message", onMessage);
-    };
-  }, [conversationId]);
+  if (!socketRef.current) {
+    socketRef.current = getSocket(); // ✅ init once
+  }
 
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [localMessages]);
+  const socket = socketRef.current;
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || !conversationId) return;
-    getSocket().emit("chat:send", { conversationId, content: input });
-    setInput("");
+  socket.emit("chat:join", { conversationId });
+
+  const onMessage = (newMessage: Message) => {
+    setLocalMessages((prev) =>
+      prev.some((m) => m.id === newMessage.id) ? prev : [...prev, newMessage],
+    );
   };
+
+  socket.on("chat:message", onMessage);
+
+  return () => {
+    socket.emit("chat:leave", { conversationId });
+    socket.off("chat:message", onMessage);
+  };
+}, [conversationId]);
+
+// Auto scroll
+useEffect(() => {
+  scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+}, [localMessages]);
+
+// Send message using SAME socket
+const handleSend = (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!input.trim() || !conversationId || !socketRef.current) return;
+
+  socketRef.current.emit("chat:send", { conversationId, content: input });
+  setInput("");
+};
+
 
   if (!conversationId) {
     return (

@@ -25,7 +25,7 @@ import type { RootState } from "@/redux/store";
 import { useProfessionalLogout } from "@/hooks/profesional/professional-profile/professional.profile.logout.hook";
 
 const adminLinks = [
-  { label: "Dashboard", path: "/professional/dashboard", icon: IconBrandTabler },
+  { label: "Dashboard", path: "/professional/home", icon: IconBrandTabler },
   { label: "Courses", path: "/professional/my-courses", icon: IconBook },
   { label: "Sessions", path: "/professional/sessions", icon: IconChartBar },
   { label: "Schedule", path: "/professional/schedule", icon: IconCalendar },
