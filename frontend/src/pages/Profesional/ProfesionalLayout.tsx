@@ -47,10 +47,9 @@ export default function ProfesionalLayout() {
     return <Rejected reason={userData.rejectReason || "No reason Provided"} />;
   if (userData?.status === "pending") return <Verification />;
 
-  const handleLogout = async() =>
-  {
+  const handleLogout = async () => {
     await logoutMutation.mutateAsync();
-  }
+  };
 
   const NavItems = () => (
     <>
@@ -91,7 +90,7 @@ export default function ProfesionalLayout() {
 
         <div className="p-4 border-t border-slate-100 dark:border-slate-800">
           <Button
-          onClick={handleLogout}
+            onClick={handleLogout}
             variant="ghost"
             className="w-full justify-start gap-3 text-red-500 hover:bg-red-50 font-bold rounded-xl"
           >

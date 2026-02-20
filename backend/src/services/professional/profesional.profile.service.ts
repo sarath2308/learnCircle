@@ -175,7 +175,7 @@ export class ProfessionalProfileService implements IProfessionalProfileService {
         oldPassword,
       );
       if (!check) {
-        throw new AppError(Messages.INCORRECT_PASSWORD, HttpStatus.NOT_MODIFIED);
+        throw new AppError(Messages.INCORRECT_PASSWORD, HttpStatus.BAD_REQUEST);
       }
     }
 

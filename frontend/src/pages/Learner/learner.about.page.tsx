@@ -1,13 +1,5 @@
-/* eslint-disable quotes */
-import React from 'react';
-import { 
-  Users, 
-  Globe, 
-  Zap, 
-  ShieldCheck, 
-  Target, 
-  Heart 
-} from 'lucide-react';
+import React from "react";
+import { Users, Globe, Zap, ShieldCheck, Target, Heart } from "lucide-react";
 
 const AboutPage = () => {
   return (
@@ -19,10 +11,12 @@ const AboutPage = () => {
             Our Mission
           </div>
           <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-            Bridging the gap between <span className="text-blue-600">Knowledge</span> and <span className="text-blue-600">Action</span>.
+            Bridging the gap between <span className="text-blue-600">Knowledge</span> and{" "}
+            <span className="text-blue-600">Action</span>.
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            LearnCircle is a global ecosystem designed for professionals to master high-demand skills through live mentorship and peer-to-peer collaboration.
+            LearnCircle is a global ecosystem designed for professionals to master high-demand
+            skills through live mentorship and peer-to-peer collaboration.
           </p>
         </div>
       </section>
@@ -48,17 +42,17 @@ const AboutPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <ValueCard 
+            <ValueCard
               icon={<Target className="text-blue-400" size={32} />}
               title="Impact Driven"
               description="We don't teach theory. We teach what works in the real world, focusing on skills that lead to career breakthroughs."
             />
-            <ValueCard 
+            <ValueCard
               icon={<Users className="text-purple-400" size={32} />}
               title="Community First"
               description="Learning is a circle. Our students become mentors, and our mentors never stop learning from the community."
             />
-            <ValueCard 
+            <ValueCard
               icon={<Zap className="text-yellow-400" size={32} />}
               title="Live & Interactive"
               description="Recorded videos aren't enough. We prioritize live sessions, Q&As, and hands-on workshops."
@@ -77,7 +71,9 @@ const AboutPage = () => {
             </div>
             <div>
               <h4 className="font-bold text-lg text-slate-800">Verified Instructors</h4>
-              <p className="text-slate-500 mt-1">Every mentor on LearnCircle undergoes a rigorous background and expertise check.</p>
+              <p className="text-slate-500 mt-1">
+                Every mentor on LearnCircle undergoes a rigorous background and expertise check.
+              </p>
             </div>
           </div>
           <div className="p-8 border border-slate-100 rounded-2xl bg-slate-50/50 flex items-start gap-4 text-left">
@@ -86,7 +82,9 @@ const AboutPage = () => {
             </div>
             <div>
               <h4 className="font-bold text-lg text-slate-800">Global Accessibility</h4>
-              <p className="text-slate-500 mt-1">Join the circle from anywhere in the world, with content localized for your growth.</p>
+              <p className="text-slate-500 mt-1">
+                Join the circle from anywhere in the world, with content localized for your growth.
+              </p>
             </div>
           </div>
         </div>
@@ -111,14 +109,22 @@ const AboutPage = () => {
 };
 
 // Sub-components
-const StatItem = ({ label, value }: { label: string, value: string }) => (
+const StatItem = ({ label, value }: { label: string; value: string }) => (
   <div>
     <p className="text-4xl font-black text-slate-900">{value}</p>
     <p className="text-sm font-bold text-slate-400 uppercase tracking-wide mt-1">{label}</p>
   </div>
 );
 
-const ValueCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+const ValueCard = ({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => (
   <div className="flex flex-col items-center text-center">
     <div className="mb-6">{icon}</div>
     <h4 className="text-xl font-bold mb-3">{title}</h4>

@@ -162,7 +162,7 @@ export default function InstructorProfile() {
                 {profileData.name?.[0]}
               </AvatarFallback>
             </Avatar>
-            
+
             <button
               disabled={changeAvatarMutation.isPending}
               onClick={() => fileInputRef.current?.click()}
@@ -174,10 +174,10 @@ export default function InstructorProfile() {
                 <Camera className="h-6 w-6" />
               )}
             </button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
               accept="image/*"
               onChange={handleAvatarChange}
             />
@@ -212,17 +212,27 @@ export default function InstructorProfile() {
         <div className="lg:col-span-8 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { label: "Expertise", val: `${profileData.experience} Years`, icon: GraduationCap, color: "indigo" },
+              {
+                label: "Expertise",
+                val: `${profileData.experience} Years`,
+                icon: GraduationCap,
+                color: "indigo",
+              },
               { label: "Total Sessions", val: profileData.totalSessions, icon: Zap, color: "blue" },
               { label: "Instructor Rating", val: profileData.rating, icon: Star, color: "amber" },
             ].map((s) => (
-              <Card key={s.label} className="border-none bg-white dark:bg-slate-900/50 shadow-xl rounded-[2.5rem]">
+              <Card
+                key={s.label}
+                className="border-none bg-white dark:bg-slate-900/50 shadow-xl rounded-[2.5rem]"
+              >
                 <CardContent className="p-8 flex flex-col items-center text-center gap-4">
                   <div className="p-4 rounded-2xl bg-indigo-500/10 text-indigo-600">
                     <s.icon className="h-7 w-7" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{s.label}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      {s.label}
+                    </p>
                     <p className="text-3xl font-black mt-1">{s.val}</p>
                   </div>
                 </CardContent>
@@ -231,13 +241,18 @@ export default function InstructorProfile() {
           </div>
 
           <Card className="border-none bg-white dark:bg-slate-900/50 shadow-2xl rounded-[3rem] p-8 md:p-12 overflow-hidden">
-            <h3 className="text-2xl font-black uppercase tracking-tighter mb-6">Professional Biography</h3>
+            <h3 className="text-2xl font-black uppercase tracking-tighter mb-6">
+              Professional Biography
+            </h3>
             <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium text-lg whitespace-pre-wrap break-words">
               {profileData.bio}
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               {profileData.skills?.map((skill) => (
-                <Badge key={skill} className="bg-slate-100 dark:bg-indigo-500/10 text-slate-600 dark:text-indigo-400 px-5 py-2.5 rounded-2xl font-black uppercase text-[10px] tracking-widest border-none">
+                <Badge
+                  key={skill}
+                  className="bg-slate-100 dark:bg-indigo-500/10 text-slate-600 dark:text-indigo-400 px-5 py-2.5 rounded-2xl font-black uppercase text-[10px] tracking-widest border-none"
+                >
                   {skill}
                 </Badge>
               ))}
@@ -248,9 +263,13 @@ export default function InstructorProfile() {
         <div className="lg:col-span-4">
           <div className="p-12 bg-slate-900 dark:bg-indigo-600 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
             <div className="relative z-10">
-              <h4 className="text-xs font-black uppercase tracking-[0.4em] mb-4 opacity-70">Current Hourly Rate</h4>
+              <h4 className="text-xs font-black uppercase tracking-[0.4em] mb-4 opacity-70">
+                Current Hourly Rate
+              </h4>
               <div className="flex items-baseline gap-2 mb-10">
-                <span className="text-6xl font-black tracking-tighter">${profileData.sessionPrice}</span>
+                <span className="text-6xl font-black tracking-tighter">
+                  ${profileData.sessionPrice}
+                </span>
                 <span className="text-sm font-bold opacity-50">USD/HR</span>
               </div>
               <Button className="w-full h-16 bg-white text-slate-900 hover:bg-slate-100 font-black rounded-2xl tracking-widest text-xs">
@@ -265,11 +284,19 @@ export default function InstructorProfile() {
       {/* --- SETTINGS DRAWER --- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[1000] flex justify-end">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            onClick={() => setIsModalOpen(false)}
+          />
           <div className="relative w-full max-w-xl bg-white dark:bg-[#0B0F1A] h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
             <div className="p-8 border-b dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-white/5">
               <h2 className="text-2xl font-black tracking-tighter uppercase">Instructor Hub</h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all"><X /></button>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all"
+              >
+                <X />
+              </button>
             </div>
 
             <div className="flex p-1.5 bg-slate-100 dark:bg-slate-900 mx-8 mt-8 rounded-2xl">
@@ -278,7 +305,9 @@ export default function InstructorProfile() {
                   key={tab}
                   onClick={() => setActiveTab(tab as any)}
                   className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                    activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-indigo-600" : "text-slate-400 opacity-60"
+                    activeTab === tab
+                      ? "bg-white dark:bg-slate-800 shadow-md text-indigo-600"
+                      : "text-slate-400 opacity-60"
                   }`}
                 >
                   {tab}
@@ -291,30 +320,73 @@ export default function InstructorProfile() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Public Identity</Label>
-                      <Input value={formState.name} onChange={(e) => setFormState({ ...formState, name: e.target.value })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold" />
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        Public Identity
+                      </Label>
+                      <Input
+                        value={formState.name}
+                        onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                        className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Professional Title</Label>
-                      <Input value={formState.title} onChange={(e) => setFormState({ ...formState, title: e.target.value })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold" />
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        Professional Title
+                      </Label>
+                      <Input
+                        value={formState.title}
+                        onChange={(e) => setFormState({ ...formState, title: e.target.value })}
+                        className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold"
+                      />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Organization</Label>
-                      <Input value={formState.companyName} onChange={(e) => setFormState({ ...formState, companyName: e.target.value })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold" />
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        Organization
+                      </Label>
+                      <Input
+                        value={formState.companyName}
+                        onChange={(e) =>
+                          setFormState({ ...formState, companyName: e.target.value })
+                        }
+                        className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Years of Practice</Label>
-                      <Input type="number" value={formState.experience} onChange={(e) => setFormState({ ...formState, experience: parseInt(e.target.value) })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold" />
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        Years of Practice
+                      </Label>
+                      <Input
+                        type="number"
+                        value={formState.experience}
+                        onChange={(e) =>
+                          setFormState({ ...formState, experience: parseInt(e.target.value) })
+                        }
+                        className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Biography</Label>
-                    <Textarea value={formState.bio} onChange={(e) => setFormState({ ...formState, bio: e.target.value })} className="min-h-[150px] rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 p-5 font-medium leading-relaxed" />
+                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                      Biography
+                    </Label>
+                    <Textarea
+                      value={formState.bio}
+                      onChange={(e) => setFormState({ ...formState, bio: e.target.value })}
+                      className="min-h-[150px] rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 p-5 font-medium leading-relaxed"
+                    />
                   </div>
-                  <Button disabled={updateMutation.isPending} onClick={handleUpdateProfile} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl rounded-[1.5rem] font-black text-xs tracking-widest uppercase">
-                    {updateMutation.isPending ? <Loader2 className="animate-spin" /> : "COMMIT CHANGES"}
+                  <Button
+                    disabled={updateMutation.isPending}
+                    onClick={handleUpdateProfile}
+                    className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl rounded-[1.5rem] font-black text-xs tracking-widest uppercase"
+                  >
+                    {updateMutation.isPending ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      "COMMIT CHANGES"
+                    )}
                   </Button>
                 </div>
               )}
@@ -323,10 +395,21 @@ export default function InstructorProfile() {
                 <div className="space-y-8">
                   {!isOtpSent ? (
                     <div className="space-y-3">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">New Communications Link</Label>
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        New Communications Link
+                      </Label>
                       <div className="flex gap-2">
-                        <Input value={formState.email} onChange={(e) => setFormState({ ...formState, email: e.target.value })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold flex-1" />
-                        <Button disabled={reqChangeEmailMutation.isPending} onClick={handleSendOtp} variant="outline" className="h-14 rounded-2xl border-slate-200 dark:border-slate-800 px-6 font-black text-xs">
+                        <Input
+                          value={formState.email}
+                          onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                          className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold flex-1"
+                        />
+                        <Button
+                          disabled={reqChangeEmailMutation.isPending}
+                          onClick={handleSendOtp}
+                          variant="outline"
+                          className="h-14 rounded-2xl border-slate-200 dark:border-slate-800 px-6 font-black text-xs"
+                        >
                           {reqChangeEmailMutation.isPending ? "SENDING..." : "SEND OTP"}
                         </Button>
                       </div>
@@ -334,12 +417,29 @@ export default function InstructorProfile() {
                   ) : (
                     <div className="space-y-6 text-center">
                       <div className="p-8 bg-indigo-600/5 border border-indigo-600/10 rounded-[2.5rem] space-y-6">
-                        <Label className="text-indigo-600 font-black text-[10px] uppercase tracking-widest">Verify Email Access</Label>
-                        <Input placeholder="000000" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value)} className="h-20 text-center text-4xl tracking-[0.5em] font-black bg-white dark:bg-slate-900 border-none rounded-2xl shadow-inner" />
-                        <Button disabled={verifyAndChangeEmail.isPending} onClick={handleVerifyOtp} className="w-full h-14 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest">
+                        <Label className="text-indigo-600 font-black text-[10px] uppercase tracking-widest">
+                          Verify Email Access
+                        </Label>
+                        <Input
+                          placeholder="000000"
+                          maxLength={6}
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                          className="h-20 text-center text-4xl tracking-[0.5em] font-black bg-white dark:bg-slate-900 border-none rounded-2xl shadow-inner"
+                        />
+                        <Button
+                          disabled={verifyAndChangeEmail.isPending}
+                          onClick={handleVerifyOtp}
+                          className="w-full h-14 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest"
+                        >
                           {verifyAndChangeEmail.isPending ? "VALIDATING..." : "VALIDATE IDENTITY"}
                         </Button>
-                        <button onClick={() => setIsOtpSent(false)} className="text-[10px] font-black text-slate-400 uppercase tracking-widest block w-full text-center">Back to settings</button>
+                        <button
+                          onClick={() => setIsOtpSent(false)}
+                          className="text-[10px] font-black text-slate-400 uppercase tracking-widest block w-full text-center"
+                        >
+                          Back to settings
+                        </button>
                       </div>
                     </div>
                   )}
@@ -350,16 +450,35 @@ export default function InstructorProfile() {
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Current Secret Key</Label>
-                      <Input type="password" value={passwords.current} onChange={(e) => setPasswords({ ...passwords, current: e.target.value })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold" />
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        Current Secret Key
+                      </Label>
+                      <Input
+                        type="password"
+                        value={passwords.current}
+                        onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                        className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">New Secure Key</Label>
-                      <Input type="password" value={passwords.new} onChange={(e) => setPasswords({ ...passwords, new: e.target.value })} className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold" />
+                      <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                        New Secure Key
+                      </Label>
+                      <Input
+                        type="password"
+                        value={passwords.new}
+                        onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                        className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none ring-1 ring-slate-200 dark:ring-slate-800 px-5 font-bold"
+                      />
                     </div>
                   </div>
-                  <Button disabled={updatePasswordMutation.isPending} onClick={handlePasswordUpdate} className="w-full h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-xs uppercase tracking-widest">
-                    <KeyRound className="w-4 h-4 mr-2" /> {updatePasswordMutation.isPending ? "PROCESSING..." : "UPDATE ENCRYPTION"}
+                  <Button
+                    disabled={updatePasswordMutation.isPending}
+                    onClick={handlePasswordUpdate}
+                    className="w-full h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-xs uppercase tracking-widest"
+                  >
+                    <KeyRound className="w-4 h-4 mr-2" />{" "}
+                    {updatePasswordMutation.isPending ? "PROCESSING..." : "UPDATE ENCRYPTION"}
                   </Button>
                 </div>
               )}

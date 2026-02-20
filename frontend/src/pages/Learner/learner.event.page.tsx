@@ -1,12 +1,5 @@
-/* eslint-disable quotes */
-import React from 'react';
-import { 
-  CalendarDays, 
-  Plus, 
-  Search, 
-  BellRing,
-  ArrowRight
-} from 'lucide-react';
+import React from "react";
+import { CalendarDays, Plus, Search, BellRing, ArrowRight } from "lucide-react";
 
 const EventsPage = () => {
   return (
@@ -15,7 +8,9 @@ const EventsPage = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Events</h1>
-          <p className="text-slate-500 font-medium">Live workshops, webinars, and community meetups.</p>
+          <p className="text-slate-500 font-medium">
+            Live workshops, webinars, and community meetups.
+          </p>
         </div>
       </div>
 
@@ -29,8 +24,8 @@ const EventsPage = () => {
 
           <h2 className="text-2xl font-bold text-slate-800 mb-3">No Upcoming Events</h2>
           <p className="text-slate-500 max-w-md mx-auto mb-8 leading-relaxed">
-            It looks like there are no events scheduled at the moment. 
-            Check back later or subscribe to notifications to be the first to know when a new session is added.
+            It looks like there are no events scheduled at the moment. Check back later or subscribe
+            to notifications to be the first to know when a new session is added.
           </p>
 
           {/* Action Buttons */}
@@ -54,7 +49,9 @@ const EventsPage = () => {
             </div>
             <div>
               <h4 className="font-bold text-slate-800">Browse Past Events</h4>
-              <p className="text-sm text-slate-500 mt-1">Access recordings of previous webinars and workshops.</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Access recordings of previous webinars and workshops.
+              </p>
               <button className="mt-3 text-blue-600 text-sm font-bold flex items-center gap-1 hover:underline">
                 View Archive <ArrowRight size={14} />
               </button>
@@ -67,7 +64,9 @@ const EventsPage = () => {
             </div>
             <div>
               <h4 className="font-bold text-slate-800">Request a Topic</h4>
-              <p className="text-sm text-slate-500 mt-1">Want to learn something specific? Tell our instructors.</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Want to learn something specific? Tell our instructors.
+              </p>
               <button className="mt-3 text-blue-600 text-sm font-bold flex items-center gap-1 hover:underline">
                 Send Request <ArrowRight size={14} />
               </button>
