@@ -2,7 +2,6 @@ import AdminCategoryManagement from "@/components/admin/admin.category";
 import AdminSubCategoryManagement from "@/components/admin/admin.sub.category";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { vi } from "zod/v4/locales";
 
 type ViewMode = "category" | "subcategory";
 

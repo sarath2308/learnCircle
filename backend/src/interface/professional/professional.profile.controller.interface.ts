@@ -1,13 +1,13 @@
 import { Response } from "express";
-import { ProfileRequest } from "@/types/professional/profile.request";
+import { IAuthRequest } from "../shared/auth/auth.request.interface";
 
 export interface IProfessionalProfileController {
-  uploadProfile: (req: ProfileRequest, res: Response) => Promise<void>;
-  updateProfile: (req: ProfileRequest, res: Response) => Promise<void>;
-  getProfile: (req: ProfileRequest, res: Response) => Promise<void>;
-  updatePassword: (req: ProfileRequest, res: Response) => Promise<void>;
-  updateProfileImage: (req: ProfileRequest, res: Response) => Promise<void>;
-  reqEmailOtp: (req: ProfileRequest, res: Response) => Promise<void>;
-  verifyAndUpdateEmail: (req: ProfileRequest, res: Response) => Promise<void>;
-  logOut: (req: ProfileRequest, res: Response) => Promise<void>;
+  uploadProfile: (req: IAuthRequest, res: Response) => Promise<void>;
+  updateProfile: (req: IAuthRequest, res: Response) => Promise<void>;
+  getProfile: (req: IAuthRequest, res: Response) => Promise<void>;
+  updatePassword: (req: IAuthRequest, res: Response) => Promise<void>;
+  updateProfileImage: (req: IAuthRequest, res: Response) => Promise<void>;
+  reqEmailOtp: (req: IAuthRequest, res: Response) => Promise<void>;
+  verifyAndUpdateEmail: (req: IAuthRequest, res: Response) => Promise<void>;
+  logOut: (req: IAuthRequest, res: Response) => Promise<void>;
 }

@@ -1,7 +1,6 @@
 import express from "express";
 import { json, urlencoded } from "express";
 import dotenv from "dotenv";
-import { createDatabase } from "./config/db/dbFactory";
 import { connectRedis } from "./config/redis/redis";
 import expressWinston from "express-winston";
 import logger from "./logs.config/logger";
@@ -11,14 +10,10 @@ import { errorHandler } from "./middleware";
 import { entryRoute } from "./routes/entry.route";
 import http from "http";
 import { initSocket } from "./socket";
+import { loadConfigFromSSM } from "./config/ssm/ssm";
+import { connectDB } from "./config/db/mongo/mongo";
 dotenv.config();
 const app = express();
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  }),
-);
 
 // Middleware - Json
 app.use((req, res, next) => {
@@ -52,14 +47,23 @@ app.use(
 );
 
 async function startServer() {
-  // Connect to MongoDB
-  const db = createDatabase(process.env.DB_TYPE!, { uri: process.env.DB_URI });
-  await db.connect();
-  console.log("MongoDB connected");
+  const env = process.env.NODE_ENV === "production" ? "prod" : "dev";
+
+  await loadConfigFromSSM(env);
+  console.log(process.env.DB_URI);
+  await connectDB();
+  await connectRedis();
 
   const server = http.createServer(app);
 
   initSocket(server);
+
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL,
+      credentials: true,
+    }),
+  );
 
   app.use("/api", entryRoute());
 
@@ -72,7 +76,6 @@ async function startServer() {
 
   app.use(errorHandler);
   // Connect to Redis
-  await connectRedis();
   console.log("Server is ready!");
 
   const PORT: number = Number(process.env.PORT) || 5000;

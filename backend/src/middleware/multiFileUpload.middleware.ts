@@ -66,8 +66,10 @@ export const busboyUpload = (req: Request, res: Response, next: NextFunction) =>
     next();
   });
 
-  busboy.on("error", (err) => {
-    res.status(400).json({ message: "Failed to parse multipart data", detail: err?.message });
+  busboy.on("error", (err: unknown) => {
+    if (err instanceof Error) {
+      res.status(400).json({ message: "Failed to parse multipart data", detail: err?.message });
+    }
   });
 
   req.pipe(busboy);

@@ -1,3 +1,5 @@
+import { RedisClientType } from "redis";
+
 export interface IRedisRepository {
   get<T>(key: string): Promise<T | null>;
   set<T>(key: string, value: T, ttl?: number): Promise<void>;
@@ -6,25 +8,27 @@ export interface IRedisRepository {
 }
 
 export class RedisRepository implements IRedisRepository {
-  constructor(private client: any) {}
+  constructor(private readonly getClient: () => RedisClientType) {}
 
   async get<T>(key: string): Promise<T | null> {
+    const client = this.getClient();
     try {
-      const data = await this.client.get(key);
+      const data = await client.get(key);
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error(error);
-      throw new Error("Data not found");
+      throw new Error("Failed to get data from Redis");
     }
   }
 
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
+    const client = this.getClient();
     try {
       const stringValue = JSON.stringify(value);
       if (ttl) {
-        await this.client.set(key, stringValue, "EX", ttl);
+        await client.set(key, stringValue, { EX: ttl }); // redis v4 style
       } else {
-        await this.client.set(key, stringValue);
+        await client.set(key, stringValue);
       }
     } catch (error) {
       console.error(error);
@@ -33,8 +37,9 @@ export class RedisRepository implements IRedisRepository {
   }
 
   async delete(key: string): Promise<void> {
+    const client = this.getClient();
     try {
-      await this.client.del(key);
+      await client.del(key);
     } catch (error) {
       console.error(error);
       throw new Error("Error occurred while deleting data from Redis");
@@ -42,8 +47,9 @@ export class RedisRepository implements IRedisRepository {
   }
 
   async exists(key: string): Promise<boolean> {
+    const client = this.getClient();
     try {
-      const exists = await this.client.exists(key);
+      const exists = await client.exists(key);
       return exists === 1;
     } catch (error) {
       console.error(error);

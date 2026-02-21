@@ -23,12 +23,6 @@ export class AdminCourseManagementController implements IAdminCourseManagementCo
     res.status(HttpStatus.OK).json({ success: true, courseData, TotalCourseCount });
   }
 
-  async getCourseData(req: IAuthRequest, res: Response): Promise<void> {
-    const courseId = req.params.courseId;
-    const courseData = await this._courseManagementService.getCourseDetails(courseId);
-    res.status(HttpStatus.OK).json({ success: true, courseData });
-  }
-
   async approveCourse(req: IAuthRequest, res: Response): Promise<void> {
     const courseId = req.params.courseId;
     await this._courseManagementService.approveCourse(courseId);

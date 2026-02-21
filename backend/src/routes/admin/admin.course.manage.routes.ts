@@ -7,11 +7,6 @@ export function adminCourseManagementRoutes(controller: IAdminCourseManagementCo
   const router = Router();
 
   router.get("/", controller.getAllCourse.bind(controller));
-  router.get(
-    "/:courseId",
-    validateRequest(adminCourseCrudParams),
-    controller.getCourseData.bind(controller),
-  );
   router.patch(
     "/:courseId/approve",
     validateRequest(adminCourseCrudParams),

@@ -7,8 +7,7 @@ import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { AppError } from "@/errors/app.error";
 import { Messages } from "@/constants/shared/messages";
 import { HttpStatus } from "@/constants/shared/httpStatus";
-import { IProfileUploadRequest } from "@/interface/shared/profile.upload.request.interface";
-import { Request } from "express";
+
 @injectable()
 export class LearnerProfileController implements ILearnerProfileController {
   constructor(
@@ -24,10 +23,7 @@ export class LearnerProfileController implements ILearnerProfileController {
     if (!req.user?.userId) {
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    const { userId } = req?.user;
-    if (!req.user?.userId) {
-      throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-    }
+    const userId = req.user.userId as string;
 
     let response = await this._learnerProfileService.getProfile(userId);
     res
@@ -40,14 +36,11 @@ export class LearnerProfileController implements ILearnerProfileController {
    * @param res
    * @param next
    */
-  async updateProfilePhoto(
-    req: Request & IAuthRequest & IProfileUploadRequest,
-    res: Response,
-  ): Promise<void> {
+  async updateProfilePhoto(req: IAuthRequest, res: Response): Promise<void> {
     if (!req.user?.userId) {
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    const { userId } = req?.user;
+    const userId = req.user.userId as string;
     if (!req.files || !req.files["avatar"]) {
       throw new AppError(Messages.PROFILE_NOT_UPDATED, HttpStatus.BAD_REQUEST);
     }
@@ -71,7 +64,7 @@ export class LearnerProfileController implements ILearnerProfileController {
     if (!req.user?.userId) {
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    let { userId } = req?.user;
+    let userId = req.user.userId as string;
     let { newEmail } = req.body;
     await this._learnerProfileService.requestEmailChangeOtp(userId, newEmail);
     res.status(HttpStatus.OK).json({ success: true, message: Messages.OTP_SENT_SUCCESS });
@@ -86,7 +79,7 @@ export class LearnerProfileController implements ILearnerProfileController {
     if (!req.user?.userId) {
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    let { userId } = req?.user;
+    let userId = req.user.userId as string;
     await this._learnerProfileService.resendEmailChangeOtp(userId);
     res.status(HttpStatus.OK).json({ success: true, message: Messages.OTP_SENT_SUCCESS });
   }
@@ -100,7 +93,7 @@ export class LearnerProfileController implements ILearnerProfileController {
     if (!req.user?.userId) {
       throw new AppError(Messages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    const { userId } = req?.user;
+    let userId = req.user.userId as string;
     const { otp } = req.body;
     let result = await this._learnerProfileService.verifyEmailChangeOtp(userId, otp);
     res

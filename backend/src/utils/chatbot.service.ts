@@ -1,5 +1,4 @@
 import { STATIC_RESPONSES } from "@/cache/chat.cache";
-import { openai } from "@/config/openAi/openAi.config";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { PROMPT } from "@/constants/shared/prompt";

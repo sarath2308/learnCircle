@@ -2,7 +2,6 @@ import { UserDtoMapper } from "@/mapper/shared/user.map";
 import { S3Service } from "@/utils/s3.service";
 import { AuthenticateMiddleware } from "@/middleware";
 import { EmailAuthService } from "@/services/shared/auth/email.auth.service";
-import redisClient from "@/config/redis/redis";
 import { RedisRepository } from "@/repos/shared/redisRepo";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
 import { IAuthProviderService } from "@/interface/shared/auth/auth.provider.interface";
@@ -16,13 +15,7 @@ import { PasswordResetService } from "@/services/shared/auth/password.reset.serv
 import { IAuthenticateMiddleware } from "@/interface/shared/auth/authentication.middlware.interface";
 import { RefreshTokenService } from "@/services/shared/auth/refreshToken.service";
 import { RefreshController } from "@/controllers/shared/refreshController";
-import {
-  CloudinaryService,
-  EmailService,
-  OtpService,
-  PasswordService,
-  TokenService,
-} from "@/utils";
+import { EmailService, OtpService, PasswordService, TokenService } from "@/utils";
 
 // Models & Repos (shared)
 import { Course, ICourse } from "@/model/shared/course.model";
@@ -143,6 +136,7 @@ import { INotificationService } from "@/interface/shared/notification/notificati
 import { NotificationService } from "@/services/shared/notification/notification.service";
 import { INotificationController } from "@/interface/shared/notification/notification.controller.interface";
 import { NotificationController } from "@/controllers/shared/notification.controller";
+import { getRedisClient } from "@/config/redis/redis";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -176,7 +170,7 @@ export const registerShared = (container: Container): void => {
   container.bind<ILessonRepo>(TYPES.ILessonRepo).to(LessonRepo);
   container.bind<IChapterRepo>(TYPES.IChapterRepo).to(ChapterRepo);
   container.bind<IUserRepo>(TYPES.IUserRepo).to(UserRepo);
-  container.bind(TYPES.IRedisRepository).toConstantValue(new RedisRepository(redisClient));
+  container.bind(TYPES.IRedisRepository).toConstantValue(new RedisRepository(getRedisClient));
   container.bind<IMessageRepo>(TYPES.IMessageRepo).to(MessageRepo);
   container.bind<IConversationRepo>(TYPES.IConversationRepo).to(ConversationRepo);
   container.bind<IPaymentRepo>(TYPES.IPaymentRepo).to(PaymentRepo);
@@ -199,7 +193,6 @@ export const registerShared = (container: Container): void => {
   container.bind(TYPES.IEmailService).to(EmailService).inSingletonScope();
   container.bind(TYPES.IOtpService).to(OtpService).inSingletonScope();
   container.bind(TYPES.IPasswordService).to(PasswordService).inSingletonScope();
-  container.bind(TYPES.ICloudinaryService).to(CloudinaryService).inSingletonScope();
   container.bind(TYPES.IEmailAuthService).to(EmailAuthService).inSingletonScope();
   container.bind<IPasswordResetService>(TYPES.IPasswordResetService).to(PasswordResetService);
   container.bind<ICourseService>(TYPES.ICourseService).to(CourseService);

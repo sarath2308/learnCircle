@@ -15,7 +15,7 @@ export class LearnerProfessionalProfileController implements ILearnerProfessiona
 
   async getAllProfiles(req: IAuthRequest, res: Response): Promise<void> {
     let { search, page } = req.query;
-    let pageNum = Number(page) ?? 1;
+    let pageNum = Number(page) || 1;
     const profileData = await this._professionalService.getAllProfilesForUser(
       search as string,
       pageNum,
