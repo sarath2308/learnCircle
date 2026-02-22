@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { json, urlencoded } from "express";
 import dotenv from "dotenv";
 import { connectRedis } from "./config/redis/redis";
@@ -64,7 +64,9 @@ async function startServer() {
       credentials: true,
     }),
   );
-
+  app.use("/", (req: Request, res: Response) => {
+    res.send("LearnCircle backend running");
+  });
   app.use("/api", entryRoute());
 
   app.use(
