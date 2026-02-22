@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface ICurrentUser {
+  id: string;
   email: string;
   name: string;
   role: string;
@@ -23,11 +24,16 @@ const userSlice = createSlice({
         Object.assign(state.currentUser, action.payload);
       }
     },
+    setProfileImg: (state, action: PayloadAction<string>) => {
+      if (state.currentUser) {
+        state.currentUser.profileImg = action.payload;
+      }
+    },
     clearCurrentUser: (state) => {
       state.currentUser = undefined;
     },
   },
 });
 
-export const { setCurrentUser, clearCurrentUser } = userSlice.actions;
+export const { setCurrentUser, clearCurrentUser, setProfileImg } = userSlice.actions;
 export default userSlice.reducer;

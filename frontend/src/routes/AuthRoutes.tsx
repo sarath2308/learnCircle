@@ -3,10 +3,10 @@ import AdminSign from "@/pages/admin/AdminSign";
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 
-const ForgotPassword = lazy(() => import("@/pages/common/ForgotPassword"));
-const ForgotOtpVerify = lazy(() => import("@/pages/common/ForgotOtpVerify"));
-const SignupOtpVerify = lazy(() => import("@/pages/common/SignupOtpVerify"));
-const ResetPassword = lazy(() => import("@/pages/common/ResetPassword"));
+const ForgotPassword = lazy(() => import("@/pages/shared/ForgotPassword"));
+const ForgotOtpVerify = lazy(() => import("@/pages/shared/ForgotOtpVerify"));
+const SignupOtpVerify = lazy(() => import("@/pages/shared/SignupOtpVerify"));
+const ResetPassword = lazy(() => import("@/pages/shared/ResetPassword"));
 const LearnerSign = lazy(() => import("@/pages/Learner/LearnerSign"));
 const ProfesionalSign = lazy(() => import("@/pages/Profesional/ProfesionalSign"));
 

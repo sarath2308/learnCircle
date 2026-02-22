@@ -40,7 +40,7 @@ const LearnerSign = () => {
     async (role: string, data: { email: string; password: string }) => {
       try {
         const result = await login({ ...data, role });
-        navigate("/learner/home");
+        navigate("/learner/home", { replace: true });
         console.log(result);
       } catch (err) {
         console.error(err);
@@ -68,7 +68,7 @@ const LearnerSign = () => {
         role,
         token: response.credential,
       });
-      navigate(`/${role}/home`);
+      navigate(`/${role}/home`, { replace: true });
     } catch (error) {
       console.error("Google login error:", error);
       toast.error("Login failed. Please try again.");
@@ -76,7 +76,7 @@ const LearnerSign = () => {
   };
 
   return (
-    <div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       {view === "login" && (
         <LoginForm
           role="learner"

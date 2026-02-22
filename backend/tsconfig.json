@@ -11,15 +11,19 @@
     "rootDir": "./src",
     "declaration": true,
     "sourceMap": true,
-    "types": ["node"],
     "isolatedModules": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": "./src",              // ✅ set baseUrl to src
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]                   // ✅ map @/ to src/
+      "@/*": ["*"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.de.ts",
+    "src/routes/admin/admin.course.manage.routes.ts"
+  ],
   "exclude": ["node_modules"]
 }

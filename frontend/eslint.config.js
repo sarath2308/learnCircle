@@ -7,7 +7,6 @@ import reactHooksPlugin from "eslint-plugin-react-hooks";
 import prettierPlugin from "eslint-plugin-prettier";
 
 export default defineConfig([
-  // Ignore node_modules and dist folders
   globalIgnores(["node_modules", "dist"]),
 
   {
@@ -28,9 +27,9 @@ export default defineConfig([
         URL: "readonly",
         FormData: "readonly",
         fetch: "readonly",
-        localStorage: "readonly", // ✅ add this
-        setInterval: "readonly", // ✅ add this
-        clearInterval: "readonly", // ✅ add this
+        localStorage: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
       },
     },
 
@@ -41,24 +40,29 @@ export default defineConfig([
       prettier: prettierPlugin,
     },
 
+    // 🔥 RULE ORDER MATTERS — recommended FIRST, custom NEXT
     rules: {
-      // Prettier integration
-      "prettier/prettier": "warn",
-
-      // General JS/TS rules
-      semi: ["error", "always"],
-      quotes: ["error", "double"],
-      "no-unused-vars": "warn",
-      "@typescript-eslint/explicit-function-return-type": "off",
-
-      // React rules
-      "react/react-in-jsx-scope": "off",
-
-      // Spread recommended rules
+      // Recommended rules
       ...js.configs.recommended.rules,
       ...tsPlugin.configs.recommended.rules,
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
+
+      // ========= CUSTOM RULES =========
+
+      "prettier/prettier": "warn",
+
+      semi: ["error", "always"],
+      quotes: ["error", "double"],
+
+      "no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
+
+      "@typescript-eslint/no-explicit-any": "warn", // 👈 THIS IS WHAT YOU WANT
+      "@typescript-eslint/explicit-function-return-type": "off",
+
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
     },
 
     settings: {

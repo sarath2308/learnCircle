@@ -8,12 +8,15 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   globalIgnores(["dist"]),
+
+  js.configs.recommended,
+
   {
     files: ["**/*.{ts,js}"],
     languageOptions: {
-      parser: typescriptParser, // ✅ actual parser module, not string
+      parser: typescriptParser,
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: "latest",
         sourceType: "module",
       },
       globals: globals.node,
@@ -22,18 +25,18 @@ export default defineConfig([
       "@typescript-eslint": typescriptPlugin,
       prettier: prettierPlugin,
     },
-    rules: {
-      // TypeScript rules
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/no-explicit-any": "off",
+  rules: {
+    "prettier/prettier": "error",
+  "no-unused-vars": "off", // 🔥 disable base rule, it breaks TS
+  "@typescript-eslint/no-unused-vars": ["error", { 
+    argsIgnorePattern: "^_",
+    varsIgnorePattern: "^_",
+  }],
+  "@typescript-eslint/explicit-function-return-type": "off",
+  "@typescript-eslint/no-explicit-any": "off",
+  "no-console": "off",
+},
 
-      // Prettier
-      "prettier/prettier": "error",
-
-      // JS rules
-      "no-unused-vars": "warn",
-      "no-console": "off",
-    },
   },
+  prettierConfig,
 ]);

@@ -1,6 +1,9 @@
+import { clearCurrentUser } from "@/redux/slice/currentUserSlice";
 import axios from "axios";
+import { store } from "@/redux/store";
+
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_BASE_URL_API,
   withCredentials: true,
 });
 
@@ -38,10 +41,11 @@ api.interceptors.response.use(
     try {
       await api.post("/auth/refresh-token");
       console.log("Refresh token called from frontend");
-      await new Promise((res) => setTimeout(res, 50));
+      await new Promise((res) => window.setTimeout(res, 50));
       return api(originalRequest); // Retry original request
     } catch (refreshError) {
       // Refresh failed (maybe expired), redirect to login
+      store.dispatch(clearCurrentUser());
       window.location.href = "/";
       return Promise.reject(refreshError);
     }

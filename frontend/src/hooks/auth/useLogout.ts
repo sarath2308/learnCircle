@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/api/authApi";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export const useLogout = () => {
@@ -10,18 +10,13 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: authApi.logOut,
     onSuccess: () => {
-      // Clear cached user data
       queryClient.clear();
-
-      // Redirect to login
-      navigate("/");
-
       toast.success("Logged out successfully");
+      navigate("/");
     },
-    onError: (err: any) => {
-      // Axios stores the server response in err.response
-      const message = err.response?.data?.message || "Something went wrong";
-      toast.error(message);
+    onError: (error: any) => {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Logout failed");
     },
   });
 };

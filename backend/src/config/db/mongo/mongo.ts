@@ -1,19 +1,11 @@
-import type { Idatabase } from "../Idatabase.js";
 import mongoose from "mongoose";
 
-export class MongoDB implements Idatabase {
-  private uri: string;
-  constructor(uri: string) {
-    this.uri = uri;
-  }
-
-  async connect() {
-    await mongoose.connect(this.uri);
-    console.log("mongodb connected..");
-  }
-
-  async disconnect() {
-    await mongoose.disconnect();
-    console.log("mongodb disconnected..");
+export async function connectDB() {
+  try {
+    await mongoose.connect(process.env.DB_URI!);
+    console.log("✅ MongoDB connected");
+  } catch (err) {
+    console.error("❌ MongoDB connection failed", err);
+    process.exit(1); // crash app if DB is dead
   }
 }
