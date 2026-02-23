@@ -1,5 +1,5 @@
 import { LessonApi } from "@/api/shared/lesson.api";
-import { addLesson, updateLesson } from "@/redux/slice/course/chapterSlice";
+import { updateLesson } from "@/redux/slice/course/chapterSlice";
 import { useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import React, { useState, useRef, useEffect } from "react";
-import { Send, X, Bot, Sparkles } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Send, X, Bot } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useGetChatbotReply } from "@/hooks/shared/chatbot/chatbot.get.reply.hook";
@@ -34,7 +34,7 @@ const Chatbot = () => {
     if (isOpen && messages.length === 0) {
       setMessages([{ id: "1", sender: "bot", text: "System Online. How can I assist you today?" }]);
     }
-  }, [isOpen]);
+  }, [isOpen, messages.length]);
 
   // Logic to handle API key vs User-facing Label
   const sendMessage = async (payload: string, displayLabel?: string) => {

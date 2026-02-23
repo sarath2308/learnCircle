@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { React } from "react";
 export function Processing() {
   const [progress, setProgress] = useState(0);
 
@@ -34,7 +33,7 @@ export function Processing() {
         {/* Title */}
         <h2 className="text-xl font-semibold mb-2">Application Under Processing</h2>
         <p className="text-gray-600 mb-6">
-          We're reviewing your application and setting up your account. This typically takes 24-48
+          We re reviewing your application and setting up your account. This typically takes 24-48
           hours.
         </p>
 

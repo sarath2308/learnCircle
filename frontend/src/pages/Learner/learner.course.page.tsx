@@ -4,17 +4,12 @@ import { useState } from "react";
 import {
   Lock,
   BookOpen,
-  ChevronRight,
   Star,
   Users,
   MessageSquare,
   AlertTriangle,
   ShieldCheck,
   Clock,
-  Globe,
-  Pencil,
-  Trash2,
-  X,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";

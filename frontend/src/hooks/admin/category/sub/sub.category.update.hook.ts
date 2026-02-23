@@ -1,4 +1,3 @@
-import { adminCategoryApi } from "@/api/admin/admin.category.api";
 import { adminSubCategoryApi } from "@/api/admin/admin.sub.category";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";

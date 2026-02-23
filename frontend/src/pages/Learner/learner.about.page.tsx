@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Globe, Zap, ShieldCheck, Target, Heart } from "lucide-react";
+import { Users, Globe, Zap, ShieldCheck, Target } from "lucide-react";
 
 const AboutPage = () => {
   return (

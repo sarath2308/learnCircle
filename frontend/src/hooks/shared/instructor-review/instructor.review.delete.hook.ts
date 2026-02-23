@@ -1,5 +1,5 @@
 import { INSTRUCTOR_REVIEW_API } from "@/api/shared/instructor.review.api";
-import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 

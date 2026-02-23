@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, UserX, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,7 +20,7 @@ const ProfessionalDirectory = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const { data: sessions, isLoading: isSessionsLoading } = useGetSessions();
+  const { data: sessions } = useGetSessions();
 
   // 1. SAFE DATA ACCESS
   // Fallback to empty arrays if data is still loading or undefined
@@ -140,7 +140,7 @@ const SidebarBox = ({ title, sessionData }: { title: string; sessionData?: Sessi
     {sessionData && sessionData.length > 0 ? (
       <div className="space-y-3">
         {sessionData.map((session) => (
-          <SessionCard key={session.id} {...session} />
+          <SessionCard key={session.id} {...session} varient="learner" />
         ))}
       </div>
     ) : (

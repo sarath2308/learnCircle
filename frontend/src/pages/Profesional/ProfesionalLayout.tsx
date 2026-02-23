@@ -1,13 +1,11 @@
 "use client";
-
-import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useGetDashboard } from "@/hooks/profesional/useGetDashboard";
 import { Processing } from "./Processing";
 import { Rejected } from "./Rejected";
 import Verification from "./Verification";
 
-import { Bell, Menu, X, LogOut, Search } from "lucide-react";
+import { Bell, Menu, LogOut } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -95,7 +95,7 @@ const OTPVerificationForm = ({ role, email, onVerified, onResend }: OTPVerificat
   const handleResendOTP = async () => {
     setIsResending(true);
     try {
-      const res = await onResend();
+      await onResend();
       const newEndTime = Date.now() + 60 * 1000;
       localStorage.setItem(TIMER_KEY, newEndTime.toString());
       setTimeLeft(60);

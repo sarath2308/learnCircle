@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from "react";
 import {
   Trophy,
   Camera,
-  Mail,
   X,
   Zap,
   Settings2,

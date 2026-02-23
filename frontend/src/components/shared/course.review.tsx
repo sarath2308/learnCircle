@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/select";
 
 // Hooks
-import { useGetCourse } from "@/hooks/shared/course-creator/course.get";
 import { useBlockCourse } from "@/hooks/admin/course/course.block";
 import { useApproveCourse } from "@/hooks/admin/course/course.approve";
 import { useUnblockCourse } from "@/hooks/admin/course/course.unblock";
@@ -29,13 +28,8 @@ import { useRejectCourse } from "@/hooks/admin/course/course.reject";
 import { useCourseDetailsUpdate } from "@/hooks/shared/course/course.details.update";
 import { useGetCategory } from "@/hooks/shared/category.get";
 import { useGetSubCategories } from "@/hooks/shared/sub.category.get";
-
-import ChapterItem, { type IChapter } from "@/components/shared/chapterItem";
-import { useLessonUpdate } from "@/hooks/shared/lesson/lesson.update";
-import { useChapterUpdate } from "@/hooks/shared/chapter/chapter.update";
-import { useRemoveChapter } from "@/hooks/shared/chapter/chapter.remove";
-import { useRemoveLesson } from "@/hooks/shared/lesson/lesson.remove";
-import { Modal } from "../Modal";
+import ChapterItem from "@/components/shared/chapterItem";
+import { useGetCourse } from "@/hooks/shared/course-creator/creator.course.get.hook";
 
 type AdminAction = "block" | "reject" | "approve" | "unblock" | null;
 
@@ -55,13 +49,8 @@ export default function CourseReviewPage({ variant }: { variant: "admin" | "crea
 
   const [action, setAction] = useState<AdminAction>(null);
   const [reason, setReason] = useState("");
-  const [modalOpen, setModalOpen] = useState();
-  const [deleteModal, setDeleteModal] = useState();
   const [isEditing, setIsEditing] = useState(false);
   const courseDetailsUpdate = useCourseDetailsUpdate();
-  const chapterUpdate = useChapterUpdate();
-  const deleteChapter = useRemoveChapter();
-
   // --- Form State ---
   const [editForm, setEditForm] = useState<IEditForm>({
     title: "",
@@ -81,19 +70,6 @@ export default function CourseReviewPage({ variant }: { variant: "admin" | "crea
 
   // FIX: Passing editForm.category instead of hardcoded ID
   const { data: subCatData, isLoading: subLoading } = useGetSubCategories(editForm.category);
-
-  const handleChapterUpdate = async (chapter: IChapter) => {
-    await chapterUpdate.mutateAsync({
-      chapterId: chapter.id,
-      title: chapter.title,
-      description: chapter.description,
-    });
-    refetch();
-  };
-
-  const handleChapterRemove = async (id: string) => {
-    await deleteChapter.mutateAsync(id);
-  };
 
   const handleCourseDetailsUpdate = async () => {
     const formData = new FormData();
@@ -187,15 +163,6 @@ export default function CourseReviewPage({ variant }: { variant: "admin" | "crea
     }
     setAction(null);
     setReason("");
-    refetch();
-  };
-
-  const handleSaveDetails = async () => {
-    const formData = new FormData();
-    Object.entries(editForm).forEach(([k, v]) => formData.append(k, String(v)));
-    if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
-    await updateMutation.mutateAsync({ courseId: id!, payload: formData });
-    setIsEditing(false);
     refetch();
   };
 
@@ -359,7 +326,7 @@ export default function CourseReviewPage({ variant }: { variant: "admin" | "crea
                     <Input
                       type="number"
                       value={editForm.price}
-                      onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                      onChange={(e) => setEditForm({ ...editForm, price: Number(e.target.value) })}
                       className="dark:bg-slate-800"
                     />
                   </div>
@@ -370,7 +337,9 @@ export default function CourseReviewPage({ variant }: { variant: "admin" | "crea
                     <Input
                       type="number"
                       value={editForm.discount}
-                      onChange={(e) => setEditForm({ ...editForm, discount: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, discount: Number(e.target.value) })
+                      }
                       className="dark:bg-slate-800"
                     />
                   </div>

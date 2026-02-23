@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, PlayCircle, Star, Zap, ShieldCheck, Globe } from "lucide-react";
+import { ArrowRight, PlayCircle, Star, Zap, ShieldCheck, Globe } from "lucide-react";
 
 export default function LandingPage() {
   return (

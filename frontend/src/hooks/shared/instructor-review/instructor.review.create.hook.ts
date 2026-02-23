@@ -1,4 +1,3 @@
-import { COURSE_REVIEW_API } from "@/api/shared/course.review.api";
 import { INSTRUCTOR_REVIEW_API } from "@/api/shared/instructor.review.api";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";

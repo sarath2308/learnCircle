@@ -17,7 +17,7 @@ export const useCourseUpdatePrice = () => {
       courseId: string;
       payload: { type: string; price: number; discount: number; status: string };
     }) => courseStep1Api.updatePriceDetails(courseId, payload),
-    onSuccess(data) {
+    onSuccess() {
       toast.success("course created successfully");
       dispatch(resetCourseDetails());
       dispatch(resetChapterState());

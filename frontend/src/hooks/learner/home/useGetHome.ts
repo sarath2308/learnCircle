@@ -1,5 +1,5 @@
 import { learnerHomeApi } from "@/api/learner/learnerHomeApi";
-import { setCurrentUser, setProfileImg } from "@/redux/slice/currentUserSlice";
+import { setProfileImg } from "@/redux/slice/currentUserSlice";
 import { useQuery } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 

@@ -19,12 +19,6 @@ export interface GetDashboardResponse {
   rejectReason?: string;
 }
 
-interface DashboardApiResponse {
-  success: boolean;
-  message: string;
-  userData: GetDashboardResponse;
-}
-
 export const useGetDashboard = () => {
   return useQuery<GetDashboardResponse, Error>({
     queryKey: ["ProfessionalDashboard"],

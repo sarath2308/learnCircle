@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import InstructorBookingPage from "@/components/learner/session.booking";
 import { useGetProfessionalProfile } from "@/hooks/learner/professionals/learner.get.professional.profile.user";
@@ -19,7 +19,7 @@ const InstructorBookingContainer = () => {
   const { instructorId } = useParams<{ instructorId: string }>();
   const [isBooking, setIsBooking] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toLocaleDateString("en-CA")); // "2026-02-23"
-  const { data: reviewData, isLoading } = useGetInstructorReview(instructorId || "");
+  const { data: reviewData } = useGetInstructorReview(instructorId || "");
   const reviews: IReviewType[] = reviewData?.reviews ?? [];
 
   // 1. Data Fetching - Profile
@@ -39,7 +39,10 @@ const InstructorBookingContainer = () => {
   const createSessionMutation = useCreateSession();
 
   const profileData = profileResponse?.profileData;
-  const slots: ISlot[] = availabilityResponse?.availabilityData?.slots || [];
+  const slots: ISlot[] = useMemo(
+    () => availabilityResponse?.availabilityData?.slots || [],
+    [availabilityResponse?.availabilityData?.slots],
+  );
 
   // 3. Logic: Filter and Format Slots
   // Inside InstructorBookingContainer
@@ -62,15 +65,12 @@ const InstructorBookingContainer = () => {
   );
 
   // 4. Logic: Dynamic Pricing
-  const getPriceForDate = useCallback(
-    (date: Date | undefined) => {
-      // Note: I changed sessionPrice to match your IPrfileResponse interface
-      const basePrice = profileData?.sessionPrice || 100;
+  const getPriceForDate = useCallback(() => {
+    // Note: I changed sessionPrice to match your IPrfileResponse interface
+    const basePrice = profileData?.sessionPrice || 100;
 
-      return availabilityResponse?.availabilityData?.price || basePrice;
-    },
-    [slots],
-  );
+    return availabilityResponse?.availabilityData?.price || basePrice;
+  }, [slots]);
 
   // 5. Logic: Booking Handler
   const handleBooking = async (

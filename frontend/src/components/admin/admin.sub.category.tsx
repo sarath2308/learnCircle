@@ -52,12 +52,6 @@ type SubCategory = {
   };
 };
 
-type Category = {
-  id: string;
-  name: string;
-  isBlocked: boolean;
-};
-
 /* ---------------- COMPONENT ---------------- */
 
 const AdminSubCategoryManagement = () => {
@@ -105,7 +99,7 @@ const AdminSubCategoryManagement = () => {
     categoryId: filterCategoryId,
   });
 
-  const { data: categories, isLoading: categoriesLoading } = useGetCategory();
+  const { data: categories } = useGetCategory();
 
   const createSubCategory = useCreateSubCategory();
   const updateSubCategory = useUpdateSubCategory();
@@ -139,7 +133,7 @@ const AdminSubCategoryManagement = () => {
     {
       header: "Category",
       accessor: "category",
-      cell: (_, row) => row.category.name,
+      cell: (row) => row.category.name,
     },
     {
       header: "Status",

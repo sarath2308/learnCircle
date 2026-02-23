@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import {
   Search,
   ChevronRight,
@@ -22,16 +22,6 @@ import { useGetCategory } from "@/hooks/shared/category.get";
 import { useGetSubCategories } from "@/hooks/shared/sub.category.get";
 import { useGetAllCourseForLearner } from "@/hooks/learner/course/learner.get.all.course.hook";
 
-// Custom Debounce Hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-}
-
 const LearnerAllCoursePage = () => {
   // 1. Unified Filter & Sort State
   const [filters, setFilters] = useState({
@@ -44,10 +34,10 @@ const LearnerAllCoursePage = () => {
     sortPrice: 0, // 1: Low-High, -1: High-Low, 0: Inactive
   });
 
-  const debouncedSearch = useDebounce(filters.search, 400);
-
   // Data Fetching
-  const { data: courseResponse, isLoading: coursesLoading } = useGetAllCourseForLearner(filters);
+  const { data: courseResponse, isLoading: coursesLoading } = useGetAllCourseForLearner(
+    filters,
+  ) as { data?: { courseData?: any[] }; isLoading: boolean };
   const categoryQuery = useGetCategory();
   const categoryData = categoryQuery.data ?? [];
   const { data: subData } = useGetSubCategories(filters.categoryId);

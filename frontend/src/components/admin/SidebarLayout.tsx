@@ -1,9 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../ui/sidebar";
-import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Moon, Sun } from "lucide-react"; // assuming you use lucide
 // if not, replace with your icons
 
@@ -20,16 +19,10 @@ interface SidebarLayoutProps {
     avatar?: string;
     profilePath?: string;
   };
-  logoText?: string;
   children: React.ReactNode;
 }
 
-export function SidebarLayout({
-  links,
-  user,
-  logoText = "Acet Labs",
-  children,
-}: SidebarLayoutProps) {
+export function SidebarLayout({ links, user, children }: SidebarLayoutProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -83,7 +76,7 @@ export function SidebarLayout({
             <SidebarLink
               link={{
                 label: user.name,
-                href: user.profilePath || "/profile",
+                path: user.profilePath || "/profile",
                 icon: (
                   <img
                     src={user.avatar || "https://via.placeholder.com/40"}
@@ -109,31 +102,3 @@ export function SidebarLayout({
     </div>
   );
 }
-
-/* -------------------------------------------
-   LOGO COMPONENTS
-------------------------------------------- */
-const Logo = ({ text }: { text: string }) => (
-  <Link
-    to="/"
-    className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black dark:text-white"
-  >
-    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-    <motion.span
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="font-medium whitespace-pre"
-    >
-      {text}
-    </motion.span>
-  </Link>
-);
-
-const LogoIcon = () => (
-  <Link
-    to="/"
-    className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black dark:text-white"
-  >
-    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-  </Link>
-);

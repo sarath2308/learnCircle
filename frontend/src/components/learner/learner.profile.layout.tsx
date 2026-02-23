@@ -10,7 +10,6 @@ import {
   Briefcase,
   ChevronRight,
   AlertTriangle,
-  X,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";

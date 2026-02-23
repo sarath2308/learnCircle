@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import toast from "react-hot-toast";
 const ResetPassword = () => {
-  const { mutateAsync: resetPassword, isPending } = useResetPassword();
+  const { mutateAsync: resetPassword } = useResetPassword();
   const navigate = useNavigate();
   const { email, role, tempToken } = useSelector((state: RootState) => state.signup);
 

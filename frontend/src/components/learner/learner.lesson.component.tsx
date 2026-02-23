@@ -2,7 +2,6 @@ import { PlayCircle, FileText, CheckCircle2, Lock, Circle, Clock } from "lucide-
 import { LESSON_TYPES } from "@/contstant/shared/lesson.type";
 import { cn } from "@/lib/utils";
 import type { LearnerLessonResponseType } from "@/hooks/learner/course/learner.course.get.hook";
-import toast from "react-hot-toast";
 
 interface ILearnerLessonProps {
   lesson: LearnerLessonResponseType;

@@ -31,13 +31,12 @@ const TABS = [
 type TabValue = (typeof TABS)[number]["value"];
 
 interface MyCourseProps {
-  onEdit: (id: string) => void;
   onPublish: (id: string) => void;
   onView: (id: string) => void;
   onCreate: () => void;
 }
 
-export default function MyCourse({ onEdit, onPublish, onView, onCreate }: MyCourseProps) {
+export default function MyCourse({ onPublish, onView, onCreate }: MyCourseProps) {
   const [tab, setTab] = useState<TabValue>("all");
 
   // 1. Integrated Filter State (including Search)
@@ -222,7 +221,6 @@ export default function MyCourse({ onEdit, onPublish, onView, onCreate }: MyCour
             <CourseCard
               key={course.id}
               course={course}
-              onEdit={onEdit}
               onPublish={onPublish}
               onView={onView}
               variant="creator"

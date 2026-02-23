@@ -10,7 +10,6 @@ import {
   IconCreditCard,
   IconMessageCircle,
   IconAnalyze,
-  IconActivity,
   IconAdjustmentsPin,
   IconMessage,
 } from "@tabler/icons-react";
@@ -45,7 +44,7 @@ export default function AdminLayoutWrapper() {
       <AdminNavbar adminName="Admin User" onLogout={logout} />
 
       <div className="flex pt-14">
-        <SidebarLayout links={adminLinks} logoText="LearnCircle">
+        <SidebarLayout links={adminLinks}>
           <Outlet />
         </SidebarLayout>
       </div>
