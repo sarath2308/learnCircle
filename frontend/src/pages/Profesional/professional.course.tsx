@@ -6,8 +6,6 @@ export default function ProfessionalCourseManage() {
   const navigate = useNavigate();
   const publishCourse = usePublishCourse();
 
-  const handleEdit = (id: string) => {};
-
   const handleView = (id: string) => {
     navigate(`/professional/my-courses/${id}`);
   };
@@ -20,12 +18,7 @@ export default function ProfessionalCourseManage() {
   };
   return (
     <>
-      <MyCourse
-        onEdit={handleEdit}
-        onPublish={handlePublish}
-        onView={handleView}
-        onCreate={handleCreate}
-      />
+      <MyCourse onPublish={handlePublish} onView={handleView} onCreate={handleCreate} />
     </>
   );
 }

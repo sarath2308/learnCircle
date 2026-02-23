@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { Star, Zap } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";

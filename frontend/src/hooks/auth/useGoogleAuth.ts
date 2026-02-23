@@ -1,8 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/api/authApi";
 import toast from "react-hot-toast";
 import { setCurrentUser } from "@/redux/slice/currentUserSlice";
 import { useDispatch } from "react-redux";
+import { AxiosError } from "axios";
 export const useGoogle = () => {
   const dispatch = useDispatch();
   return useMutation({
@@ -11,10 +12,13 @@ export const useGoogle = () => {
       dispatch(setCurrentUser(res.user));
       toast.success("Sign successfull");
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       // Axios stores the server response in err.response
-      const message = err.response?.data?.message || "Something went wrong";
-      toast.error(message);
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message || "Something went wrong");
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 };

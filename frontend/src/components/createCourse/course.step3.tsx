@@ -50,7 +50,7 @@ export default function CoursePricingForm() {
   const onFormSubmit = async (data: PricingFormData, status: "draft" | "published") => {
     try {
       await updatePriceMutation.mutateAsync({
-        courseId,
+        courseId: courseId ?? "",
         payload: {
           type: data.isFree ? "Free" : "Paid",
           price: data.price,

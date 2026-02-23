@@ -17,8 +17,6 @@ const VideoRoom = () => {
 
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(true);
-  const [message, setMessage] = useState("");
   const [status, setStatus] = useState("joining");
   const [peerConnected, setPeerConnected] = useState(false);
 
@@ -95,6 +93,7 @@ const VideoRoom = () => {
       socketRef.current?.emit("join-room", { roomId });
     }
   };
+  console.log(status);
 
   useEffect(() => {
     socketRef.current = getSocket();

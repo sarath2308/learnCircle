@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Stepper, { Step } from "../../components/Stepper";
 import { Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { File } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -40,8 +39,6 @@ const Verification = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [processing, setProcessing] = useState(false);
-
-  const { mutate, isPending } = useVerification();
 
   const [data, setData] = useState<ProfileData>({
     title: "",

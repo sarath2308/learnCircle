@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { useState } from "react";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
@@ -17,7 +17,7 @@ const ProfesionalSign = () => {
   const navigate = useNavigate();
   const { mutateAsync: login } = useLogin();
   const { mutateAsync: signup } = useReqSignup();
-  const { mutateAsync, isPending } = useGoogle();
+  const { mutateAsync } = useGoogle();
 
   const onSignUp = useCallback(
     async (role: string, data: { name: string; email: string; password: string }) => {

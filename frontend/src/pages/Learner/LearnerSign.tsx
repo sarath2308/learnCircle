@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { useState } from "react";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
@@ -19,7 +19,7 @@ const LearnerSign = () => {
 
   const { mutateAsync: reqSignup } = useReqSignup();
 
-  const { mutateAsync, isPending } = useGoogle();
+  const { mutateAsync } = useGoogle();
 
   const dispatch = useDispatch();
   const onSignUp = useCallback(
@@ -33,7 +33,7 @@ const LearnerSign = () => {
         console.error(err);
       }
     },
-    [reqSignup],
+    [reqSignup, dispatch, navigate],
   );
 
   const onLogin = useCallback(

@@ -1,6 +1,5 @@
 import { courseStep1Api } from "@/api/shared/course.create.step1.api";
 import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 
 export const useCourseDetailsUpdate = () => {
   return useMutation({

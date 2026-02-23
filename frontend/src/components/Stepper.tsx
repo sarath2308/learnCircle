@@ -70,7 +70,7 @@ export default function Stepper({
   const handleNext = () => {
     if (!isLastStep) {
       setDirection(1);
-      if (validateStep(currentStep)) {
+      if (!validateStep || validateStep(currentStep)) {
         updateStep(currentStep + 1);
       }
     }

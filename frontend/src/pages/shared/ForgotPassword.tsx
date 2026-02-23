@@ -1,7 +1,6 @@
 import ForgotPasswordForm from "@/components/ForgotPasswordForm";
 import { useForgotApi } from "@/hooks/auth/useForgot";
 import { setSignupData } from "@/redux/slice/signupSlice";
-import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -9,7 +8,7 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { mutate: getOtp } = useForgotApi();
-  const [role, setRole] = useState(localStorage.getItem("role") || "learner");
+  const role = localStorage.getItem("role") || "learner";
   const onBack = () => {
     navigate(-1);
   };

@@ -1,6 +1,6 @@
 import { Modal } from "@/components/Modal";
 import { LESSON_TYPES } from "@/contstant/shared/lesson.type";
-import { X, FileText, PlayCircle, ExternalLink, AlertCircle } from "lucide-react";
+import { FileText, PlayCircle, ExternalLink, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ResourceViewerModalProps {

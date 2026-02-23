@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Clock, ChevronDown } from "lucide-react";
+import { BookOpen, Clock } from "lucide-react";
 import {
   AccordionItem,
   AccordionTrigger,
@@ -10,7 +10,6 @@ import {
 import { cn } from "@/lib/utils";
 
 import LearnerLessonItem from "./learner.lesson.component";
-import type { ILessons } from "@/interface/lesson.response.interface";
 import type { LearnerLessonResponseType } from "@/hooks/learner/course/learner.course.get.hook";
 
 interface LearnerChapterProps {

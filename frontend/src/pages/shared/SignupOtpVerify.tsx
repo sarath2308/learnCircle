@@ -2,12 +2,11 @@ import OTPVerificationForm from "@/components/OtpVerificationForm";
 import { useSignupWithOtp } from "@/hooks/auth/useSignupWithOtp";
 import { useResendSignupOtp } from "@/hooks/auth/useResendSignupOtp";
 import toast from "react-hot-toast";
-import { React } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 
-const SignupOtpVerify: React.FC = () => {
+const SignupOtpVerify = () => {
   const { mutateAsync: verifyOtp } = useSignupWithOtp();
   const { mutate: resendOtp } = useResendSignupOtp();
   const navigate = useNavigate();

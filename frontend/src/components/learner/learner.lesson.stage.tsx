@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Youtube, ExternalLink, PlayCircle, BookOpen, AlertCircle } from "lucide-react";
+import { FileText, ExternalLink, PlayCircle, AlertCircle } from "lucide-react";
 import type { LearnerLessonResponseType } from "@/hooks/learner/course/learner.course.get.hook";
 import { motion } from "framer-motion";
 

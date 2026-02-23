@@ -1,4 +1,4 @@
-import { creatorCourseManageApi } from "@/api/creator/creator.course.manage";
+import { creatorCourseManageApi } from "@/api/creator/creator.course.manage.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 

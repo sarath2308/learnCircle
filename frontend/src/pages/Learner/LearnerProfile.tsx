@@ -93,7 +93,7 @@ export default function LearnerProfile() {
           <div className="relative group">
             <div className="absolute -inset-1.5 bg-gradient-to-tr from-indigo-500 to-fuchsia-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
             <Avatar className="h-36 w-36 border-[6px] border-[#F8FAFC] dark:border-[#0B0F1A] shadow-2xl relative">
-              <AvatarImage src={profileImg} className="object-cover" />
+              <AvatarImage src={profileImg ?? ""} className="object-cover" />
               <AvatarFallback className="bg-slate-200 dark:bg-slate-800 text-3xl font-black">
                 {name[0]}
               </AvatarFallback>

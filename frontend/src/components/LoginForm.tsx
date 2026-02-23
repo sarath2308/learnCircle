@@ -1,11 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import type { Roles } from "@/types/role.type";
-import { React } from "react";
+
 interface LoginFormProps {
   role: Roles;
   onSubmit: (role: string, data: { email: string; password: string }) => Promise<void>;

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { SessionCard } from "@/components/shared/session.card";
-import { useGetSessions } from "@/hooks/learner/session-booking/learner.session.get.hook";
 import { Inbox, Loader2 } from "lucide-react";
-import { useGetProf } from "@/hooks/profesional/useGetProf";
 import { useGetProfessionalSessions } from "@/hooks/profesional/session-booking/professionsl.get.session";
 import { useMarkSessionAsCompleted } from "@/hooks/profesional/session-booking/professional.mark.completed.hook";
 

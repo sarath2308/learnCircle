@@ -1,6 +1,6 @@
 import { PROFESSIONA_PROFILE_API } from "@/api/profesional/professional.profile.api";
 import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 export const useProfessionalUpdatePassword = () => {

@@ -275,7 +275,7 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
                   />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-950 border-slate-200 dark:border-gray-800 shadow-2xl z-[100]">
-                  {subCategories.map((sub) => (
+                  {subCategories.map((sub: { id: string; name: string }) => (
                     <SelectItem key={sub.id} value={sub.id} className="py-2.5 cursor-pointer">
                       {sub.name}
                     </SelectItem>
@@ -294,7 +294,11 @@ const CourseDetails = ({ handleNext }: CourseDetailsProps) => {
               </Label>
               <Select
                 value={courseDetails.skillLevel || ""}
-                onValueChange={(v) => dispatch(setCourseDetails({ skillLevel: v }))}
+                onValueChange={(v) =>
+                  dispatch(
+                    setCourseDetails({ skillLevel: v as "beginner" | "intermediate" | "advanced" }),
+                  )
+                }
               >
                 <SelectTrigger className="h-12 bg-white dark:bg-gray-900 border-slate-200 dark:border-gray-800 rounded-xl shadow-sm">
                   <SelectValue placeholder="Level" />

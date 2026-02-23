@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import type { Roles } from "@/types/role.type";
 import { GraduationCap, Briefcase, CheckCircle2 } from "lucide-react";
-import React from "react";
 import Magnet from "./Magnet";
 import AnimatedContent from "./AnimatedContent";
 
@@ -53,7 +52,7 @@ const RoleSelector = ({ selectedRole, onRoleSelect }: RoleSelectorProps) => {
             <Magnet key={role.id} padding={20} disabled={false} magnetStrength={30}>
               <AnimatedContent
                 distance={20}
-                direction="up"
+                direction="vertical"
                 duration={0.4}
                 scale={1}
                 threshold={0.1}

@@ -9,9 +9,7 @@ import {
   CheckCircle2,
   Loader2,
   Calendar as CalendarIcon,
-  Clock,
   Sparkles,
-  AlertCircle,
   MessageSquare,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";

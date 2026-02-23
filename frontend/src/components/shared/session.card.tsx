@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Clock,
   Video,
@@ -32,7 +31,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { BookingStatus } from "@/pages/Learner/learner.profile.myBookings";
 import { useCheckSessionJoinPermission } from "@/hooks/shared/session-booking/session.check.join.hook";
 import { cn } from "@/lib/utils";
-import { useInstructorReviewCreate } from "@/hooks/shared/instructor-review/instructor.review.create.hook";
 
 interface SessionCardProps {
   id: string;
@@ -101,7 +99,7 @@ export const SessionCard = ({
     const [hours, minutes] = endTime.split(":").map(Number);
     sessionEndTime.setHours(hours, minutes, 0, 0);
     return now > sessionEndTime;
-  }, [date, endTime, status]);
+  }, [dateObj, endTime, status]);
 
   return (
     <>

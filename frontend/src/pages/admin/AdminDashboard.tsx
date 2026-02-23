@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Users,
-  ShieldCheck,
-  Layers,
-  ArrowUpRight,
-  TrendingUp,
-  CreditCard,
-  UserCheck,
-} from "lucide-react";
+import { Users, Layers, ArrowUpRight, TrendingUp, CreditCard, UserCheck } from "lucide-react";
 import {
   AreaChart,
   Area,

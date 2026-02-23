@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import DataTable from "@/components/PaginatedTable";

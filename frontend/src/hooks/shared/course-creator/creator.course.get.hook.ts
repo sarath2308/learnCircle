@@ -1,6 +1,4 @@
-import { adminCourseManagement } from "@/api/admin/admin.course.manage";
-import { creatorCourseManageApi } from "@/api/creator/creator.course.manage";
-import { courseApi } from "@/api/shared/course.api";
+import { creatorCourseManageApi } from "@/api/creator/creator.course.manage.api";
 import { useQuery } from "@tanstack/react-query";
 
 export type AdminLessonResponseType = {

@@ -251,7 +251,7 @@ export default function LessonFormModal({
                     }}
                   />
                 </label>
-                <ErrorMessage message={form.formState.errors.file?.message} />
+                <ErrorMessage message={form.formState.errors.file?.message as string | undefined} />
               </div>
             )}
           </div>
@@ -294,7 +294,9 @@ export default function LessonFormModal({
                   </label>
                 )}
               </div>
-              <ErrorMessage message={form.formState.errors.thumbnail?.message} />
+              <ErrorMessage
+                message={form.formState.errors.thumbnail?.message as string | undefined}
+              />
             </div>
 
             <div className="space-y-2">

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, ReactNode } from "react";
+import React, { useRef, useEffect, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -7,7 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 interface AnimatedContentProps {
   children: ReactNode;
   distance?: number;
-  direction?: "vertical" | "horizontal";
+  direction: "vertical" | "horizontal";
   reverse?: boolean;
   duration?: number;
   ease?: string | ((progress: number) => number);

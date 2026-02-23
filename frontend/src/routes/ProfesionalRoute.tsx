@@ -18,10 +18,6 @@ const ProfessionalSessionBooking = lazy(
 const VideoCallPage = lazy(() => import("@/pages/shared/video.room.page"));
 const ChatPage = lazy(() => import("@/pages/shared/chat.page"));
 
-const ProfessionalProfileLayout = lazy(
-  () => import("@/components/professional/professional.profile.component"),
-);
-
 const ProfessionalProfilePage = lazy(() => import("@/pages/Profesional/professional.profile.page"));
 
 const professionalRoutes: RouteObject[] = [

@@ -2,17 +2,7 @@
 
 import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import {
-  User,
-  Calendar,
-  Settings,
-  LogOut,
-  Briefcase,
-  ChevronRight,
-  AlertTriangle,
-  X,
-  GraduationCap,
-} from "lucide-react";
+import { User, Calendar, LogOut, ChevronRight, AlertTriangle, GraduationCap } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useLearnerLogout } from "@/hooks/learner/profile/useLearnerLogout";

@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 export interface Column<T> {
   header: string;
   accessor: keyof T;
-  cell?: (value: T[keyof T], row: T) => React.ReactNode;
+  cell?: (row: T) => React.ReactNode;
 }
 
 interface DataTableProps<T> {
@@ -108,7 +108,7 @@ export default function DataTable<T>({
                     <TableCell key={String(col.accessor)} className="py-4">
                       <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         {col.cell
-                          ? col.cell(row[col.accessor], row)
+                          ? col.cell(row)
                           : ((row[col.accessor] as React.ReactNode) ?? (
                               <span className="text-slate-300 dark:text-slate-700">—</span>
                             ))}

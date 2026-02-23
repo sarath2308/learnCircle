@@ -10,7 +10,7 @@ export const getSocket = () => {
     });
 
     socket.on("connect", () => {
-      console.log("SOCKET CONNECTED", socket.id);
+      console.log("SOCKET CONNECTED", socket?.id);
     });
 
     socket.on("disconnect", (reason) => {

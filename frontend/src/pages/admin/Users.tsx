@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,7 +17,6 @@ import {
   FileText,
   UserCheck,
   UserX,
-  Filter,
   AlertTriangle,
   Users as UsersIcon,
 } from "lucide-react";
@@ -80,7 +79,17 @@ const Users = () => {
     search: debouncedSearch,
   });
 
-  const users = data?.data ?? [];
+  const users: UserType[] = (data?.data ?? []).map((user: any) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role ?? role,
+    isBlocked: user.isBlocked ?? false,
+    status: user.status ?? "pending",
+    resumeUrl: user.resumeUrl,
+    totalSessions: user.totalSessions,
+    state: user.state,
+  }));
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / 10));
 
@@ -114,6 +123,7 @@ const Users = () => {
     refetch();
   };
 
+  
   const columns: Column<UserType>[] =
     role === "learner"
       ? [
@@ -122,11 +132,11 @@ const Users = () => {
           {
             header: "Status",
             accessor: "isBlocked",
-            cell: (value) => (
+            cell: (row) => (
               <div
                 className={cn(
                   "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                  value
+                  row.isBlocked
                     ? "bg-rose-50 border-rose-100 text-rose-600 dark:bg-rose-500/10 dark:border-rose-500/20"
                     : "bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:border-emerald-500/20",
                 )}
@@ -134,10 +144,10 @@ const Users = () => {
                 <div
                   className={cn(
                     "h-1.5 w-1.5 rounded-full",
-                    value ? "bg-rose-500" : "bg-emerald-500",
+                    row.isBlocked ? "bg-rose-500" : "bg-emerald-500",
                   )}
                 />
-                {value ? "Blocked" : "Active"}
+                {row.isBlocked ? "Blocked" : "Active"}
               </div>
             ),
           },
@@ -148,16 +158,16 @@ const Users = () => {
           {
             header: "Status",
             accessor: "status",
-            cell: (val) => (
+            cell: (row) => (
               <span
                 className={cn(
                   "text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded border",
-                  val === "approved"
+                  row.status === "approved"
                     ? "text-indigo-600 bg-indigo-50 border-indigo-100"
                     : "text-amber-600 bg-amber-50 border-amber-100",
                 )}
               >
-                {val}
+                {row.status}
               </span>
             ),
           },
@@ -166,16 +176,16 @@ const Users = () => {
           {
             header: "State",
             accessor: "state",
-            cell: (value) => (
+            cell: (row) => (
               <span
                 className={cn(
                   "px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest",
-                  value === "Blocked"
+                  row.state === "Blocked"
                     ? "bg-rose-100 text-rose-700"
                     : "bg-emerald-100 text-emerald-700",
                 )}
               >
-                {value === "Blocked" ? "Blocked" : "Active"}
+                {row.state === "Blocked" ? "Blocked" : "Active"}
               </span>
             ),
           },

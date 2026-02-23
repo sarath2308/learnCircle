@@ -3,7 +3,6 @@ import { useGetMessages } from "@/hooks/shared/chat/message.get";
 import type { RootState } from "@/redux/store";
 import { connectSocket, getSocket } from "@/socket/socket";
 import { useEffect, useState, useRef } from "react";
-import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

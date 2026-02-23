@@ -2,15 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  BookOpen,
-  Clock,
-  BarChart3,
-  PlayCircle,
-  MoreVertical,
-  Calendar,
-  Layers,
-} from "lucide-react";
+import { Clock, PlayCircle, Calendar, Layers } from "lucide-react";
 
 type CourseStatus = "draft" | "published" | "pending" | "rejected";
 
@@ -32,18 +24,11 @@ interface Course {
 interface CourseCardProps {
   course: Course;
   variant: "admin" | "user" | "creator";
-  onEdit?: (id: string) => void;
   onPublish?: (id: string) => void;
   onView?: (id: string) => void;
 }
 
-export default function CourseCard({
-  course,
-  variant,
-  onEdit,
-  onPublish,
-  onView,
-}: CourseCardProps) {
+export default function CourseCard({ course, variant, onPublish, onView }: CourseCardProps) {
   // Status Color Logic
   const statusConfig = {
     draft: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
@@ -138,18 +123,6 @@ export default function CourseCard({
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl h-10 shadow-md shadow-green-100 dark:shadow-none"
               >
                 Publish
-              </Button>
-            )}
-            {onEdit && (
-              <Button
-                variant="outline"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(course.id);
-                }}
-                className="flex-1 border-slate-200 dark:border-slate-700 font-bold rounded-xl h-10 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-white"
-              >
-                Edit
               </Button>
             )}
           </div>

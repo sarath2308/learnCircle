@@ -5,16 +5,6 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
-interface ChapterCreateResponse {
-  success: boolean;
-  chapterData: {
-    id: string;
-    title: string;
-    description: string;
-    order: number;
-  };
-}
-
 export const useChapterCreate = () => {
   const dispatch = useDispatch();
 

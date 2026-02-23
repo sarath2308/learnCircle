@@ -1,4 +1,3 @@
-import React from "react";
 import { CalendarDays, Plus, Search, BellRing, ArrowRight } from "lucide-react";
 
 const EventsPage = () => {

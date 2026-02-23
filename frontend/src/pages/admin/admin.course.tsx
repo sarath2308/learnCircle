@@ -1,10 +1,7 @@
-import CreateCourseStepper from "@/components/createCourse/create.course.stepper";
 import DataTable, { type Column } from "@/components/PaginatedTable";
 import { Input } from "@/components/ui/input";
 import { useGetAllCourses } from "@/hooks/admin/course/courses.get";
-import { useGetCategory } from "@/hooks/shared/category.get";
 import { useState } from "react";
-import AdminCourseViewPage from "./admin.course.view";
 import { Link } from "react-router-dom";
 type CourseType = {
   id: string;
@@ -36,38 +33,35 @@ const AdminCourse = () => {
     limit: 10,
   });
 
-  const categoryData = useGetCategory();
-
   const columns: Column<CourseType>[] = [
     {
       header: "Thumbnail",
       accessor: "thumbnailUrl",
-      cell: (value) => (
-        <img src={value as string} alt="thumbnail" className="w-16 h-9 object-cover rounded" />
+      cell: (row) => (
+        <img src={row.thumbnailUrl} alt="thumbnail" className="w-16 h-9 object-cover rounded" />
       ),
     },
     {
       header: "Title",
       accessor: "title",
     },
-    // Inside columns array
     {
       header: "Category",
-      accessor: "category.name", // This can stay for reference
-      cell: (_, row: CourseType) => (
+      accessor: "category",
+      cell: (row) => (
         <span className="text-sm font-medium">{row.category?.name || "Uncategorized"}</span>
       ),
     },
     {
       header: "Verification",
       accessor: "verificationStatus",
-      cell: (value: string) => (
+      cell: (row) => (
         <span
           className={`px-2 py-1 rounded text-sm font-medium ${
-            statusStyles[value] ?? "bg-gray-100 text-gray-700"
+            statusStyles[row.verificationStatus] ?? "bg-gray-100 text-gray-700"
           }`}
         >
-          {value}
+          {row.verificationStatus}
         </span>
       ),
     },
@@ -78,18 +72,17 @@ const AdminCourse = () => {
     {
       header: "State",
       accessor: "isBlocked",
-      cell: (value) => (
+      cell: (row) => (
         <span
           className={`px-2 py-1 rounded text-sm font-medium ${
-            value ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+            row.isBlocked ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
           }`}
         >
-          {value ? "Blocked" : "Active"}
+          {row.isBlocked ? "Blocked" : "Active"}
         </span>
       ),
     },
   ];
-
   const renderActions = (course: CourseType) => {
     return (
       <div>

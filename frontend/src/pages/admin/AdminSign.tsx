@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import LoginForm from "@/components/LoginForm";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/hooks/auth/useLogin";
@@ -10,7 +10,7 @@ const AdminSign = () => {
 
   const { mutateAsync: login } = useLogin();
 
-  const { mutateAsync, isPending } = useGoogle();
+  const { mutateAsync } = useGoogle();
 
   const onLogin = useCallback(
     async (role: string, data: { email: string; password: string }) => {
