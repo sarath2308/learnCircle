@@ -12,7 +12,8 @@ export class ChatBotService implements IChatBotService {
     if (STATIC_RESPONSES[userMessage]) {
       return STATIC_RESPONSES[userMessage];
     }
-    const model = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+    const model = process.env.GEMINI_MODEL;
+    console.log("gemini model " + model);
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
