@@ -34,6 +34,8 @@ export class ChatBotService implements IChatBotService {
       },
     );
 
+    console.log("gemini response "+ response);
+
     const data = await response.json();
     console.log("Gemini raw response:", JSON.stringify(data, null, 2));
 
