@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { json, urlencoded } from "express";
 import dotenv from "dotenv";
 import { connectRedis } from "./config/redis/redis";
