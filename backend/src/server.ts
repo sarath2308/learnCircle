@@ -64,9 +64,6 @@ async function startServer() {
       credentials: true,
     }),
   );
-  app.use("/", (req: Request, res: Response) => {
-    res.send("LearnCircle backend running");
-  });
   app.use("/api", entryRoute());
 
   app.use(
