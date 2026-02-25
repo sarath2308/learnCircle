@@ -22,7 +22,7 @@ export class PaymentService implements IPaymentService {
     @inject(TYPES.IEnrollRepo) private _enrollRepo: IEnrollRepo,
     @inject(TYPES.ISessionBookingRepo) private _sessionBookingRepo: ISessionBookingRepo,
   ) {
-    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keyId = process.env.RAZORPAY_API_KEY;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
     if (!keyId || !keySecret) {
