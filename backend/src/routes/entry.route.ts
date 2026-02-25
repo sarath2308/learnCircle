@@ -33,7 +33,6 @@ import { INotificationController } from "@/interface/shared/notification/notific
 import { NotificationRoutes } from "./shared/notification/notification.routes";
 import { PaymentRoute } from "./shared/payment-webhook/payment.routes";
 import { IPaymentController } from "@/interface/shared/payment/payment.controller.interface";
-import { PaymentWebhookRoute } from "./shared/payment-webhook/payment.webhook.routes";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -181,7 +180,6 @@ export function entryRoute() {
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     NotificationRoutes(notificationController),
   );
-  router.use("/payment/webhooks", PaymentWebhookRoute(paymentController));
   router.use("/payment", authenticate.handle.bind(authenticate), PaymentRoute(paymentController));
 
   return router;
