@@ -39,13 +39,11 @@ export class CoursePurchaseService implements ICoursePurchaseService {
     let finalAmount = 0;
     if (course.price && course.discount)
       finalAmount = course.price - (course.price * course.discount) / 100;
-
     const order = await this._paymentService.createPayment(userId, {
       amount: finalAmount,
       purpose: PaymentPurpose.COURSE,
       referenceId: courseId,
     });
-
     return { status: ENROLLMENT_STATUS.PAYMENT_REQUERED, order };
   }
 }

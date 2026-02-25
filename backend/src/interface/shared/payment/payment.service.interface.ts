@@ -7,6 +7,7 @@ export interface IPaymentService {
     userId: string,
     metaData: { amount: number; purpose: PaymentPurpose; referenceId: string },
   ) => Promise<RazorpayPaymentType>;
+
   handleWebhook: (rawBody: Buffer, signature: string) => Promise<void>;
   getPaymentStatus: (orderid: string) => Promise<PAYMENT_STATUS>;
 }

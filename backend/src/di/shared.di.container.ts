@@ -145,8 +145,11 @@ import { ICoursePurchaseService } from "@/interface/shared/course-purchase/cours
 import { CoursePurchaseService } from "@/services/shared/enrollment/course.purchase.service";
 import { IEnrollmentController } from "@/interface/shared/enroll/enrollment.controller.interface";
 import { EnrollmentController } from "@/controllers/shared/enrollment.controlller";
+<<<<<<< Updated upstream
 import { IPaymentController } from "@/interface/shared/payment/payment.controller.interface";
 import { PaymentController } from "@/controllers/shared/payment.controller";
+=======
+>>>>>>> Stashed changes
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -255,6 +258,7 @@ export const registerShared = (container: Container): void => {
   container.bind<INotificationController>(TYPES.INotificationController).to(NotificationController);
   container.bind<IEnrollmentController>(TYPES.IEnrollmentController).to(EnrollmentController);
   container.bind<IPaymentController>(TYPES.IPaymentController).to(PaymentController);
+
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);
