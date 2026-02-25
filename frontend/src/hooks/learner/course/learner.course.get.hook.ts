@@ -43,7 +43,7 @@ export interface LearnerCourseData {
   thumbnailUrl: string | null;
 
   chapters: LearnerChapterResponse[] | [];
-
+  isEnrolled: boolean;
   chapterCount: number;
   lessonCount: number;
 }

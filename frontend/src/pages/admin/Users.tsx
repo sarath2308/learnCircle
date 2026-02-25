@@ -123,7 +123,6 @@ const Users = () => {
     refetch();
   };
 
-  
   const columns: Column<UserType>[] =
     role === "learner"
       ? [

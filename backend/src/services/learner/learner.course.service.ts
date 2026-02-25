@@ -11,7 +11,7 @@ export class LearnerCourseService implements ILearnerCourseService {
   constructor(@inject(TYPES.ICourseService) private _courseService: ICourseService) {}
 
   async getCourseData(courseId: string, userId: string): Promise<LearnerCourseResponse> {
-    let courseData = await this._courseService.getCourseDataForLearner(courseId);
+    let courseData = await this._courseService.getCourseDataForLearner(userId, courseId);
 
     return courseData;
   }

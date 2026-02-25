@@ -47,7 +47,7 @@ import { LessonService } from "@/services/shared/course/lesson.service";
 import { LessonController } from "@/controllers/shared/lesson.controller";
 import { ILessonController } from "@/interface/shared/lesson/lesson.controller.interface";
 import { IMessage, Message } from "@/model/shared/messages";
-import { Enroll, IEnroll } from "@/model/shared/enroll";
+import { Enrollment, IEnroll } from "@/model/shared/enroll";
 import { Conversation, IConversation } from "@/model/shared/conversation.model";
 import { IPayment, Payment } from "@/model/shared/payments";
 import { IMessageRepo } from "@/interface/shared/messages/message.repo.interface";
@@ -137,6 +137,16 @@ import { NotificationService } from "@/services/shared/notification/notification
 import { INotificationController } from "@/interface/shared/notification/notification.controller.interface";
 import { NotificationController } from "@/controllers/shared/notification.controller";
 import { getRedisClient } from "@/config/redis/redis";
+import { IPaymentService } from "@/interface/shared/payment/payment.service.interface";
+import { PaymentService } from "@/services/shared/payment/payment.service";
+import { IEnrollmentService } from "@/interface/shared/enroll/enroll.service.interface";
+import { EnrollmentService } from "@/services/shared/enrollment/enrollment.service";
+import { ICoursePurchaseService } from "@/interface/shared/course-purchase/course.purchase.service.interface";
+import { CoursePurchaseService } from "@/services/shared/enrollment/course.purchase.service";
+import { IEnrollmentController } from "@/interface/shared/enroll/enrollment.controller.interface";
+import { EnrollmentController } from "@/controllers/shared/enrollment.controlller";
+import { IPaymentController } from "@/interface/shared/payment/payment.controller.interface";
+import { PaymentController } from "@/controllers/shared/payment.controller";
 
 export const registerShared = (container: Container): void => {
   /*-------------------Model-----------------------*/
@@ -145,7 +155,7 @@ export const registerShared = (container: Container): void => {
   container.bind<Model<ILesson>>(TYPES.ILessonModel).toConstantValue(Lesson);
   container.bind<Model<IChapter>>(TYPES.IChapterModel).toConstantValue(Chapter);
   container.bind<Model<IMessage>>(TYPES.IMessage).toConstantValue(Message);
-  container.bind<Model<IEnroll>>(TYPES.IEnroll).toConstantValue(Enroll);
+  container.bind<Model<IEnroll>>(TYPES.IEnroll).toConstantValue(Enrollment);
   container.bind<Model<IConversation>>(TYPES.IConversation).toConstantValue(Conversation);
   container.bind<Model<IPayment>>(TYPES.IPayment).toConstantValue(Payment);
   container
@@ -219,6 +229,9 @@ export const registerShared = (container: Container): void => {
   container.bind<IChatBotService>(TYPES.IChatBotService).to(ChatBotService);
   container.bind<ISocketEmitService>(TYPES.ISocketEmitService).to(SocketEmitService);
   container.bind<INotificationService>(TYPES.INotificationService).to(NotificationService);
+  container.bind<IPaymentService>(TYPES.IPaymentService).to(PaymentService);
+  container.bind<IEnrollmentService>(TYPES.IEnrollmentService).to(EnrollmentService);
+  container.bind<ICoursePurchaseService>(TYPES.ICoursePurchaseService).to(CoursePurchaseService);
   /*-------------------Controller------------------------*/
   container.bind<IAuthController>(TYPES.IAuthController).to(AuthController);
   container.bind<ICourseController>(TYPES.ICourseController).to(CourseController);
@@ -240,6 +253,8 @@ export const registerShared = (container: Container): void => {
 
   container.bind<IChatBotController>(TYPES.IChatBotController).to(ChatBotController);
   container.bind<INotificationController>(TYPES.INotificationController).to(NotificationController);
+  container.bind<IEnrollmentController>(TYPES.IEnrollmentController).to(EnrollmentController);
+  container.bind<IPaymentController>(TYPES.IPaymentController).to(PaymentController);
   /*-------------------Middleware------------------------*/
 
   container.bind<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware).to(AuthenticateMiddleware);

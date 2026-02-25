@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import InstructorBookingPage from "@/components/learner/session.booking";
@@ -7,6 +8,10 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { useCreateSession } from "@/hooks/learner/session-booking/session.create";
 import { useGetInstructorReview } from "@/hooks/shared/instructor-review/instructor.review.get.hook";
 import type { IReviewType } from "@/types/shared/review.type";
+import { loadRazorpay } from "@/helper/razorpay";
+import toast from "react-hot-toast";
+import { PaymentStatus, PaymentStatusOverlay } from "@/components/shared/payment.overlay.component";
+import { useGetPaymentStatus } from "@/hooks/shared/payment/payment.get.status";
 
 // Explicit interfaces based on your request
 export interface ISlot {
@@ -21,6 +26,7 @@ const InstructorBookingContainer = () => {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toLocaleDateString("en-CA")); // "2026-02-23"
   const { data: reviewData } = useGetInstructorReview(instructorId || "");
   const reviews: IReviewType[] = reviewData?.reviews ?? [];
+  const [paymentStatus, setPaymentStatus] = useState(PaymentStatus.IDLE);
 
   // 1. Data Fetching - Profile
   const {
@@ -37,6 +43,7 @@ const InstructorBookingContainer = () => {
   } = useGetAvailability(instructorId || "", selectedDate);
 
   const createSessionMutation = useCreateSession();
+  const checkPaymentStatusMutation = useGetPaymentStatus();
 
   const profileData = profileResponse?.profileData;
   const slots: ISlot[] = useMemo(
@@ -70,7 +77,7 @@ const InstructorBookingContainer = () => {
     const basePrice = profileData?.sessionPrice || 100;
 
     return availabilityResponse?.availabilityData?.price || basePrice;
-  }, [slots]);
+  }, [profileData?.sessionPrice, availabilityResponse?.availabilityData?.price]);
 
   // 5. Logic: Booking Handler
   const handleBooking = async (
@@ -81,28 +88,98 @@ const InstructorBookingContainer = () => {
   ) => {
     if (!date || !slot) return;
     setIsBooking(true);
-    try {
-      const [startTime, endTime] = slot.split(" - ");
-      console.log("Booking Session with details:", {
-        instructorId,
-        date: date.toLocaleDateString("en-CA"),
-        startTime,
-        endTime,
-        price: finalPrice,
-        typeOfSession,
-      });
-      await createSessionMutation.mutateAsync({
-        startTime,
-        endTime,
-        instructorId: instructorId || "",
-        date: date.toLocaleDateString("en-CA"),
-        price: Number(finalPrice),
-        typeOfSession: typeOfSession,
-      });
-    } finally {
+    const [startTime, endTime] = slot.split(" - ");
+    console.log("Booking Session with details:", {
+      instructorId,
+      date: date.toLocaleDateString("en-CA"),
+      startTime,
+      endTime,
+      price: finalPrice,
+      typeOfSession,
+    });
+    const response = await createSessionMutation.mutateAsync({
+      startTime,
+      endTime,
+      instructorId: instructorId || "",
+      date: date.toLocaleDateString("en-CA"),
+      price: Number(finalPrice),
+      typeOfSession: typeOfSession,
+    });
+    const orderData = response?.orderData;
+    const loaded = await loadRazorpay();
+    if (!loaded) {
+      toast.error("razorpay failed, please try after sometimes");
       setIsBooking(false);
-      refetchAvailability(); // Refetch availability data after booking
+      return;
     }
+
+    const options = {
+      key: orderData.key, // RAZORPAY_KEY_ID (public)
+      amount: orderData.amount, // in paise
+      currency: "INR",
+      name: "LearnCircle",
+      description: "Course SlotBooking",
+      order_id: orderData.orderId, // VERY IMPORTANT
+      handler: async function (response: any) {
+        const orderId = response.razorpay_order_id;
+        let attempts = 0;
+        const maxAttempts = 10;
+        // Show "Confirming payment..."
+        setPaymentStatus(PaymentStatus.PROCESSING);
+
+        // Start polling backend
+        const poll = async () => {
+          attempts++;
+          try {
+            const res = await checkPaymentStatusMutation.mutateAsync(orderId);
+
+            if (res.paymentStatus === "PAID") {
+              setPaymentStatus(PaymentStatus.SUCCESS);
+              setIsBooking(false);
+              refetchAvailability();
+              return;
+            }
+
+            if (res.paymentStatus === "FAILED" || res.paymentStatus === "CANCELLED") {
+              setPaymentStatus(PaymentStatus.FAILED);
+              setIsBooking(false);
+              return;
+            }
+
+            if (attempts >= maxAttempts) {
+              // Give up waiting
+              toast.loading("Payment is still processing. Please check back later.");
+              setPaymentStatus(PaymentStatus.IDLE); // or keep PROCESSING with a message
+              setIsBooking(false);
+              return;
+            }
+            setTimeout(poll, 2000);
+          } catch (err) {
+            console.error("Polling error", err);
+            if (attempts >= maxAttempts) {
+              toast.error("Could not confirm payment. Please refresh later.");
+              setPaymentStatus(PaymentStatus.FAILED);
+              setIsBooking(false);
+              return;
+            }
+
+            setTimeout(poll, 3000);
+          }
+        };
+
+        poll();
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+    rzp.on("payment.failed", () => {
+      setPaymentStatus(PaymentStatus.FAILED);
+      setIsBooking(false);
+    });
+    rzp.open();
   };
 
   // 6. Loading & Error Alignment Fixes
@@ -111,19 +188,25 @@ const InstructorBookingContainer = () => {
   if (profileError || !profileData) return <ErrorState message="Profile not found" />;
 
   return (
-    <InstructorBookingPage
-      instructor={{
-        ...profileData,
-        // Mapping profile_key to profileUrl if that's your field naming
-        profileUrl: profileData.profileUrl,
-      }}
-      onBook={handleBooking}
-      getSlots={getSlotsForDate}
-      getPrice={getPriceForDate}
-      isBookingLoading={isBooking}
-      isSlotsLoading={availabilityLoading} // Pass this to show a loader in the slot grid
-      reviews={reviews}
-    />
+    <>
+      <PaymentStatusOverlay
+        status={paymentStatus}
+        onClose={() => setPaymentStatus(PaymentStatus.IDLE)}
+      />
+      <InstructorBookingPage
+        instructor={{
+          ...profileData,
+          // Mapping profile_key to profileUrl if that's your field naming
+          profileUrl: profileData.profileUrl,
+        }}
+        onBook={handleBooking}
+        getSlots={getSlotsForDate}
+        getPrice={getPriceForDate}
+        isBookingLoading={isBooking}
+        isSlotsLoading={availabilityLoading} // Pass this to show a loader in the slot grid
+        reviews={reviews}
+      />
+    </>
   );
 };
 

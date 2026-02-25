@@ -4,17 +4,45 @@ export interface IEnroll extends Document {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   courseId: Types.ObjectId;
+  paymentId: Types.ObjectId;
+  status: "ACTIVE" | "REVOKED";
   isEnrolled: boolean;
-  enrollerAt: Date;
+  enrolledAt: Date;
 }
 
-const enrollSchema = new Schema<IEnroll>(
+const EnrollmentSchema = new Schema<IEnroll>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
-    isEnrolled: { type: Boolean, default: false },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    courseId: {
+      type: Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+      index: true,
+    },
+    paymentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Payment",
+      required: false, // null for free courses
+    },
+    enrolledAt: {
+      type: Date,
+      default: Date.now,
+    },
+    status: {
+      type: String,
+      enum: ["ACTIVE", "REVOKED"],
+      default: "ACTIVE",
+    },
   },
   { timestamps: true },
 );
 
-export const Enroll = model<IEnroll>("Enroll", enrollSchema);
+// 🚨 CRITICAL: prevent duplicate enrollments
+EnrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true });
+
+export const Enrollment = model("Enrollment", EnrollmentSchema);

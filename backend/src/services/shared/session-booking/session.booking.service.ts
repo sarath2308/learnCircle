@@ -1,10 +1,13 @@
+import { BOOKING_STATUS } from "@/constants/shared/booking.status";
 import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { NotificationTemplates, NotificationType } from "@/constants/shared/notification.constant";
+import { PaymentPurpose } from "@/constants/shared/payment.purpose.type";
 import { AppError } from "@/errors/app.error";
 import { IProfessionalProfileService } from "@/interface/professional/professional.profile.service.interface";
 import { IMapper } from "@/interface/shared/mapper/mapper.interface";
 import { INotificationService } from "@/interface/shared/notification/notification.service.interface";
+import { IPaymentService } from "@/interface/shared/payment/payment.service.interface";
 import { IAvailabilityRepo } from "@/interface/shared/session-booking/availabillity/availability.repo.interface";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
 import { ISessionBookingService } from "@/interface/shared/session-booking/booking/session.booking.service.interface";
@@ -25,12 +28,16 @@ export class SessionBookingService implements ISessionBookingService {
     @inject(TYPES.IProfessionalProfileService)
     private _professionalProfileService: IProfessionalProfileService,
     @inject(TYPES.INotificationService) private _notificationService: INotificationService,
+    @inject(TYPES.IPaymentService) private _paymentService: IPaymentService,
   ) {}
   /**
    *
    * @param data
    */
-  async createSession(data: SessionBookingRequestType): Promise<SessionBookingResponseType> {
+  async createSession(data: SessionBookingRequestType): Promise<{
+    session: SessionBookingResponseType;
+    order: { key: string; amount: number; orderId: string };
+  }> {
     const isBookingExists = await this._sessionBookingRepo.checkSessionBookingExists(
       data.instructorId,
       new Date(data.date),
@@ -69,7 +76,14 @@ export class SessionBookingService implements ISessionBookingService {
     if (!sessionBooking) {
       throw new AppError(Messages.SESSION_BOOKING_NOT_CREATED, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return this._sessionBookingMapper.map(sessionBooking);
+
+    const order = await this._paymentService.createPayment(data.learnerId!, {
+      amount: sessionBooking.price,
+      purpose: PaymentPurpose.SESSION,
+      referenceId: String(sessionBooking.id),
+    });
+
+    return { session: this._sessionBookingMapper.map(sessionBooking), order };
   }
 
   /**
@@ -146,47 +160,43 @@ export class SessionBookingService implements ISessionBookingService {
     sessionBookingId: string,
     userId: string,
   ): Promise<{ hasPermission: boolean; roomId: string }> {
+    const booking = await this._sessionBookingRepo.findById(sessionBookingId);
+
+    if (!booking) {
+      throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (booking.status !== BOOKING_STATUS.CONFIRMED) {
+      throw new AppError(Messages.SESSION_IS_NOT_CONFIRM, HttpStatus.BAD_REQUEST);
+    }
+    const isLearner = booking.learnerId.toString() === userId;
+    const isInstructor = booking.instructorId.toString() === userId;
+
+    if (!isLearner && !isInstructor) {
+      throw new AppError(Messages.NO_PERMISSION_TO_JOIN, HttpStatus.FORBIDDEN);
+    }
+    const [startHour, startMinute] = booking.startTime.split(":").map(Number);
+    const sessionStart = new Date(booking.date);
+    sessionStart.setHours(startHour, startMinute, 0, 0);
+
+    // Build session end datetime
+    const [endHour, endMinute] = booking.endTime.split(":").map(Number);
+    const sessionEnd = new Date(booking.date);
+    sessionEnd.setHours(endHour, endMinute, 0, 0);
+
+    const now = new Date();
+
+    // Allow join 5 minutes before and 5 minutes after
+    const earlyJoin = new Date(sessionStart.getTime() - 5 * 60 * 1000);
+    const lateLeave = new Date(sessionEnd.getTime() + 5 * 60 * 1000);
+
+    if (now < earlyJoin || now > lateLeave) {
+      throw new AppError(Messages.SESSION_NOT_AVAILABLE_AT_THIS_TIME, HttpStatus.FORBIDDEN);
+    }
+
     return {
       hasPermission: true,
       roomId: `session_${sessionBookingId}`,
     };
-    // const booking = await this._sessionBookingRepo.findById(sessionBookingId);
-
-    // if (!booking) {
-    //   throw new AppError(Messages.SESSION_BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
-    // }
-    // if (booking.status !== BOOKING_STATUS.CONFIRMED) {
-    //   throw new AppError(Messages.SESSION_IS_NOT_CONFIRM, HttpStatus.BAD_REQUEST);
-    // }
-    // const isLearner = booking.learnerId.toString() === userId;
-    // const isInstructor = booking.instructorId.toString() === userId;
-
-    // if (!isLearner && !isInstructor) {
-    //   throw new AppError(Messages.NO_PERMISSION_TO_JOIN, HttpStatus.FORBIDDEN);
-    // }
-    // const [startHour, startMinute] = booking.startTime.split(":").map(Number);
-    // const sessionStart = new Date(booking.date);
-    // sessionStart.setHours(startHour, startMinute, 0, 0);
-
-    // // Build session end datetime
-    // const [endHour, endMinute] = booking.endTime.split(":").map(Number);
-    // const sessionEnd = new Date(booking.date);
-    // sessionEnd.setHours(endHour, endMinute, 0, 0);
-
-    // const now = new Date();
-
-    // // Allow join 5 minutes before and 5 minutes after
-    // const earlyJoin = new Date(sessionStart.getTime() - 5 * 60 * 1000);
-    // const lateLeave = new Date(sessionEnd.getTime() + 5 * 60 * 1000);
-
-    // if (now < earlyJoin || now > lateLeave) {
-    //   throw new AppError(Messages.SESSION_NOT_AVAILABLE_AT_THIS_TIME, HttpStatus.FORBIDDEN);
-    // }
-
-    // return {
-    //   hasPermission: true,
-    //   roomId: `session_${sessionBookingId}`,
-    // };
   }
 
   async MarkSessionAsCompleted(sessionBookingId: string): Promise<void> {
