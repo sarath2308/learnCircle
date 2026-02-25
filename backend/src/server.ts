@@ -12,38 +12,12 @@ import http from "http";
 import { initSocket } from "./socket";
 import { loadConfigFromSSM } from "./config/ssm/ssm";
 import { connectDB } from "./config/db/mongo/mongo";
+import { PaymentWebhookRoute } from "./routes/shared/payment-webhook/payment.webhook.routes";
+import container from "./di/di.container";
+import { IPaymentController } from "./interface/shared/payment/payment.controller.interface";
+import { TYPES } from "./types/shared/inversify/types";
 dotenv.config();
 const app = express();
-
-// Middleware - Json
-app.use((req, res, next) => {
-  const contentType = req.headers["content-type"];
-  if (contentType?.startsWith("multipart/form-data")) {
-    return next();
-  }
-
-  json()(req, res, next);
-});
-
-app.use(cookieParser());
-app.use(urlencoded({ extended: true }));
-
-app.use(
-  expressWinston.logger({
-    winstonInstance: logger,
-    meta: true,
-    msg: "HTTP {{req.method}} {{req.url}} | status: {{res.statusCode}} | responseTime: {{res.responseTime}}ms",
-    requestWhitelist: ["body", "params", "query"], // remove headers
-    responseWhitelist: ["body"],
-    dynamicMeta: (req) => {
-      // remove sensitive data
-      const safeBody = { ...req.body };
-      if (safeBody.password) delete safeBody.password;
-      return { req: { body: safeBody } };
-    },
-    colorize: true,
-  }),
-);
 
 async function startServer() {
   const env = process.env.NODE_ENV === "production" ? "prod" : "dev";
@@ -56,6 +30,37 @@ async function startServer() {
   const server = http.createServer(app);
 
   initSocket(server);
+  const paymentController = container.get<IPaymentController>(TYPES.IPaymentController);
+  app.use("/api/payment/webhooks", PaymentWebhookRoute(paymentController));
+
+  app.use((req, res, next) => {
+    const contentType = req.headers["content-type"];
+    if (contentType?.startsWith("multipart/form-data")) {
+      return next();
+    }
+
+    json()(req, res, next);
+  });
+
+  app.use(cookieParser());
+  app.use(urlencoded({ extended: true }));
+
+  app.use(
+    expressWinston.logger({
+      winstonInstance: logger,
+      meta: true,
+      msg: "HTTP {{req.method}} {{req.url}} | status: {{res.statusCode}} | responseTime: {{res.responseTime}}ms",
+      requestWhitelist: ["body", "params", "query"], // remove headers
+      responseWhitelist: ["body"],
+      dynamicMeta: (req) => {
+        // remove sensitive data
+        const safeBody = { ...req.body };
+        if (safeBody.password) delete safeBody.password;
+        return { req: { body: safeBody } };
+      },
+      colorize: true,
+    }),
+  );
 
   app.use(
     cors({
