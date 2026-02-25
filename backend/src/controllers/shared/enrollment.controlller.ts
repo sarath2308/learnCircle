@@ -19,5 +19,4 @@ export class EnrollmentController implements IEnrollmentController {
     res
       .status(HttpStatus.OK)
       .json({ success: true, status: response.status, orderData: response.order });
-  }
 }
