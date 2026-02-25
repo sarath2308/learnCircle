@@ -19,6 +19,7 @@ export const LearnerCourseDetailsSchema = z.object({
   }),
   chapterCount: z.number(),
   thumbnailUrl: z.string(),
+  isEnrolled: z.boolean(),
 });
 
 export type LearnerCourseDetailsResponseType = z.infer<typeof LearnerCourseDetailsSchema>;

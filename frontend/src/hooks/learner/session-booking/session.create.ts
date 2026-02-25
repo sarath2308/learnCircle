@@ -1,7 +1,5 @@
 import { SESSION_API } from "@/api/learner/session.book.api";
 import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { useCompleteSession } from "./learner.session.complete.hook";
 import type { BookingStatus } from "@/pages/Learner/learner.profile.myBookings";
 
 export interface SessionBooking {
@@ -18,15 +16,15 @@ export interface SessionBooking {
 export interface CreateSessionPayload {
   success: boolean;
   data: SessionBooking;
+  orderData: {
+    amount: number;
+    orderId: string;
+    key: string;
+  };
 }
 export const useCreateSession = () => {
-  const sessionComleteMutation = useCompleteSession();
   return useMutation({
     mutationKey: ["create-session"],
     mutationFn: SESSION_API.BOOK_SESSION,
-    onSuccess: async (res: CreateSessionPayload) => {
-      await sessionComleteMutation.mutateAsync(res.data.id);
-      toast.success("Session Created Successfully");
-    },
   });
 };

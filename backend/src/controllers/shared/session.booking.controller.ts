@@ -16,7 +16,9 @@ export class SessionBookingController implements ISessionBookingController {
     const userId = req.user?.userId as string;
     req.body.learnerId = userId;
     const sessionBooking = await this._sessionBookingService.createSession(req.body);
-    res.status(HttpStatus.CREATED).json({ success: true, data: sessionBooking });
+    res
+      .status(HttpStatus.CREATED)
+      .json({ success: true, data: sessionBooking, orderData: sessionBooking.order });
   }
 
   async confirmBooking(req: IAuthRequest, res: Response): Promise<void> {

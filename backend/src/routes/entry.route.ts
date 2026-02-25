@@ -31,6 +31,8 @@ import { IChatBotController } from "@/interface/shared/chatbot/chatbot.controlle
 import { ChatBotRoutes } from "./shared/chatbot/chatbot.routes";
 import { INotificationController } from "@/interface/shared/notification/notification.controller.interface";
 import { NotificationRoutes } from "./shared/notification/notification.routes";
+import { PaymentRoute } from "./shared/payment-webhook/payment.routes";
+import { IPaymentController } from "@/interface/shared/payment/payment.controller.interface";
 
 export function entryRoute() {
   const authenticate = container.get<IAuthenticateMiddleware>(TYPES.IAuthenticateMiddleware);
@@ -69,6 +71,10 @@ export function entryRoute() {
   const notificationController = wrapAsyncController(
     container.get<INotificationController>(TYPES.INotificationController),
   );
+
+  const paymentController = wrapAsyncController(
+    container.get<IPaymentController>(TYPES.IPaymentController),
+  );
   const router = Router();
 
   router.use("/auth", authEntryRoute());
@@ -97,7 +103,7 @@ export function entryRoute() {
   router.use(
     "/course",
     authenticate.handle.bind(authenticate),
-    authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL),
+    authorizeRoles(ROLE.ADMIN, ROLE.PROFESSIONAL, ROLE.LEARNER),
     courseEntryRoute(),
   );
 
@@ -174,6 +180,8 @@ export function entryRoute() {
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     NotificationRoutes(notificationController),
   );
+
+  router.use("/payment", authenticate.handle.bind(authenticate), PaymentRoute(paymentController));
 
   return router;
 }

@@ -38,6 +38,7 @@ import { LearnerCourseDetailsSchema } from "@/schema/learner/course/learner.cour
 import { learnerLessonResponseSchema } from "@/schema/learner/course/lesson/learner.lesson.response";
 import { learnerChapterResponse } from "@/schema/learner/course/chapter/learner.chapter.response.schema";
 import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
+import { IEnrollmentService } from "@/interface/shared/enroll/enroll.service.interface";
 
 @injectable()
 export class CourseService implements ICourseService {
@@ -48,6 +49,7 @@ export class CourseService implements ICourseService {
     @inject(TYPES.ISafeDeleteService) private _safeDeleteService: ISafeDeleteService,
     @inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo,
     @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo,
+    @inject(TYPES.IEnrollmentService) private _enrollmentService: IEnrollmentService,
   ) {}
   //creating a course
   /**
@@ -160,8 +162,8 @@ export class CourseService implements ICourseService {
       courseData.subCategory = subCategoryObjectId ?? courseData.subCategory?._id;
       courseData.skillLevel = payload.skillLevel ?? courseData.skillLevel;
       courseData.thumbnail_key = key ?? courseData.thumbnail_key;
-      courseData.price = Number(payload.price) ?? courseData.price;
-      courseData.discount = Number(payload.discount) ?? courseData.discount;
+      courseData.price = payload.price ? Number(payload.price) : courseData.price;
+      courseData.discount = payload.discount ? Number(payload.discount) : courseData.discount;
 
       await courseData.save();
     } finally {
@@ -627,7 +629,7 @@ export class CourseService implements ICourseService {
     };
   }
 
-  async getCourseDataForLearner(courseId: string): Promise<LearnerCourseResponse> {
+  async getCourseDataForLearner(userId: string, courseId: string): Promise<LearnerCourseResponse> {
     const courseData = await this._courseRepo.findById(courseId);
 
     if (!courseData) {
@@ -643,6 +645,9 @@ export class CourseService implements ICourseService {
     const createdBy = courseData.createdBy as unknown as CreatedByPopulated;
     const category = courseData.category as unknown as CategoryObjType;
 
+    //checking if the user is enrolled
+    const isEnrolled = await this._enrollmentService.isEnrolled(userId, courseId);
+
     const courseObj = {
       ...courseData.toObject(),
       id: String(courseData._id),
@@ -657,6 +662,7 @@ export class CourseService implements ICourseService {
       discount: courseData.discount ?? 0,
       thumbnailUrl,
       rejectReason: courseData.rejectReason ?? "",
+      isEnrolled: isEnrolled,
     };
 
     const chapters = await this._chapterRepo.getChapters(courseId);

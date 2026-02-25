@@ -115,4 +115,9 @@ export const TYPES = {
   INotificationRepo: Symbol.for("INotificationRepo"),
   INotificationService: Symbol.for("INotificationService"),
   INotificationController: Symbol.for("INotificationController"),
+  IEnrollmentService: Symbol.for("IEnrollmentService"),
+  IPaymentService: Symbol.for("IPaymentService"),
+  ICoursePurchaseService: Symbol.for("ICoursePurchaseService"),
+  IEnrollmentController: Symbol.for("IEnrollmentController"),
+  IPaymentController: Symbol.for("IPaymentController"),
 };

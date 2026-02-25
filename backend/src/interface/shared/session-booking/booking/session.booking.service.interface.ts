@@ -2,7 +2,10 @@ import { SessionBookingRequestType } from "@/schema/learner/session.booking/sess
 import { SessionBookingResponseType } from "@/schema/learner/session.booking/session.booking.response.schema";
 
 export interface ISessionBookingService {
-  createSession: (data: SessionBookingRequestType) => Promise<SessionBookingResponseType>;
+  createSession: (data: SessionBookingRequestType) => Promise<{
+    session: SessionBookingResponseType;
+    order: { key: string; amount: number; orderId: string };
+  }>;
   cancelBooking?: (sessionBookingId: string) => Promise<void>;
   confirmBooking: (sessionBookingId: string) => Promise<SessionBookingResponseType>;
   getAllBookingForUser: (

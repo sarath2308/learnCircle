@@ -111,4 +111,5 @@ export const Messages = {
   //Chat bot
 
   CHATBOT_REPLY_NOT_FOUND: "No reply for this message",
+  PAYMENT_NOT_FOUND: "Payment info  not found",
 };

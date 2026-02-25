@@ -49,6 +49,7 @@ export class ChatBotService implements IChatBotService {
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
+
     if (!reply) {
       throw new AppError("Empty response from AI", HttpStatus.INTERNAL_SERVER_ERROR);
     }
