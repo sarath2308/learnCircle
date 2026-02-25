@@ -18,10 +18,6 @@ const app = express();
 // Middleware - Json
 app.use((req, res, next) => {
   const contentType = req.headers["content-type"];
-  if (req.originalUrl === "/api/payments/webhook") {
-    return next();
-  }
-
   if (contentType?.startsWith("multipart/form-data")) {
     return next();
   }

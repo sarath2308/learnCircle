@@ -3,7 +3,7 @@ import { IAuthRequest } from "@/interface/shared/auth/auth.request.interface";
 import { IPaymentController } from "@/interface/shared/payment/payment.controller.interface";
 import { IPaymentService } from "@/interface/shared/payment/payment.service.interface";
 import { TYPES } from "@/types/shared/inversify/types";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -20,7 +20,7 @@ export class PaymentController implements IPaymentController {
 
     res.status(200).json({ status: "ok" });
   }
-  async checkPaymentStatus(req: IAuthRequest, res: Response): Promise<void> {
+  async checkPaymentStatus(req: Request, res: Response): Promise<void> {
     const orderId = req.params.orderId as string;
     const status = await this._paymentService.getPaymentStatus(orderId);
     res.status(HttpStatus.OK).json({ success: true, paymentStatus: status });

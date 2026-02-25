@@ -6,7 +6,7 @@ export const PaymentWebhookRoute = (controller: IPaymentController) => {
   const router = Router();
 
   router.post(
-    "/webhooks/razorpay",
+    "/razorpay",
     express.raw({ type: "application/json" }),
     controller.handleWebHook.bind(controller),
   );

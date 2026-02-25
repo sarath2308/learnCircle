@@ -181,9 +181,8 @@ export function entryRoute() {
     authorizeRoles(ROLE.LEARNER, ROLE.PROFESSIONAL),
     NotificationRoutes(notificationController),
   );
-
+  router.use("/payment/webhooks", PaymentWebhookRoute(paymentController));
   router.use("/payment", authenticate.handle.bind(authenticate), PaymentRoute(paymentController));
-  router.use("/payment", PaymentWebhookRoute(paymentController));
 
   return router;
 }
