@@ -14,7 +14,7 @@ import { IEnrollRepo } from "@/interface/shared/enroll/enroll.repo.interface";
 import { RazorpayPaymentType } from "@/types/shared/razorpay.payment.type";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
 
-injectable();
+@injectable()
 export class PaymentService implements IPaymentService {
   constructor(
     @inject(TYPES.IPaymentRepo) private _paymentRepo: IPaymentRepo,
