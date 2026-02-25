@@ -1,4 +1,3 @@
-import { razorpay } from "@/config/razorpay/razorpay.config";
 import { PaymentPurpose } from "@/constants/shared/payment.purpose.type";
 import { PAYMENT_STATUS } from "@/constants/shared/paymnet.status";
 import { AppError } from "@/errors/app.error";
@@ -13,14 +12,28 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { IEnrollRepo } from "@/interface/shared/enroll/enroll.repo.interface";
 import { RazorpayPaymentType } from "@/types/shared/razorpay.payment.type";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
+import Razorpay from "razorpay";
 
 @injectable()
 export class PaymentService implements IPaymentService {
+  private razorpay: any;
   constructor(
     @inject(TYPES.IPaymentRepo) private _paymentRepo: IPaymentRepo,
     @inject(TYPES.IEnrollRepo) private _enrollRepo: IEnrollRepo,
     @inject(TYPES.ISessionBookingRepo) private _sessionBookingRepo: ISessionBookingRepo,
-  ) {}
+  ) {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      throw new Error("Razorpay keys are missing in environment variables");
+    }
+
+    this.razorpay = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+  }
 
   async createPayment(
     userId: string,
@@ -40,7 +53,7 @@ export class PaymentService implements IPaymentService {
 
     const amountInPaise = Math.round(Number(metaData.amount) * 100);
 
-    const order = await razorpay.orders.create({
+    const order = await this.razorpay.orders.create({
       amount: amountInPaise,
       currency: "INR",
       receipt: String(paymentData.id),
