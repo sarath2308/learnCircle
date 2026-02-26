@@ -146,14 +146,14 @@ export class PaymentService implements IPaymentService {
 
     if (status !== "captured") {
       console.warn("⚠️ [Webhook] Payment not captured. Marking as FAILED.");
-      await this._paymentRepo.markFailed(String(payment._id), razorpayPaymentId);
+      await this._paymentRepo.markFailed(String(payment._id));
       console.log("❌ [Webhook] Marked payment as FAILED in DB");
       return;
     }
 
     // Mark as PAID
     console.log("✅ [Webhook] Marking payment as PAID in DB");
-    await this._paymentRepo.markPaid(String(payment._id), razorpayPaymentId);
+    await this._paymentRepo.markPaid(String(payment._id));
     console.log("✅ [Webhook] Payment marked as PAID");
 
     // Business logic

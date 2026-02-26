@@ -15,15 +15,15 @@ export class PaymentRepo extends BaseRepo<IPayment> implements IPaymentRepo {
     return await this._paymentModel.findOne({ orderId: orderId });
   }
 
-  async markFailed(paymentId: string, orderId: string): Promise<void> {
+  async markFailed(paymentId: string): Promise<void> {
     await this._paymentModel.updateOne(
-      { _id: paymentId, orderId: orderId },
+      { _id: paymentId },
       { $set: { status: PAYMENT_STATUS.FAILED } },
     );
   }
-  async markPaid(paymentId: string, orderId: string): Promise<void> {
+  async markPaid(paymentId: string): Promise<void> {
     await this._paymentModel.updateOne(
-      { _id: paymentId, orderId: orderId },
+      { _id: paymentId },
       { $set: { status: PAYMENT_STATUS.PAID } },
     );
   }
