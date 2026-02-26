@@ -76,72 +76,106 @@ export class PaymentService implements IPaymentService {
   }
 
   async handleWebhook(rawBody: Buffer, signature: string): Promise<void> {
+    console.log("🔥 [Webhook] Hit Razorpay webhook endpoint");
+
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+    console.log("🔑 [Webhook] Using webhook secret:", secret ? "SET" : "MISSING");
+
     const expectedSignature = createHmac("sha256", secret).update(rawBody).digest("hex");
 
+    console.log("🧾 [Webhook] Received signature:", signature);
+    console.log("🧾 [Webhook] Expected signature:", expectedSignature);
+
     if (expectedSignature !== signature) {
+      console.error("❌ [Webhook] Signature mismatch. Rejecting webhook.");
       throw new Error("Invalid Razorpay webhook signature");
     }
 
-    // 2. Parse payload (now it's trusted)
-    const payload = JSON.parse(rawBody.toString("utf8"));
+    console.log("✅ [Webhook] Signature verified");
+
+    // Parse payload
+    const payloadStr = rawBody.toString("utf8");
+    console.log("📦 [Webhook] Raw payload:", payloadStr);
+
+    const payload = JSON.parse(payloadStr);
 
     const event = payload.event as string;
+    console.log("📣 [Webhook] Event received:", event);
 
-    // You can handle multiple events if you want
+    // Ignore unwanted events
     if (event !== "payment.captured" && event !== "order.paid") {
-      // Ignore events you don't care about
+      console.log("ℹ️ [Webhook] Ignoring event:", event);
       return;
     }
 
     const paymentEntity = payload.payload?.payment?.entity;
     if (!paymentEntity) {
+      console.error("❌ [Webhook] Invalid payload structure. Missing payment.entity");
       throw new Error("Invalid Razorpay payload structure");
     }
 
     const razorpayOrderId: string = paymentEntity.order_id;
     const razorpayPaymentId: string = paymentEntity.id;
-    const status: string = paymentEntity.status; // "captured", etc.
+    const status: string = paymentEntity.status;
+
+    console.log("🆔 [Webhook] razorpayOrderId:", razorpayOrderId);
+    console.log("🆔 [Webhook] razorpayPaymentId:", razorpayPaymentId);
+    console.log("📊 [Webhook] Razorpay status:", status);
 
     if (!razorpayOrderId) {
+      console.error("❌ [Webhook] Missing razorpay order_id");
       throw new Error("Missing razorpay order_id in webhook");
     }
 
-    // 3. Find your payment record by razorpayOrderId
+    // Find payment in DB
     const payment = await this._paymentRepo.getPaymentWithOrderId(razorpayOrderId);
+    console.log("🔎 [Webhook] Payment found in DB:", payment ? "YES" : "NO");
 
     if (!payment) {
-      // You didn't create this order → log and ignore
-      console.warn("Payment not found for order:", razorpayOrderId);
+      console.warn("⚠️ [Webhook] Payment not found for order:", razorpayOrderId);
       return;
     }
 
-    // 4. Idempotency: if already PAID, do nothing
+    console.log("💾 [Webhook] Current DB payment status:", payment.status);
+
+    // Idempotency check
     if (payment.status === PAYMENT_STATUS.PAID) {
+      console.log("♻️ [Webhook] Payment already marked as PAID. Skipping.");
       return;
     }
 
     if (status !== "captured") {
-      // You can mark FAILED here if you want
+      console.warn("⚠️ [Webhook] Payment not captured. Marking as FAILED.");
       await this._paymentRepo.markFailed(String(payment._id), razorpayPaymentId);
+      console.log("❌ [Webhook] Marked payment as FAILED in DB");
       return;
     }
 
-    // 6. Mark as PAID in DB
+    // Mark as PAID
+    console.log("✅ [Webhook] Marking payment as PAID in DB");
     await this._paymentRepo.markPaid(String(payment._id), razorpayPaymentId);
+    console.log("✅ [Webhook] Payment marked as PAID");
 
-    // 7. Trigger business action based on purpose
+    // Business logic
+    console.log("🎯 [Webhook] Payment purpose:", payment.purpose);
+
     if (payment.purpose === PaymentPurpose.COURSE) {
+      console.log("📚 [Webhook] Creating enrollment");
       await this._enrollRepo.create({
         userId: payment.userId,
         courseId: payment.referenceId,
         paymentId: payment._id,
       });
+      console.log("✅ [Webhook] Enrollment created");
     } else if (payment.purpose === PaymentPurpose.SESSION) {
+      console.log("📅 [Webhook] Confirming session booking");
       await this._sessionBookingRepo.confirmSessionBooking(String(payment.referenceId));
+      console.log("✅ [Webhook] Session booking confirmed");
     } else {
-      console.warn("Unknown payment purpose:", payment.purpose);
+      console.warn("⚠️ [Webhook] Unknown payment purpose:", payment.purpose);
     }
+
+    console.log("🏁 [Webhook] Webhook processing completed successfully");
   }
   async getPaymentStatus(orderid: string): Promise<PAYMENT_STATUS> {
     const paymentData = await this._paymentRepo.getPaymentWithOrderId(orderid);
