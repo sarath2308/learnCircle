@@ -8,7 +8,7 @@ import { getSocket } from "@/socket/socket";
 import toast from "react-hot-toast";
 
 const VideoRoom = () => {
-  const { roomId } = useParams<string>();
+   const { roomId } = useParams<string>();
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode");
   const navigate = useNavigate();
@@ -22,28 +22,46 @@ const VideoRoom = () => {
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const socketRef = useRef<any>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
+  const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
 
-  // Memoize Peer Connection creation to prevent unnecessary re-initialization
   const createPeerConnection = useCallback(() => {
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
+    // 🔥 Proper negotiation handling
+    pc.onnegotiationneeded = async () => {
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socketRef.current?.emit("webrtc:offer", { roomId, offer });
+      } catch (err) {
+        console.error("Negotiation error:", err);
+      }
+    };
+
     pc.onicecandidate = (event) => {
       if (event.candidate) {
-        socketRef.current?.emit("webrtc:ice-candidate", { roomId, candidate: event.candidate });
+        socketRef.current?.emit("webrtc:ice-candidate", {
+          roomId,
+          candidate: event.candidate,
+        });
       }
     };
 
     pc.ontrack = (event) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
+        remoteVideoRef.current.play().catch(() => {});
         setPeerConnected(true);
       }
     };
 
     pc.onconnectionstatechange = () => {
-      if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
+      if (
+        pc.connectionState === "disconnected" ||
+        pc.connectionState === "failed"
+      ) {
         setPeerConnected(false);
       }
     };
@@ -63,77 +81,92 @@ const VideoRoom = () => {
 
     const startSession = async () => {
       try {
-        // 1. Get Media First. If this fails, the rest is useless.
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // 1️⃣ Get Media
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+
         localStreamRef.current = stream;
+
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
 
-        // 2. Initialize Peer Connection and add tracks
+        // 2️⃣ Create Peer Connection
         const pc = createPeerConnection();
         stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
-        // 3. Define Signaling Listeners
-        const onOffer = async ({ offer }: { offer: RTCSessionDescriptionInit }) => {
+        // 3️⃣ Signaling Handlers
+
+        const onOffer = async ({ offer }: any) => {
           await pc.setRemoteDescription(new RTCSessionDescription(offer));
+
+          // Flush buffered ICE
+          for (const candidate of pendingIceCandidates.current) {
+            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+          }
+          pendingIceCandidates.current = [];
+
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
           socket.emit("webrtc:answer", { roomId, answer });
-          setPeerConnected(true);
         };
 
-        const onAnswer = async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
+        const onAnswer = async ({ answer }: any) => {
           await pc.setRemoteDescription(new RTCSessionDescription(answer));
-          setPeerConnected(true);
+
+          // Flush buffered ICE
+          for (const candidate of pendingIceCandidates.current) {
+            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+          }
+          pendingIceCandidates.current = [];
         };
 
-        const onIceCandidate = async ({ candidate }: { candidate: RTCIceCandidateInit }) => {
+        const onIceCandidate = async ({ candidate }: any) => {
+          if (!pc.remoteDescription) {
+            pendingIceCandidates.current.push(candidate);
+            return;
+          }
+
           try {
-            if (pc.remoteDescription) {
-              await pc.addIceCandidate(new RTCIceCandidate(candidate));
-            }
-          } catch (e) {
-            console.error("Error adding ice candidate", e);
+            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+          } catch (err) {
+            console.error("ICE error:", err);
           }
         };
 
-        const onPeerJoined = async () => {
-          toast.success("Stranger joined");
-          // The peer who was already in the room creates the offer
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          socket.emit("webrtc:offer", { roomId, offer });
-        };
-
         const onPeerLeft = () => {
-          toast.error("Stranger left the chat");
+          toast.error("Stranger left");
           setPeerConnected(false);
+
           if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = null;
           }
         };
 
-        // 4. Attach Listeners BEFORE emitting join
+        // 4️⃣ Attach Listeners
         socket.on("webrtc:offer", onOffer);
         socket.on("webrtc:answer", onAnswer);
         socket.on("webrtc:ice-candidate", onIceCandidate);
-        socket.on("peer-joined", onPeerJoined);
         socket.on("peer-left", onPeerLeft);
 
-        // 5. Join Room
+        // 5️⃣ Join Room (ONLY AFTER everything ready)
         const joinEvent = mode === "match" ? "join-match-room" : "join-room";
         socket.emit(joinEvent, { roomId });
       } catch (err: any) {
-        console.error("Initialization error:", err);
-        if (err.name === "NotAllowedError") toast.error("Camera/Mic permission denied");
-        else toast.error("Failed to access media devices");
+        console.error("Init error:", err);
+
+        if (err.name === "NotAllowedError") {
+          toast.error("Camera/Mic permission denied");
+        } else {
+          toast.error("Failed to access media devices");
+        }
       }
     };
 
     startSession();
 
-    // CLEANUP
     return () => {
       const leaveEvent = mode === "match" ? "leave-match-room" : "leave-room";
       socket.emit(leaveEvent, { roomId });
@@ -141,13 +174,13 @@ const VideoRoom = () => {
       socket.off("webrtc:offer");
       socket.off("webrtc:answer");
       socket.off("webrtc:ice-candidate");
-      socket.off("peer-joined");
       socket.off("peer-left");
 
       if (pcRef.current) {
         pcRef.current.close();
         pcRef.current = null;
       }
+
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());
         localStreamRef.current = null;
@@ -155,19 +188,22 @@ const VideoRoom = () => {
     };
   }, [roomId, mode, navigate, createPeerConnection]);
 
-  // Toggle Handlers
   const toggleMute = () => {
     const newState = !isMuted;
     if (localStreamRef.current) {
-      localStreamRef.current.getAudioTracks().forEach((t) => (t.enabled = !newState));
+      localStreamRef.current.getAudioTracks().forEach(
+        (t) => (t.enabled = !newState)
+      );
       setIsMuted(newState);
     }
   };
 
   const toggleVideo = () => {
-    const nextEnabled = isVideoOff; // If it's off, we are enabling it
+    const nextEnabled = isVideoOff;
     if (localStreamRef.current) {
-      localStreamRef.current.getVideoTracks().forEach((t) => (t.enabled = nextEnabled));
+      localStreamRef.current.getVideoTracks().forEach(
+        (t) => (t.enabled = nextEnabled)
+      );
       setIsVideoOff(!nextEnabled);
     }
   };
