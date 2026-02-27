@@ -101,7 +101,7 @@ export const SessionCard = ({
     return now > sessionEndTime;
   }, [dateObj, endTime, status]);
 
-    const isJoinable = useMemo(() => {
+  const isJoinable = useMemo(() => {
     if (status !== BookingStatus.CONFIRM) return false;
     const now = new Date();
     const todayStr = now.toISOString().split("T")[0];
@@ -210,7 +210,7 @@ export const SessionCard = ({
             </div>
 
             <div className="shrink-0">
-              {isJoinable? (
+              {isJoinable ? (
                 <Button
                   onClick={handleJoinClick}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl px-8 h-11 shadow-xl shadow-indigo-600/20 active:scale-95 transition-all"
