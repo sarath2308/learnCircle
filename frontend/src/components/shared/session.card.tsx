@@ -101,6 +101,23 @@ export const SessionCard = ({
     return now > sessionEndTime;
   }, [dateObj, endTime, status]);
 
+    const isJoinable = useMemo(() => {
+    if (status !== BookingStatus.CONFIRM) return false;
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+    const sessionDateStr = dateObj.toISOString().split("T")[0];
+    if (todayStr !== sessionDateStr) return false;
+
+    const getMinutes = (time: string) => {
+      const [hrs, mins] = time.split(":").map(Number);
+      return hrs * 60 + mins;
+    };
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const startMins = getMinutes(startTime);
+    const endMins = getMinutes(endTime);
+    return currentMinutes >= startMins - 5 && currentMinutes <= endMins;
+  }, [date, startTime, endTime, status]);
+
   return (
     <>
       <Card className="group overflow-hidden border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:shadow-xl transition-all duration-500">
@@ -193,7 +210,7 @@ export const SessionCard = ({
             </div>
 
             <div className="shrink-0">
-              {status !== BookingStatus.COMPLETED ? (
+              {isJoinable? (
                 <Button
                   onClick={handleJoinClick}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl px-8 h-11 shadow-xl shadow-indigo-600/20 active:scale-95 transition-all"
