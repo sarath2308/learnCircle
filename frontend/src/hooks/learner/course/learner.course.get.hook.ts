@@ -46,6 +46,7 @@ export interface LearnerCourseData {
   isEnrolled: boolean;
   chapterCount: number;
   lessonCount: number;
+  enrollmentCount: number;
 }
 
 export const useGetLearnerCourse = (courseId: string) => {

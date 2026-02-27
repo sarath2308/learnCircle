@@ -34,4 +34,8 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   findCourseWithOutPoppulate: (courseId: string) => Promise<ICourse | null>;
   getAllCourseForUser: (filter: LearnerAllCourseRequestType) => Promise<CoursePopulated[]>;
   updateRating: (courseId: string, rating: number) => Promise<void>;
+  getTopCourseCreatedByInstructor: (instructorId: string) => Promise<ICourse[]>;
+  getTotalCourseCreatedByInstructor: (instructorId: string) => Promise<number>;
+  getTotalEnrolledStudents: (instructorId: string) => Promise<{ totalEnrolled: number }>;
+  getTotalEarningOfInstructor: (instructorId: string) => Promise<{ totalEarning: number }>;
 }

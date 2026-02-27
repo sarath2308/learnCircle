@@ -1,5 +1,6 @@
 import { ISessionBooking } from "@/model/shared/session.booking.model";
 import { IBaseRepo } from "@/repos/shared/base";
+import { MonthlySessionData } from "@/types/professional/monthely.session.data.type";
 
 export interface ISessionBookingRepo extends IBaseRepo<ISessionBooking> {
   getBookingsOfInstructorWithDate: (
@@ -24,4 +25,6 @@ export interface ISessionBookingRepo extends IBaseRepo<ISessionBooking> {
   getAllUpcomingBookingsForInstructor: (instructorId: string) => Promise<ISessionBooking[]>;
   getAllCompletedBookingsForInstructor: (instructorId: string) => Promise<ISessionBooking[]>;
   updateSessionStatusToCompleted: (bookingId: string) => Promise<void>;
+  totalEarningsForInstructor: (instructorId: string) => Promise<{ totalEarning: number }>;
+  monthlySessionDataOfInstructor: (instructorId: string) => Promise<MonthlySessionData[]>;
 }

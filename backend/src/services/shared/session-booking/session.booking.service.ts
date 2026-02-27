@@ -14,6 +14,7 @@ import { ISessionBookingService } from "@/interface/shared/session-booking/booki
 import { ISessionBooking } from "@/model/shared/session.booking.model";
 import { SessionBookingRequestType } from "@/schema/learner/session.booking/session.booking.request.schema";
 import { SessionBookingResponseType } from "@/schema/learner/session.booking/session.booking.response.schema";
+import { MonthlySessionData } from "@/types/professional/monthely.session.data.type";
 import { TYPES } from "@/types/shared/inversify/types";
 import { inject, injectable } from "inversify";
 import mongoose from "mongoose";
@@ -206,5 +207,27 @@ export class SessionBookingService implements ISessionBookingService {
     }
     await this._sessionBookingRepo.updateSessionStatusToCompleted(sessionBookingId);
     await this._professionalProfileService.updateSessions(String(booking.instructorId));
+  }
+
+  async getSessionDataForProfessionalDashboard(instructorId: string): Promise<{
+    totalSession: number;
+    sessionEarning: number;
+    sessionMonthData: MonthlySessionData[];
+  }> {
+    const sessionInMonths =
+      await this._sessionBookingRepo.monthlySessionDataOfInstructor(instructorId);
+
+    const completedSessions =
+      await this._sessionBookingRepo.getAllCompletedBookingsForInstructor(instructorId);
+    const { totalEarning } =
+      await this._sessionBookingRepo.totalEarningsForInstructor(instructorId);
+
+    console.log("total earning" + totalEarning);
+
+    return {
+      totalSession: completedSessions.length,
+      sessionEarning: totalEarning,
+      sessionMonthData: sessionInMonths,
+    };
   }
 }

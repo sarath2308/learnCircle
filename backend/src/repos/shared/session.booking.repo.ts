@@ -3,8 +3,9 @@ import { BaseRepo } from "./base";
 import { ISessionBooking } from "@/model/shared/session.booking.model";
 import { ISessionBookingRepo } from "@/interface/shared/session-booking/booking/session.booking.repo.interface";
 import { TYPES } from "@/types/shared/inversify/types";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { BOOKING_STATUS } from "@/constants/shared/booking.status";
+import { MonthlySessionData } from "@/types/professional/monthely.session.data.type";
 
 @injectable()
 export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISessionBookingRepo {
@@ -96,5 +97,63 @@ export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISe
       { _id: bookingId },
       { $set: { status: BOOKING_STATUS.COMPLETED } },
     );
+  }
+
+  async totalCompletedSessionOfInstructor(instructorId: string): Promise<number> {
+    const instructorObjId = new mongoose.Types.ObjectId(instructorId);
+    return await this._sessionBookingModel.countDocuments({
+      instructorId: instructorObjId,
+      status: BOOKING_STATUS.COMPLETED,
+    });
+  }
+  async totalEarningsForInstructor(instructorId: string): Promise<{ totalEarning: number }> {
+    const instructorObjId = new mongoose.Types.ObjectId(instructorId);
+    const result = await this._sessionBookingModel.aggregate([
+      {
+        $match: { instructorId: instructorObjId, status: BOOKING_STATUS.COMPLETED },
+      },
+      {
+        $group: { _id: "$instructorId", totalEarning: { $sum: "$price" } },
+      },
+    ]);
+
+    return result[0] || { totalEarning: 0 };
+  }
+  async monthlySessionDataOfInstructor(instructorId: string): Promise<MonthlySessionData[]> {
+    const result = await this._sessionBookingModel.aggregate([
+      {
+        $match: {
+          instructorId: new mongoose.Types.ObjectId(instructorId),
+          status: BOOKING_STATUS.COMPLETED,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          totalRevenue: { $sum: "$price" },
+          totalSessions: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          totalRevenue: 1,
+          totalSessions: 1,
+        },
+      },
+    ]);
+
+    return result;
   }
 }

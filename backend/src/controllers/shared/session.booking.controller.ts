@@ -49,4 +49,15 @@ export class SessionBookingController implements ISessionBookingController {
     await this._sessionBookingService.MarkSessionAsCompleted(sessionId);
     res.status(HttpStatus.OK).json({ success: true, message: Messages.SESSION_MARKED_COMPLETED });
   }
+
+  async getSessionDataForProfessionalDashboard(req: IAuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.userId as string;
+    const result = await this._sessionBookingService.getSessionDataForProfessionalDashboard(userId);
+    res.status(HttpStatus.OK).json({
+      success: true,
+      totalSession: result.totalSession,
+      sessionEarning: result.sessionEarning,
+      sessionMonthData: result.sessionMonthData,
+    });
+  }
 }

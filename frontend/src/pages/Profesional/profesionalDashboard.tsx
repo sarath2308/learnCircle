@@ -1,4 +1,9 @@
-import { Users, BookOpen, Calendar, DollarSign, TrendingUp, MoreHorizontal } from "lucide-react";
+import React, { useMemo } from "react";
+import { useGetTotalCourseOfInstructor } from "@/hooks/profesional/professiona-course/professional.get.total.course";
+import { useGetTotalEnrolledCount } from "@/hooks/profesional/professiona-course/professional.get.total.enrolled";
+import { useGetTopCoursesOfInstructor } from "@/hooks/profesional/professiona-course/professional.top.courses";
+import { useGetSessionDataForInstructorDashboard } from "@/hooks/profesional/session-booking/professiona.sessionData.dashboard";
+import { Users, BookOpen, Calendar, DollarSign, TrendingUp } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -11,79 +16,111 @@ import {
   Bar,
 } from "recharts";
 
-// Demo Data
-const revenueData = [
-  { name: "Jan", revenue: 4000 },
-  { name: "Feb", revenue: 3000 },
-  { name: "Mar", revenue: 5000 },
-  { name: "Apr", revenue: 4500 },
-  { name: "May", revenue: 6000 },
-  { name: "Jun", revenue: 5500 },
-  { name: "Jul", revenue: 7000 },
-  { name: "Aug", revenue: 8500 },
-];
+// 1. Define the interface based on your backend response
+export type MonthlySessionData = {
+  year: number;
+  month: number; // 1-12
+  totalRevenue: number;
+  totalSessions: number;
+};
 
-const sessionData = [
-  { name: "Jan", sessions: 20 },
-  { name: "Feb", sessions: 25 },
-  { name: "Mar", sessions: 45 },
-  { name: "Apr", sessions: 30 },
-  { name: "May", sessions: 50 },
-  { name: "Jun", sessions: 40 },
-];
+export type CourseData = {
+  id: string;
+  title: string;
+  averageRating: number;
+  thumbnail: string;
+};
 
-const topCourses = [
-  {
-    id: 1,
-    name: "Advanced React Patterns",
-    students: 4,
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=100&h=60&fit=crop",
-  },
-  {
-    id: 2,
-    name: "UI/UX Fundamentals",
-    students: 8,
-    rating: 4.8,
-    image: "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=100&h=60&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Node.js Backend Mastery",
-    students: 7,
-    rating: 4.7,
-    image: "https://images.unsplash.com/photo-1502942735232-2307584994e9?w=100&h=60&fit=crop",
-  },
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 const Dashboard = () => {
+  const enrolledQuery = useGetTotalEnrolledCount();
+  const courseCountQuery = useGetTotalCourseOfInstructor();
+  const sessionQuery = useGetSessionDataForInstructorDashboard();
+  const topCoursesQuery = useGetTopCoursesOfInstructor();
+
+  // --- DATA TRANSFORMATION ---
+  // We use useMemo to prevent re-calculating chart data on every render
+  const formattedChartData = useMemo(() => {
+    // Backend likely returns an array like: [{ year: 2026, month: 2, totalRevenue: 3000, totalSessions: 12 }]
+    const rawData: MonthlySessionData[] = sessionQuery.data?.sessionMonthData ?? [];
+
+    // Map through all 12 months to ensure the chart isn't empty/broken if data is missing
+    return MONTH_NAMES.map((name, index) => {
+      const monthNumber = index + 1;
+      const monthData = rawData.find((d) => d.month === monthNumber);
+
+      return {
+        name,
+        sessions: monthData?.totalSessions ?? 0,
+        revenue: monthData?.totalRevenue ?? 0,
+      };
+    });
+  }, [sessionQuery.data]);
+
+  const isLoading =
+    enrolledQuery.isLoading ||
+    courseCountQuery.isLoading ||
+    sessionQuery.isLoading ||
+    topCoursesQuery.isLoading;
+
+  if (isLoading) return <div className="p-8 font-medium">Loading Dashboard Data...</div>;
+
+  const enrolledCount = enrolledQuery.data?.totalEnrolledCount ?? 0;
+  const courseEarning = enrolledQuery.data?.courseTotalEarning ?? 0;
+  const courseCount = courseCountQuery.data?.totalCourse ?? 0;
+  const sessionDataRes = sessionQuery.data ?? { sessionEarning: 0, totalSession: 0 };
+  const courseInfo: CourseData[] = topCoursesQuery.data?.courseData ?? [];
+
   return (
     <div className="min-h-screen bg-gray-50 p-8 font-sans text-slate-900">
-      {/* Header */}
-      <header className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Dashboard Overview</h1>
-          <p className="text-slate-500">Welcome back, here is what's happening today.</p>
-        </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
-          Generate Report
-        </button>
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+        <p className="text-slate-500">Real-time performance metrics for 2026.</p>
       </header>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <StatCard title="Total Sessions" value="120" icon={<Calendar size={20} />} trend="+12%" />
-        <StatCard title="Total Courses" value="30" icon={<BookOpen size={20} />} trend="0%" />
-        <StatCard title="Total Learners" value="500" icon={<Users size={20} />} trend="+5%" />
         <StatCard
-          title="Sessions Conducted"
-          value="100"
+          title="Total Sessions"
+          value={sessionDataRes.totalSession}
+          icon={<Calendar size={20} />}
+          trend="+12%"
+        />
+        <StatCard
+          title="Total Courses"
+          value={courseCount}
+          icon={<BookOpen size={20} />}
+          trend="0%"
+        />
+        <StatCard
+          title="Total Learners"
+          value={enrolledCount}
+          icon={<Users size={20} />}
+          trend="+5%"
+        />
+        <StatCard
+          title="Session Earnings"
+          value={`₹${sessionDataRes.sessionEarning}`}
           icon={<TrendingUp size={20} />}
           trend="+18%"
         />
         <StatCard
-          title="Total Earnings"
-          value="$15,000"
+          title="Course Earnings"
+          value={`₹${courseEarning}`}
           icon={<DollarSign size={20} />}
           trend="+10%"
           isEarning
@@ -92,97 +129,92 @@ const Dashboard = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold mb-4">Revenue Trends</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#94a3b8", fontSize: 12 }}
-                />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#2563eb"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: "#2563eb" }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {/* Revenue Line Chart */}
+        <ChartContainer title="Revenue Trends (₹)">
+          <LineChart data={formattedChartData}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94a3b8", fontSize: 12 }}
+            />
+            <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="revenue"
+              stroke="#2563eb"
+              strokeWidth={3}
+              dot={{ r: 4, fill: "#2563eb" }}
+            />
+          </LineChart>
+        </ChartContainer>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold mb-4">Sessions per Month</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={sessionData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#94a3b8", fontSize: 12 }}
-                />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <Tooltip cursor={{ fill: "#f8fafc" }} />
-                <Bar dataKey="sessions" fill="#93c5fd" radius={[4, 4, 0, 0]} barSize={30} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {/* Sessions Bar Chart */}
+        <ChartContainer title="Sessions per Month">
+          <BarChart data={formattedChartData}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94a3b8", fontSize: 12 }}
+            />
+            <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
+            <Tooltip cursor={{ fill: "#f8fafc" }} />
+            <Bar dataKey="sessions" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
+          </BarChart>
+        </ChartContainer>
       </div>
 
-      {/* Top Courses Section (Replacing Recent Activity) */}
+      {/* Top Courses Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h3 className="text-lg font-semibold">Top Performing Courses</h3>
-          <button className="text-blue-600 text-sm font-medium hover:underline">View All</button>
         </div>
         <div className="divide-y divide-gray-100">
-          {topCourses.map((course) => (
-            <div
-              key={course.id}
-              className="p-4 flex items-center justify-between hover:bg-gray-50 transition"
-            >
-              <div className="flex items-center gap-4">
-                <img
-                  src={course.image}
-                  alt={course.name}
-                  className="w-16 h-10 object-cover rounded-md bg-gray-200"
-                />
-                <div>
-                  <h4 className="font-medium text-slate-800">{course.name}</h4>
-                  <p className="text-xs text-slate-500">
-                    {course.students.toLocaleString()} Students enrolled
-                  </p>
+          {courseInfo.length === 0 ? (
+            <div className="p-8 text-center text-slate-400">No course data available.</div>
+          ) : (
+            courseInfo.map((course) => (
+              <div
+                key={course.id}
+                className="p-4 flex items-center justify-between hover:bg-gray-50 transition"
+              >
+                <div className="flex items-center gap-4">
+                  <img
+                    src={course.thumbnail}
+                    alt=""
+                    className="w-16 h-10 object-cover rounded-md bg-gray-200"
+                  />
+                  <h4 className="font-medium text-slate-800">{course.title}</h4>
                 </div>
-              </div>
-              <div className="flex items-center gap-8">
                 <div className="text-right">
-                  <p className="text-sm font-semibold">⭐ {course.rating}</p>
+                  <p className="text-sm font-semibold">⭐ {course.averageRating}</p>
                   <p className="text-xs text-slate-400">Rating</p>
                 </div>
-                <button className="text-slate-400 hover:text-slate-600">
-                  <MoreHorizontal size={20} />
-                </button>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-// Sub-component for Stat Cards
+// Reusable Chart Wrapper
+const ChartContainer = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        {children as any}
+      </ResponsiveContainer>
+    </div>
+  </div>
+);
+
 const StatCard = ({ title, value, icon, trend, isEarning = false }: any) => (
   <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
     <div className="flex justify-between items-start mb-4">
@@ -197,10 +229,8 @@ const StatCard = ({ title, value, icon, trend, isEarning = false }: any) => (
         {trend}
       </span>
     </div>
-    <div>
-      <p className="text-sm text-slate-500 font-medium">{title}</p>
-      <h2 className="text-2xl font-bold mt-1">{value}</h2>
-    </div>
+    <p className="text-sm text-slate-500 font-medium">{title}</p>
+    <h2 className="text-2xl font-bold mt-1">{value}</h2>
   </div>
 );
 
