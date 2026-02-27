@@ -1,260 +1,175 @@
 /* eslint-disable no-undef */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import type { Socket } from "socket.io-client";
 import { getSocket } from "@/socket/socket";
 import toast from "react-hot-toast";
 
 const VideoRoom = () => {
   const { roomId } = useParams<string>();
   const [searchParams] = useSearchParams();
-  const mode = searchParams.get("mode"); // "match" or "session"
-
+  const mode = searchParams.get("mode");
   const navigate = useNavigate();
 
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
-  const [status, setStatus] = useState("joining");
   const [peerConnected, setPeerConnected] = useState(false);
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
-  const socketRef = useRef<Socket | null>(null);
-  const localStreamRef = useRef<MediaStream | null>(null); // Track stream for hard cleanup
+  const socketRef = useRef<any>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
 
-  const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
-  const pendingOffer = useRef<RTCSessionDescriptionInit | null>(null);
-  const pendingAnswer = useRef<RTCSessionDescriptionInit | null>(null);
-
-  if (!roomId) {
-    navigate(-1);
-  }
-
-  // ✅ FIXED: Toggle Mic (Correctly handles the boolean flip)
-  const toggleMute = () => {
-    const newMuteState = !isMuted;
-    if (localStreamRef.current) {
-      localStreamRef.current.getAudioTracks().forEach((track) => {
-        track.enabled = !newMuteState; // enabled=true means NOT muted
-      });
-      setIsMuted(newMuteState);
-    }
-  };
-
-  const toggleVideo = () => {
-    const stream = localStreamRef.current;
-    if (!stream) return;
-
-    const videoTrack = stream.getVideoTracks()[0];
-    if (!videoTrack) return;
-
-    // Flip enabled flag
-    const nextEnabled = !videoTrack.enabled;
-    videoTrack.enabled = nextEnabled;
-
-    // Update UI state (isVideoOff = opposite of enabled)
-    setIsVideoOff(!nextEnabled);
-  };
-
-  const setupWithStream = async (stream: MediaStream) => {
-    localStreamRef.current = stream; // Store for cleanup
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = stream;
-      localVideoRef.current.muted = true;
-      localVideoRef.current.play().catch(() => {});
-    }
-
-    const pc = createPeerConnection();
-    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-
-    // Flush buffers...
-    pendingIceCandidates.current.forEach((c) => pc.addIceCandidate(new RTCIceCandidate(c)));
-    pendingIceCandidates.current = [];
-
-    if (pendingOffer.current) {
-      await pc.setRemoteDescription(new RTCSessionDescription(pendingOffer.current));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socketRef.current?.emit("webrtc:answer", { roomId, answer });
-      pendingOffer.current = null;
-    }
-    if (pendingAnswer.current) {
-      await pc.setRemoteDescription(new RTCSessionDescription(pendingAnswer.current));
-      pendingAnswer.current = null;
-    }
-
-    if (mode === "match") {
-      socketRef.current?.emit("join-match-room", { roomId });
-    } else {
-      socketRef.current?.emit("join-room", { roomId });
-    }
-  };
-  console.log(status);
-
-  useEffect(() => {
-    socketRef.current = getSocket();
-    const s = socketRef.current;
-
-    const onConnect = () => {
-      if (!roomId) return;
-
-      if (mode === "match") {
-        s?.emit("join-match-room", { roomId });
-      } else {
-        s?.emit("join-room", { roomId });
-      }
-    };
-
-    s?.on("connect", onConnect);
-
-    return () => {
-      s?.off("connect", onConnect);
-    };
-  }, [roomId, mode]);
-
-  useEffect(() => {
-    if (!roomId) return;
-    const onIceCandidate = async ({ candidate }: { candidate: RTCIceCandidateInit }) => {
-      const pc = pcRef.current;
-      if (!pc) {
-        pendingIceCandidates.current.push(candidate);
-        return;
-      }
-      try {
-        await pc.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    const onJoinedRoom = () => setStatus("joined");
-    const onPeerJoined = async () => {
-      // Triggered when someone else enters your room
-      toast.success("Stranger joined", {
-        position: "bottom-right",
-      });
-
-      setPeerConnected(true);
-      const pc = pcRef.current;
-      if (!pc) return;
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      socketRef.current?.emit("webrtc:offer", { roomId, offer });
-    };
-    const handleOffer = async (offer: RTCSessionDescriptionInit) => {
-      const pc = pcRef.current!;
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socketRef.current?.emit("webrtc:answer", { roomId, answer });
-      setPeerConnected(true);
-    };
-    const onOffer = async ({ offer }: { offer: RTCSessionDescriptionInit }) => {
-      const pc = pcRef.current;
-      if (!pc) {
-        pendingOffer.current = offer;
-        return;
-      }
-      await handleOffer(offer);
-    };
-    const onAnswer = async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
-      const pc = pcRef.current;
-      if (!pc) {
-        pendingAnswer.current = answer;
-        return;
-      }
-      await pc.setRemoteDescription(new RTCSessionDescription(answer));
-    };
-
-    const onPeerLeft = () => {
-      // Triggered when the other person disconnects
-      toast.error("Stranger left the chat", {
-        position: "bottom-right",
-      });
-
-      if (pcRef.current) {
-        pcRef.current.close();
-        pcRef.current = null;
-      }
-
-      setPeerConnected(false);
-      setStatus("joined");
-    };
-
-    const s = socketRef.current;
-    s?.on("webrtc:ice-candidate", onIceCandidate);
-    s?.on("joined-room", onJoinedRoom);
-    s?.on("peer-joined", onPeerJoined);
-    s?.on("webrtc:offer", onOffer);
-    s?.on("webrtc:answer", onAnswer);
-    s?.on("peer-left", onPeerLeft);
-
-    return () => {
-      s?.off("webrtc:ice-candidate", onIceCandidate);
-      s?.off("joined-room", onJoinedRoom);
-      s?.off("peer-joined", onPeerJoined);
-      s?.off("webrtc:offer", onOffer);
-      s?.off("webrtc:answer", onAnswer);
-      s?.off("peer-left", onPeerLeft);
-    };
-  }, [roomId]);
-
-  useEffect(() => {
-    const start = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        await setupWithStream(stream);
-      } catch (err: any) {
-        if (err.name === "NotAllowedError") {
-          toast.error("Permission denied");
-        } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
-          toast.error("Camera is already in use by another app");
-        } else {
-          toast.error("Failed to access media devices");
-        }
-      }
-    };
-    start();
-
-    // ✅ HARD CLEANUP: Stop tracks immediately on unmount
-    return () => {
-      if (mode === "match" && roomId) {
-        socketRef.current?.emit("leave-match-room", { roomId });
-      }
-
-      if (pcRef.current) {
-        pcRef.current.close();
-        pcRef.current = null;
-      }
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track) => {
-          track.stop(); // This kills the hardware light
-        });
-        localStreamRef.current = null;
-      }
-    };
-  }, [roomId]);
-
-  const createPeerConnection = () => {
+  // Memoize Peer Connection creation to prevent unnecessary re-initialization
+  const createPeerConnection = useCallback(() => {
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
+
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         socketRef.current?.emit("webrtc:ice-candidate", { roomId, candidate: event.candidate });
       }
     };
+
     pc.ontrack = (event) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
         setPeerConnected(true);
       }
     };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
+        setPeerConnected(false);
+      }
+    };
+
     pcRef.current = pc;
     return pc;
+  }, [roomId]);
+
+  useEffect(() => {
+    if (!roomId) {
+      navigate(-1);
+      return;
+    }
+
+    socketRef.current = getSocket();
+    const socket = socketRef.current;
+
+    const startSession = async () => {
+      try {
+        // 1. Get Media First. If this fails, the rest is useless.
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localStreamRef.current = stream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
+
+        // 2. Initialize Peer Connection and add tracks
+        const pc = createPeerConnection();
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+        // 3. Define Signaling Listeners
+        const onOffer = async ({ offer }: { offer: RTCSessionDescriptionInit }) => {
+          await pc.setRemoteDescription(new RTCSessionDescription(offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          socket.emit("webrtc:answer", { roomId, answer });
+          setPeerConnected(true);
+        };
+
+        const onAnswer = async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
+          await pc.setRemoteDescription(new RTCSessionDescription(answer));
+          setPeerConnected(true);
+        };
+
+        const onIceCandidate = async ({ candidate }: { candidate: RTCIceCandidateInit }) => {
+          try {
+            if (pc.remoteDescription) {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            }
+          } catch (e) {
+            console.error("Error adding ice candidate", e);
+          }
+        };
+
+        const onPeerJoined = async () => {
+          toast.success("Stranger joined");
+          // The peer who was already in the room creates the offer
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socket.emit("webrtc:offer", { roomId, offer });
+        };
+
+        const onPeerLeft = () => {
+          toast.error("Stranger left the chat");
+          setPeerConnected(false);
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = null;
+          }
+        };
+
+        // 4. Attach Listeners BEFORE emitting join
+        socket.on("webrtc:offer", onOffer);
+        socket.on("webrtc:answer", onAnswer);
+        socket.on("webrtc:ice-candidate", onIceCandidate);
+        socket.on("peer-joined", onPeerJoined);
+        socket.on("peer-left", onPeerLeft);
+
+        // 5. Join Room
+        const joinEvent = mode === "match" ? "join-match-room" : "join-room";
+        socket.emit(joinEvent, { roomId });
+      } catch (err: any) {
+        console.error("Initialization error:", err);
+        if (err.name === "NotAllowedError") toast.error("Camera/Mic permission denied");
+        else toast.error("Failed to access media devices");
+      }
+    };
+
+    startSession();
+
+    // CLEANUP
+    return () => {
+      const leaveEvent = mode === "match" ? "leave-match-room" : "leave-room";
+      socket.emit(leaveEvent, { roomId });
+
+      socket.off("webrtc:offer");
+      socket.off("webrtc:answer");
+      socket.off("webrtc:ice-candidate");
+      socket.off("peer-joined");
+      socket.off("peer-left");
+
+      if (pcRef.current) {
+        pcRef.current.close();
+        pcRef.current = null;
+      }
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
+        localStreamRef.current = null;
+      }
+    };
+  }, [roomId, mode, navigate, createPeerConnection]);
+
+  // Toggle Handlers
+  const toggleMute = () => {
+    const newState = !isMuted;
+    if (localStreamRef.current) {
+      localStreamRef.current.getAudioTracks().forEach((t) => (t.enabled = !newState));
+      setIsMuted(newState);
+    }
+  };
+
+  const toggleVideo = () => {
+    const nextEnabled = isVideoOff; // If it's off, we are enabling it
+    if (localStreamRef.current) {
+      localStreamRef.current.getVideoTracks().forEach((t) => (t.enabled = nextEnabled));
+      setIsVideoOff(!nextEnabled);
+    }
   };
 
   return (
@@ -285,27 +200,22 @@ const VideoRoom = () => {
           )}
           <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
 
-          <div className="absolute top-4 right-4 w-32 md:w-48 aspect-video ...">
-            {/* The placeholder UI */}
+          {/* Local Video Overlay */}
+          <div className="absolute top-4 right-4 w-32 md:w-48 aspect-video rounded-xl overflow-hidden border-2 border-white/10 shadow-lg bg-slate-800">
             <div
               className={cn(
-                "absolute inset-0 w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 transition-opacity duration-300",
+                "absolute inset-0 flex items-center justify-center bg-slate-800 transition-opacity",
                 isVideoOff ? "opacity-100 z-10" : "opacity-0 -z-1",
               )}
             >
-              <VideoOff size={20} className="text-slate-400" />
+              <VideoOff size={20} className="text-slate-500" />
             </div>
-
-            {/* The video element remains ALWAYS present in the DOM */}
             <video
               ref={localVideoRef}
               autoPlay
               muted
               playsInline
-              className={cn(
-                "w-full h-full object-cover",
-                isVideoOff && "invisible", // Keep it in DOM, just hide it
-              )}
+              className={cn("w-full h-full object-cover", isVideoOff && "invisible")}
             />
           </div>
         </div>
@@ -331,8 +241,6 @@ const VideoRoom = () => {
           </button>
         </div>
       </main>
-
-      {/* Chat sidebar remains as is... */}
     </div>
   );
 };
@@ -350,19 +258,5 @@ const ControlButton = ({ icon, active, onClick }: any) => (
     {icon}
   </button>
 );
-
-// const ChatMessage = ({ user, message, isMe }: any) => (
-//   <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
-//     <span className="text-[10px] font-black uppercase text-slate-400">{user}</span>
-//     <div
-//       className={cn(
-//         "max-w-[85%] p-3 rounded-2xl text-sm",
-//         isMe ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-slate-900",
-//       )}
-//     >
-//       {message}
-//     </div>
-//   </div>
-// );
 
 export default VideoRoom;
