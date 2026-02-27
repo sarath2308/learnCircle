@@ -60,4 +60,8 @@ export class SessionBookingController implements ISessionBookingController {
       sessionMonthData: result.sessionMonthData,
     });
   }
+  async getTotalCompletedSessionCount(req: IAuthRequest, res: Response): Promise<void> {
+    const count = await this._sessionBookingService.getTotalCompletedSessionForAdmin();
+    res.status(HttpStatus.OK).json({ success: true, sessionCount: count });
+  }
 }

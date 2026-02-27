@@ -47,4 +47,5 @@ export default interface ICourseService {
   getTotalEnrolledStudentsAndEarnings: (
     instructorId: string,
   ) => Promise<{ enrolledCount: number; totalEarnings: number }>;
+  getTotalActiveCoursesCountForAdmin: () => Promise<number>;
 }

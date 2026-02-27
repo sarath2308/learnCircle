@@ -110,4 +110,8 @@ export class CourseController implements ICourseController {
       courseTotalEarning: result.totalEarnings,
     });
   }
+  async getTotalActiveCourseForAdmin(req: IAuthRequest, res: Response): Promise<void> {
+    const result = await this._courseService.getTotalActiveCoursesCountForAdmin();
+    res.status(HttpStatus.OK).json({ success: true, totalCourseCount: result });
+  }
 }

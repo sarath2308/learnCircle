@@ -2,9 +2,7 @@ import { HttpStatus } from "@/constants/shared/httpStatus";
 import { Messages } from "@/constants/shared/messages";
 import { AppError } from "@/errors/app.error";
 import { IAdminCourseManagementService } from "@/interface/admin/admin.course.manage.interface";
-import { IChapterRepo } from "@/interface/shared/chapter/chapter.repo.interface";
 import ICourseRepo from "@/interface/shared/course/course.repo.interface";
-import ILessonRepo from "@/interface/shared/lesson/lesson.repo.interface";
 import { IS3Service } from "@/interface/shared/s3.service.interface";
 import {
   CourseDetailsResponseType,
@@ -29,8 +27,6 @@ export type CategoryObjType = {
 export class AdminCourseManagementService implements IAdminCourseManagementService {
   constructor(
     @inject(TYPES.ICourseRepo) private _courseRepo: ICourseRepo,
-    @inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo,
-    @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
   ) {}
   /**

@@ -230,4 +230,7 @@ export class SessionBookingService implements ISessionBookingService {
       sessionMonthData: sessionInMonths,
     };
   }
+  async getTotalCompletedSessionForAdmin(): Promise<number> {
+    return await this._sessionBookingRepo.getTotalCompletedSessionCount();
+  }
 }
