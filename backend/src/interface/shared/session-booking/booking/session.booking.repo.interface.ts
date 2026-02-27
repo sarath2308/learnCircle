@@ -27,4 +27,5 @@ export interface ISessionBookingRepo extends IBaseRepo<ISessionBooking> {
   updateSessionStatusToCompleted: (bookingId: string) => Promise<void>;
   totalEarningsForInstructor: (instructorId: string) => Promise<{ totalEarning: number }>;
   monthlySessionDataOfInstructor: (instructorId: string) => Promise<MonthlySessionData[]>;
+  getTotalCompletedSessionCount: () => Promise<number>;
 }

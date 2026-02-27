@@ -38,4 +38,5 @@ export default interface ICourseRepo extends IBaseRepo<ICourse> {
   getTotalCourseCreatedByInstructor: (instructorId: string) => Promise<number>;
   getTotalEnrolledStudents: (instructorId: string) => Promise<{ totalEnrolled: number }>;
   getTotalEarningOfInstructor: (instructorId: string) => Promise<{ totalEarning: number }>;
+  getTotalActiveCourseCount: () => Promise<number>;
 }

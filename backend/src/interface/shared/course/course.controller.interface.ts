@@ -12,4 +12,5 @@ export interface ICourseController {
   getTotalEnrolledCountForInstructor: (req: IAuthRequest, res: Response) => Promise<void>;
   getTotalCourseCreatedByInstructor: (req: IAuthRequest, res: Response) => Promise<void>;
   getTopCoursesCreatedByInstructor: (req: IAuthRequest, res: Response) => Promise<void>;
+  getTotalActiveCourseForAdmin: (req: IAuthRequest, res: Response) => Promise<void>;
 }

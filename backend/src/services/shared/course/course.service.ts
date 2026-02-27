@@ -804,4 +804,8 @@ export class CourseService implements ICourseService {
   async getTotalInstructorCourseCount(instructorId: string): Promise<number> {
     return await this._courseRepo.getTotalCourseCreatedByInstructor(instructorId);
   }
+
+  async getTotalActiveCoursesCountForAdmin(): Promise<number> {
+    return await this._courseRepo.getTotalActiveCourseCount();
+  }
 }

@@ -28,4 +28,5 @@ export interface ISessionBookingService {
     sessionEarning: number;
     sessionMonthData: MonthlySessionData[];
   }>;
+  getTotalCompletedSessionForAdmin: () => Promise<number>;
 }

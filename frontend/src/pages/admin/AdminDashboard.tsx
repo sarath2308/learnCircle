@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Layers, ArrowUpRight, TrendingUp, CreditCard, UserCheck } from "lucide-react";
+import { Users, Layers, TrendingUp, CreditCard } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -12,6 +12,8 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useGetTotalCourseCount } from "@/hooks/admin/dashboard/admin.course.count";
+import { useGetTotalSessionCount } from "@/hooks/admin/dashboard/admin.total.session";
 
 // Demo Data for Platform Growth
 const growthData = [
@@ -23,23 +25,18 @@ const growthData = [
 ];
 
 const userTypeData = [
-  { name: "Students", value: 850, color: "#2563eb" },
-  { name: "Instructors", value: 150, color: "#10b981" },
-];
-
-const topInstructors = [
-  {
-    id: 1,
-    name: "Dr. Sarah Jenkins",
-    totalStudents: 4500,
-    platformCut: "$12,400",
-    status: "Elite",
-  },
-  { id: 2, name: "Mark Thompson", totalStudents: 3200, platformCut: "$8,900", status: "Pro" },
-  { id: 3, name: "Elena Rodriguez", totalStudents: 2800, platformCut: "$7,200", status: "Pro" },
+  { name: "Students", value: 9, color: "#2563eb" },
+  { name: "Instructors", value: 5, color: "#10b981" },
 ];
 
 const AdminDashboard = () => {
+  const getTotalCourseQuery = useGetTotalCourseCount();
+  const getTotalSessionQuery = useGetTotalSessionCount();
+  if (getTotalCourseQuery.isLoading || getTotalSessionQuery.isLoading) {
+    return <div>Loading...</div>;
+  }
+  const activeCourse = getTotalCourseQuery.data.totalCourseCount ?? 0;
+  const totalSession = getTotalSessionQuery.data.sessionCount ?? 0;
   return (
     <div className="min-h-screen bg-slate-50 p-8 font-sans">
       {/* Admin Header */}
@@ -64,28 +61,28 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <AdminStatCard
           title="Total Platform Users"
-          value="12,540"
+          value="9"
           subValue="+1.2k this month"
           icon={<Users />}
           color="blue"
         />
         <AdminStatCard
           title="Active Courses"
-          value="1,204"
-          subValue="42 pending approval"
+          value={activeCourse}
+          subValue="22 pending approval"
           icon={<Layers />}
           color="purple"
         />
         <AdminStatCard
           title="Platform Commission"
-          value="$48,200"
-          subValue="Avg. 15% per sale"
+          value="₹8,200"
+          subValue="Avg. 20% per sale"
           icon={<CreditCard />}
           color="green"
         />
         <AdminStatCard
           title="Total Sessions"
-          value="8,400"
+          value={totalSession}
           subValue="Across all instructors"
           icon={<TrendingUp />}
           color="orange"
@@ -167,62 +164,6 @@ const AdminDashboard = () => {
                 <span className="font-bold text-slate-800">{item.value}</span>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Top Instructors (Professional Users) */}
-        <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-            <h3 className="text-lg font-bold text-slate-800">
-              Top Professional Users (Income Generators)
-            </h3>
-            <button className="flex items-center gap-1 text-sm text-blue-600 font-bold hover:gap-2 transition-all">
-              Manage All Professionals <ArrowUpRight size={16} />
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-slate-400 text-xs uppercase tracking-wider">
-                  <th className="px-6 py-4 font-semibold">Instructor Name</th>
-                  <th className="px-6 py-4 font-semibold">Total Students</th>
-                  <th className="px-6 py-4 font-semibold">Platform Revenue (Cut)</th>
-                  <th className="px-6 py-4 font-semibold">Account Status</th>
-                  <th className="px-6 py-4 font-semibold text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {topInstructors.map((prof) => (
-                  <tr key={prof.id} className="hover:bg-slate-50/50 transition">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs">
-                          {prof.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </div>
-                        <span className="font-semibold text-slate-700">{prof.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 font-medium">
-                      {prof.totalStudents.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-green-600 font-bold">{prof.platformCut}</td>
-                    <td className="px-6 py-4">
-                      <span className="px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-bold uppercase">
-                        {prof.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="text-slate-400 hover:text-blue-600 transition">
-                        <UserCheck size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>

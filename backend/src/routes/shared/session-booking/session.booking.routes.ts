@@ -11,5 +11,6 @@ export const sessionBookingRoutes = (controller: ISessionBookingController) => {
     validateRequest(SessionBookingParamsSchema),
     controller.checkJoinPermission.bind(controller),
   );
+  router.get("/admin/total-session", controller.getTotalCompletedSessionCount.bind(controller));
   return router;
 };

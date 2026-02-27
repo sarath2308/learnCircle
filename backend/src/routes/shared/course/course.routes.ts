@@ -23,6 +23,7 @@ export function courseRoutes(controller: ICourseController) {
     "/professional/total-enrolled",
     controller.getTotalEnrolledCountForInstructor.bind(controller),
   );
+  router.get("/admin/total-course", controller.getTotalActiveCourseForAdmin.bind(controller));
   router.post(
     "/",
     busboyUpload,

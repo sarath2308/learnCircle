@@ -6,6 +6,7 @@ import mongoose, { Model } from "mongoose";
 import { BaseRepo } from "./base";
 import { CoursePopulated } from "@/types/learner/course/course.home.card.type";
 import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
+import { BOOKING_STATUS } from "@/constants/shared/booking.status";
 
 @injectable()
 export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
@@ -267,5 +268,13 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
     return {
       totalEarning: result[0]?.totalEarning || 0,
     };
+  }
+
+  async getTotalActiveCourseCount(): Promise<number> {
+    return await this._model.countDocuments({
+      status: "published",
+      verificationStatus: "approved",
+      isDeleted: false,
+    });
   }
 }

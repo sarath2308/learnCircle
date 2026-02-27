@@ -156,4 +156,7 @@ export class SessionBookingRepo extends BaseRepo<ISessionBooking> implements ISe
 
     return result;
   }
+  async getTotalCompletedSessionCount(): Promise<number> {
+    return await this._sessionBookingModel.countDocuments({ status: BOOKING_STATUS.COMPLETED });
+  }
 }
