@@ -142,10 +142,17 @@ const SignupForm = ({
           <p className="text-gray-500 mt-1">Sign up to get started on your learning journey</p>
         </div>
 
-        <GoogleLogin
-          onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
-          onError={() => console.log("Login Failed")}
-        />
+        <div className="w-full flex justify-center mb-6">
+          <div className="w-full">
+            <GoogleLogin
+              onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
+              onError={() => console.log("Login Failed")}
+              theme="outline"
+              shape="rectangular"
+              width="100%" // Essential for production alignment
+            />
+          </div>
+        </div>
 
         <div className="relative mb-4">
           <div className="absolute inset-0 flex items-center">

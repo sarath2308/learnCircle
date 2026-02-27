@@ -88,10 +88,20 @@ const LoginForm = ({
 
         <CardContent className="space-y-6">
           {role !== "admin" && (
-            <GoogleLogin
-              onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
-              onError={() => console.error("Login Failed")}
-            />
+            <div className="w-full flex justify-center pb-2">
+              {/* Wrapping in a full-width container helps the iframe stabilize */}
+              <div className="w-full max-w-[400px]">
+                <GoogleLogin
+                  onSuccess={(credentialRes) => handleGoogleSign(role, credentialRes)}
+                  onError={() => console.error("Login Failed")}
+                  // Add these props to force consistent styling
+                  useOneTap
+                  theme="outline"
+                  shape="rectangular"
+                  width="100%" // This tells the script to fill the container
+                />
+              </div>
+            </div>
           )}
 
           {/* Divider */}
