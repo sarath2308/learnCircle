@@ -39,6 +39,7 @@ import { learnerLessonResponseSchema } from "@/schema/learner/course/lesson/lear
 import { learnerChapterResponse } from "@/schema/learner/course/chapter/learner.chapter.response.schema";
 import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
 import { IEnrollmentService } from "@/interface/shared/enroll/enroll.service.interface";
+import { ICourseReviewRepo } from "@/interface/shared/course-review/course.review.interface";
 
 @injectable()
 export class CourseService implements ICourseService {
@@ -50,6 +51,7 @@ export class CourseService implements ICourseService {
     @inject(TYPES.ILessonRepo) private _lessonRepo: ILessonRepo,
     @inject(TYPES.IChapterRepo) private _chapterRepo: IChapterRepo,
     @inject(TYPES.IEnrollmentService) private _enrollmentService: IEnrollmentService,
+    @inject(TYPES.ICourseReviewRepo) private _courseReviewRepo: ICourseReviewRepo,
   ) {}
   //creating a course
   /**
@@ -258,6 +260,9 @@ export class CourseService implements ICourseService {
           if (!course.createdBy || typeof course.createdBy !== "object") {
             throw new Error("Course createdBy not populated");
           }
+          const { averageRating } = await this._courseReviewRepo.findAverageRating(
+            String(course._id),
+          );
 
           const chapters = await this._chapterRepo.getChapters(String(course._id));
 
@@ -293,7 +298,7 @@ export class CourseService implements ICourseService {
             },
 
             chapterCount: chapters.length ?? 0,
-            averageRating: course.averageRating ?? 0,
+            averageRating: averageRating ?? 0,
           };
 
           // final runtime validation
@@ -341,7 +346,9 @@ export class CourseService implements ICourseService {
           if (!course.createdBy || typeof course.createdBy !== "object") {
             throw new Error("Course createdBy not populated");
           }
-
+          const { averageRating } = await this._courseReviewRepo.findAverageRating(
+            String(course._id),
+          );
           const chapters = await this._chapterRepo.getChapters(String(course._id));
 
           const responseObject: userCourseCardResponseType = {
@@ -376,7 +383,7 @@ export class CourseService implements ICourseService {
             },
 
             chapterCount: chapters.length ?? 0,
-            averageRating: course.averageRating ?? 0,
+            averageRating: averageRating ?? 0,
           };
 
           // final runtime validation
@@ -753,5 +760,48 @@ export class CourseService implements ICourseService {
 
   async updateAverageRating(courseId: string, rating: number): Promise<void> {
     await this._courseRepo.updateRating(courseId, rating);
+  }
+
+  async getTopInstructorCourses(instructorId: string): Promise<courseResponseType[]> {
+    const courses = await this._courseRepo.getTopCourseCreatedByInstructor(instructorId);
+
+    return Promise.all(
+      courses.map(async (course) => {
+        let thumbnailUrl = "";
+
+        if (course.thumbnail_key) {
+          thumbnailUrl = await this._s3Service.getFileUrl(
+            course.thumbnail_key,
+            Number(process.env.S3_URL_EXPIRES_IN),
+          );
+        }
+
+        const responseObject = {
+          id: String(course._id),
+          title: course.title,
+          status: course.status,
+          description: course.description ?? "",
+          type: course.type,
+          thumbnail: thumbnailUrl,
+          createdAt: String(course.createdAt),
+          price: course.type === "Free" ? 0 : course.price,
+          discount: course.type === "Free" ? 0 : course.discount,
+          skillLevel: course.skillLevel,
+          verificationStatus: course.verificationStatus,
+        };
+
+        return courseResponseSchema.parse(responseObject);
+      }),
+    );
+  }
+  async getTotalEnrolledStudentsAndEarnings(
+    instructorId: string,
+  ): Promise<{ enrolledCount: number; totalEarnings: number }> {
+    const enroll = await this._courseRepo.getTotalEnrolledStudents(instructorId);
+    const earningResult = await this._courseRepo.getTotalEarningOfInstructor(instructorId);
+    return { enrolledCount: enroll.totalEnrolled, totalEarnings: earningResult.totalEarning };
+  }
+  async getTotalInstructorCourseCount(instructorId: string): Promise<number> {
+    return await this._courseRepo.getTotalCourseCreatedByInstructor(instructorId);
   }
 }

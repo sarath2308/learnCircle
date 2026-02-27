@@ -11,6 +11,18 @@ export function courseRoutes(controller: ICourseController) {
 
   // router.get("/", controller.getCouseDataForCourseManagement.bind(controller));
   router.get("/:id", controller.getCourseById.bind(controller));
+  router.get(
+    "/professional/total-course",
+    controller.getTotalCourseCreatedByInstructor.bind(controller),
+  );
+  router.get(
+    "/professional/top-course",
+    controller.getTopCoursesCreatedByInstructor.bind(controller),
+  );
+  router.get(
+    "/professional/total-enrolled",
+    controller.getTotalEnrolledCountForInstructor.bind(controller),
+  );
   router.post(
     "/",
     busboyUpload,

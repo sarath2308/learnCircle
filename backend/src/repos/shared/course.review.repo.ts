@@ -43,7 +43,7 @@ export class CourseReviewRepo extends BaseRepo<ICourseReview> implements ICourse
 
     const result = await this._courseReviewModel.aggregate([
       {
-        $match: { instructorId: objId, isDeleted: false },
+        $match: { courseId: objId, isDeleted: false },
       },
       {
         $group: {

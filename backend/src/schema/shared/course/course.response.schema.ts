@@ -4,7 +4,7 @@ export const courseResponseSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
-  category: z.string(),
+  category: z.string().optional(),
   subCategory: z.string().optional(),
   skillLevel: z.string(),
   price: z.number().optional(),

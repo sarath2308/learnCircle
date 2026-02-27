@@ -19,6 +19,7 @@ interface Course {
   skillLevel: string;
   level?: string;
   lessonsCount?: number;
+  averageRating: number;
 }
 
 interface CourseCardProps {

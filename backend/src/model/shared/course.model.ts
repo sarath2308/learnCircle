@@ -52,7 +52,7 @@ const courseSchema = new Schema<ICourse>(
     },
     isDeleted: { type: Boolean, default: false },
     rejectReason: { type: String },
-    isBlocked: { type: Boolean },
+    isBlocked: { type: Boolean, default: false },
     blockedReason: { type: String },
     chapterCount: { type: Number, default: 0 },
     totalDuration: { type: Number, default: 0 },

@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import ICourseRepo, { CourseStatus } from "@/interface/shared/course/course.repo.interface";
 import { ICourse } from "@/model/shared/course.model";
 import { TYPES } from "@/types/shared/inversify/types";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { BaseRepo } from "./base";
 import { CoursePopulated } from "@/types/learner/course/course.home.card.type";
 import { LearnerAllCourseRequestType } from "@/schema/learner/course/learner.course.get.all.schema";
@@ -156,7 +156,7 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
     }
 
     if (filter.sortRating) {
-      sort.rating = Number(filter.sortRating);
+      sort.averageRating = Number(filter.sortRating);
     }
     query.isDeleted = false;
     query.status = "published";
@@ -172,6 +172,100 @@ export class CourseRepo extends BaseRepo<ICourse> implements ICourseRepo {
       .lean<CoursePopulated[]>();
   }
   async updateRating(courseId: string, rating: number): Promise<void> {
-    await this._model.updateOne({ _id: courseId }, { $set: { averageRating: rating } });
+    const courseObjId = new mongoose.Types.ObjectId(courseId);
+    await this._model.updateOne({ _id: courseObjId }, { $set: { averageRating: rating } });
+  }
+
+  async getTopCourseCreatedByInstructor(instructorId: string): Promise<ICourse[]> {
+    const instructorObjId = new mongoose.Types.ObjectId(instructorId);
+    return await this._model
+      .find({
+        createdBy: instructorObjId,
+        isBlocked: false,
+        verificationStatus: "approved",
+        status: "published",
+      })
+      .sort({ averageRating: 1 })
+      .limit(5);
+  }
+  async getTotalCourseCreatedByInstructor(instructorId: string): Promise<number> {
+    const instructorObjId = new mongoose.Types.ObjectId(instructorId);
+    return await this._model.countDocuments({
+      createdBy: instructorObjId,
+      isBlocked: false,
+      verificationStatus: "approved",
+      status: "published",
+    });
+  }
+
+  async getTotalEnrolledStudents(instructorId: string): Promise<{ totalEnrolled: number }> {
+    const instructorObjId = new mongoose.Types.ObjectId(instructorId);
+    const result = await this._model.aggregate([
+      {
+        $match: {
+          createdBy: instructorObjId,
+          verificationStatus: "approved",
+        },
+      },
+      {
+        $lookup: {
+          from: "enrollments",
+          localField: "_id",
+          foreignField: "courseId",
+          as: "enrollments",
+        },
+      },
+      {
+        $project: {
+          enrollCount: { $size: "$enrollments" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalEnrolled: { $sum: "$enrollCount" },
+        },
+      },
+    ]);
+    return result[0] || { totalEnrolled: 0 };
+  }
+  async getTotalEarningOfInstructor(instructorId: string): Promise<{ totalEarning: number }> {
+    const result = await this._model.aggregate([
+      {
+        $match: {
+          createdBy: new mongoose.Types.ObjectId(instructorId),
+          type: "Paid",
+          verificationStatus: "approved",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "enrollments",
+          localField: "_id",
+          foreignField: "courseId",
+          as: "enrollments",
+        },
+      },
+
+      {
+        $project: {
+          courseRevenue: {
+            $multiply: ["$price", { $size: "$enrollments" }],
+          },
+        },
+      },
+
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$courseRevenue" },
+        },
+      },
+    ]);
+
+    return {
+      totalEarning: result[0]?.totalEarning || 0,
+    };
   }
 }

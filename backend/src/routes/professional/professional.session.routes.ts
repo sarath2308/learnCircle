@@ -5,6 +5,8 @@ import { Router } from "express";
 
 export const porfessionalSessionRoutes = (controller: ISessionBookingController) => {
   const router = Router();
+  router.get("/dashboard", controller.getSessionDataForProfessionalDashboard.bind(controller));
+
   router.get("/", controller.getAllBoookingForInstructor.bind(controller));
   router.post(
     "/:sessionId/mark-completed",

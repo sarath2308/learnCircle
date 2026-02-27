@@ -90,4 +90,24 @@ export class CourseController implements ICourseController {
     await this._courseService.publishCourse(id);
     res.status(HttpStatus.OK).json({ success: true });
   }
+
+  async getTopCoursesCreatedByInstructor(req: IAuthRequest, res: Response): Promise<void> {
+    const instructorId = req.user?.userId as string;
+    const result = await this._courseService.getTopInstructorCourses(instructorId);
+    res.status(HttpStatus.OK).json({ success: true, courseData: result });
+  }
+  async getTotalCourseCreatedByInstructor(req: IAuthRequest, res: Response): Promise<void> {
+    const instructorId = req.user?.userId as string;
+    const total = await this._courseService.getTotalInstructorCourseCount(instructorId);
+    res.status(HttpStatus.OK).json({ success: true, totalCourse: total });
+  }
+  async getTotalEnrolledCountForInstructor(req: IAuthRequest, res: Response): Promise<void> {
+    const instructorId = req.user?.userId as string;
+    const result = await this._courseService.getTotalEnrolledStudentsAndEarnings(instructorId);
+    res.status(HttpStatus.OK).json({
+      success: true,
+      totalEnrolledCount: result.enrolledCount,
+      courseTotalEarning: result.totalEarnings,
+    });
+  }
 }

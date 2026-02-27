@@ -9,4 +9,5 @@ export interface ISessionBookingController {
   getAllBoookingForInstructor: (req: IAuthRequest, res: Response) => Promise<void>;
   checkJoinPermission: (req: IAuthRequest, res: Response) => Promise<void>;
   markSessionAsCompleted: (req: IAuthRequest, res: Response) => Promise<void>;
+  getSessionDataForProfessionalDashboard: (req: IAuthRequest, res: Response) => Promise<void>;
 }

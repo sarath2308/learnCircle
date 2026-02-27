@@ -11,6 +11,5 @@ export const sessionBookingRoutes = (controller: ISessionBookingController) => {
     validateRequest(SessionBookingParamsSchema),
     controller.checkJoinPermission.bind(controller),
   );
-
   return router;
 };

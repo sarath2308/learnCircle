@@ -1,5 +1,6 @@
 import { SessionBookingRequestType } from "@/schema/learner/session.booking/session.booking.request.schema";
 import { SessionBookingResponseType } from "@/schema/learner/session.booking/session.booking.response.schema";
+import { MonthlySessionData } from "@/types/professional/monthely.session.data.type";
 
 export interface ISessionBookingService {
   createSession: (data: SessionBookingRequestType) => Promise<{
@@ -21,4 +22,10 @@ export interface ISessionBookingService {
   ) => Promise<{ hasPermission: boolean; roomId: string }>;
 
   MarkSessionAsCompleted: (sessionBookingId: string) => Promise<void>;
+
+  getSessionDataForProfessionalDashboard: (instructorId: string) => Promise<{
+    totalSession: number;
+    sessionEarning: number;
+    sessionMonthData: MonthlySessionData[];
+  }>;
 }

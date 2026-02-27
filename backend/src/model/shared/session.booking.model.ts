@@ -1,6 +1,7 @@
+import { BOOKING_STATUS } from "@/constants/shared/booking.status";
 import { Schema, model, Types, Document } from "mongoose";
 
-export type BookingStatus = "pending" | "confirmed" | "cancelled";
+export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
 
 export interface ISessionBooking extends Document {
   _id: Types.ObjectId;
@@ -13,7 +14,7 @@ export interface ISessionBooking extends Document {
 
   price: number;
 
-  status: BookingStatus;
+  status: BOOKING_STATUS;
   typeOfSession: string;
 
   expiresAt?: Date;
@@ -36,8 +37,13 @@ const SessionBookingSchema = new Schema<ISessionBooking>(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
-      default: "pending",
+      enum: [
+        BOOKING_STATUS.CANCELLED,
+        BOOKING_STATUS.COMPLETED,
+        BOOKING_STATUS.CONFIRMED,
+        BOOKING_STATUS.PENDING,
+      ],
+      default: BOOKING_STATUS.PENDING,
       index: true,
     },
 
