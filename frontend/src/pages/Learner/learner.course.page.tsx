@@ -3,16 +3,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  Lock,
-  BookOpen,
-  Star,
-  Users,
-  MessageSquare,
-  AlertTriangle,
-  ShieldCheck,
-  Clock,
-} from "lucide-react";
+import { Lock, BookOpen, Star, Users, MessageSquare, ShieldCheck, Clock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -253,9 +244,6 @@ const LearnerCoursePage = () => {
               className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:opacity-70 transition-all"
             >
               <Star size={14} /> Leave a Review
-            </button>
-            <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:opacity-70 transition-all">
-              <AlertTriangle size={14} /> Report
             </button>
           </div>
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
