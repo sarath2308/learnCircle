@@ -14,9 +14,7 @@ import {
   IconBrandTabler,
   IconCalendar,
   IconChartBar,
-  IconCreditCard,
   IconMessageCircle,
-  IconSettings,
 } from "@tabler/icons-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
