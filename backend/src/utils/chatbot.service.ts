@@ -25,7 +25,7 @@ export class ChatBotService implements IChatBotService {
       body: JSON.stringify({
         // Fix 2: Proper System Instruction (Optional but recommended)
         system_instruction: {
-          parts: [{ text: PROMPT.SYSTEM_PROMPT }]
+          parts: [{ text: PROMPT.SYSTEM_PROMPT }],
         },
         contents: [
           {
@@ -41,14 +41,10 @@ export class ChatBotService implements IChatBotService {
     if (!response.ok) {
       // Fix 3: Log the actual error from Google so you can stop guessing
       console.error("Gemini API Error Detail:", data.error?.message || data);
-      throw new AppError(
-        data.error?.message || Messages.CHATBOT_REPLY_NOT_FOUND, 
-        response.status
-      );
+      throw new AppError(data.error?.message || Messages.CHATBOT_REPLY_NOT_FOUND, response.status);
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
 
     if (!reply) {
       throw new AppError("Empty response from AI", HttpStatus.INTERNAL_SERVER_ERROR);
