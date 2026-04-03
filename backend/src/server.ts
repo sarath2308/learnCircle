@@ -16,6 +16,10 @@ import { PaymentWebhookRoute } from "./routes/shared/payment-webhook/payment.web
 import container from "./di/di.container";
 import { IPaymentController } from "./interface/shared/payment/payment.controller.interface";
 import { TYPES } from "./types/shared/inversify/types";
+import register from "./metrics/metrics";
+import { httpRequestDuration } from "./metrics/request.duration";
+import { httpRequestCounter } from "./metrics/request.counter";
+
 dotenv.config();
 const app = express();
 
@@ -45,6 +49,7 @@ async function startServer() {
   app.use(cookieParser());
   app.use(urlencoded({ extended: true }));
 
+  //winston logger for HTTP requests
   app.use(
     expressWinston.logger({
       winstonInstance: logger,
@@ -62,12 +67,37 @@ async function startServer() {
     }),
   );
 
+  app.use((req, res, next) => {
+    const end = httpRequestDuration.startTimer();
+
+    res.on("finish", () => {
+      httpRequestCounter.inc({
+        method: req.method,
+        route: req.route?.path || req.path,
+        status: res.statusCode,
+      });
+
+      end({
+        method: req.method,
+        route: req.route?.path || req.path,
+        status: res.statusCode,
+      });
+    });
+
+    next();
+  });
+
   app.use(
     cors({
       origin: process.env.FRONTEND_URL,
       credentials: true,
     }),
   );
+  app.get("/metrics", async (req, res) => {
+    res.set("Content-Type", register.contentType);
+    res.end(await register.metrics());
+  });
+
   app.use("/api", entryRoute());
 
   app.use(

@@ -28,5 +28,4 @@ export interface ISessionBookingRepo extends IBaseRepo<ISessionBooking> {
   totalEarningsForInstructor: (instructorId: string) => Promise<{ totalEarning: number }>;
   monthlySessionDataOfInstructor: (instructorId: string) => Promise<MonthlySessionData[]>;
   getTotalCompletedSessionCount: () => Promise<number>;
-  checkTheBookingLimit: (instructorId: string, userId: string) => Promise<ISessionBooking[]>;
 }
