@@ -47,6 +47,7 @@ type UserType = {
   resumeUrl?: string;
   totalSessions?: number;
   state?: string;
+  userId: string;
 };
 
 const Users = () => {
@@ -89,6 +90,7 @@ const Users = () => {
     resumeUrl: user.resumeUrl,
     totalSessions: user.totalSessions,
     state: user.state,
+    userId: user.userId,
   }));
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / 10));
