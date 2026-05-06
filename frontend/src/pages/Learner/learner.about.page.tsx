@@ -3,18 +3,18 @@ import { Users, Globe, Zap, ShieldCheck, Target } from "lucide-react";
 
 const AboutPage = () => {
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
+    <div className="min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
       {/* Hero Section */}
-      <section className="relative py-20 bg-slate-50 border-b border-slate-100">
+      <section className="relative py-20 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-5xl mx-auto px-8 text-center">
-          <div className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-600 uppercase bg-blue-50 rounded-full">
+          <div className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-600 dark:text-blue-400 uppercase bg-blue-50 dark:bg-blue-900/30 rounded-full">
             Our Mission
           </div>
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
+          <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-slate-100 mb-6">
             Bridging the gap between <span className="text-blue-600">Knowledge</span> and{" "}
             <span className="text-blue-600">Action</span>.
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
             LearnCircle is a global ecosystem designed for professionals to master high-demand
             skills through live mentorship and peer-to-peer collaboration.
           </p>
@@ -34,7 +34,7 @@ const AboutPage = () => {
       </section>
 
       {/* Core Values - The "Circle" Philosophy */}
-      <section className="py-20 bg-slate-900 text-white rounded-t-[3rem] mt-10">
+      <section className="py-20 bg-slate-900 dark:bg-slate-900/50 text-white rounded-t-[3rem] mt-10 dark:border-t dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-extrabold mb-4">The LearnCircle Philosophy</h2>
@@ -65,23 +65,23 @@ const AboutPage = () => {
       <section className="py-24 max-w-5xl mx-auto px-8 text-center">
         <h3 className="text-2xl font-bold mb-12">Trusted by Professionals Globally</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="p-8 border border-slate-100 rounded-2xl bg-slate-50/50 flex items-start gap-4 text-left">
-            <div className="p-3 bg-white rounded-xl shadow-sm">
+          <div className="p-8 border border-slate-100 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 flex items-start gap-4 text-left">
+            <div className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
               <ShieldCheck className="text-green-600" />
             </div>
             <div>
-              <h4 className="font-bold text-lg text-slate-800">Verified Instructors</h4>
+              <h4 className="font-bold text-lg text-slate-800 dark:text-slate-100">Verified Instructors</h4>
               <p className="text-slate-500 mt-1">
                 Every mentor on LearnCircle undergoes a rigorous background and expertise check.
               </p>
             </div>
           </div>
-          <div className="p-8 border border-slate-100 rounded-2xl bg-slate-50/50 flex items-start gap-4 text-left">
-            <div className="p-3 bg-white rounded-xl shadow-sm">
+          <div className="p-8 border border-slate-100 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 flex items-start gap-4 text-left">
+            <div className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
               <Globe className="text-blue-600" />
             </div>
             <div>
-              <h4 className="font-bold text-lg text-slate-800">Global Accessibility</h4>
+              <h4 className="font-bold text-lg text-slate-800 dark:text-slate-100">Global Accessibility</h4>
               <p className="text-slate-500 mt-1">
                 Join the circle from anywhere in the world, with content localized for your growth.
               </p>
@@ -111,7 +111,7 @@ const AboutPage = () => {
 // Sub-components
 const StatItem = ({ label, value }: { label: string; value: string }) => (
   <div>
-    <p className="text-4xl font-black text-slate-900">{value}</p>
+    <p className="text-4xl font-black text-slate-900 dark:text-slate-100">{value}</p>
     <p className="text-sm font-bold text-slate-400 uppercase tracking-wide mt-1">{label}</p>
   </div>
 );
