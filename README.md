@@ -2,6 +2,32 @@
 
 LearnCircle is a full-stack educational web application designed to provide interactive learning experiences. It features a modern, responsive frontend and a robust backend that supports real-time communication, authentication, payments, and media uploads.
 
+## 📸 Screenshots
+
+### Learner View
+<div align="center">
+  <img src="assets/browseCourse.png" alt="Browse Courses" width="48%" />
+  <img src="assets/courseView.png" alt="Course View" width="48%" />
+</div>
+<div align="center">
+  <img src="assets/professionalsList.png" alt="Professionals List" width="48%" />
+  <img src="assets/randomConnect.png" alt="Random Connect" width="48%" />
+</div>
+<div align="center">
+  <img src="assets/chatbot.png" alt="AI Chatbot" width="48%" />
+</div>
+
+### Professional View
+<div align="center">
+  <img src="assets/professionalDashboard.png" alt="Professional Dashboard" width="80%" />
+</div>
+
+### Admin View
+<div align="center">
+  <img src="assets/adminDashboard.png" alt="Admin Dashboard" width="80%" />
+</div>
+
+
 ## 🚀 Tech Stack
 
 ### Frontend
