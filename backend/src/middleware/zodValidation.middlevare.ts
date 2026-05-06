@@ -7,16 +7,21 @@ export const validateRequest = (schema: ZodObject<any>) => {
     try {
       const shape = schema.shape;
 
-      if (shape?.body) {
-        req.body = shape.body.parse(req.body);
-      }
+      if (!shape?.body && !shape?.params && !shape?.query) {
+        // Schema is directly for req.body
+        req.body = schema.parse(req.body);
+      } else {
+        if (shape?.body) {
+          req.body = shape.body.parse(req.body);
+        }
 
-      if (shape?.params) {
-        req.params = shape.params.parse(req.params);
-      }
+        if (shape?.params) {
+          req.params = shape.params.parse(req.params);
+        }
 
-      if (shape?.query) {
-        req.query = shape.query.parse(req.query);
+        if (shape?.query) {
+          req.query = shape.query.parse(req.query);
+        }
       }
 
       next();
