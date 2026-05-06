@@ -74,13 +74,13 @@ const LoginForm = ({
   return (
     <div className="w-full max-w-md mx-auto my-8">
       {role !== "admin" && (
-        <button onClick={onBack} className="mb-6 flex items-center text-gray-500 hover:text-black">
+        <button onClick={onBack} className="mb-6 flex items-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Role Selection
         </button>
       )}
 
-      <Card className="shadow-md border border-gray-300 ">
+      <Card className="shadow-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Sign in as {role}</CardTitle>
           <CardDescription>Enter your credentials to access your account</CardDescription>
@@ -107,10 +107,10 @@ const LoginForm = ({
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-300" />
+              <span className="w-full border-t border-gray-300 dark:border-gray-700" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Or continue with email</span>
+              <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">Or continue with email</span>
             </div>
           </div>
 
@@ -169,7 +169,7 @@ const LoginForm = ({
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-sm text-gray-500 hover:text-black"
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
               >
                 Forgot Password?
               </button>
@@ -179,7 +179,7 @@ const LoginForm = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md transition"
+              className="w-full bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-black py-2 rounded-md transition"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
@@ -191,7 +191,7 @@ const LoginForm = ({
               <button
                 type="button"
                 onClick={onSwitchToSignup}
-                className="text-sm text-gray-500 hover:text-black"
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
               >
                 Don’t have an account? Sign up
               </button>

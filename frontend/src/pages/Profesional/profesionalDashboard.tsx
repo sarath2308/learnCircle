@@ -86,7 +86,7 @@ const Dashboard = () => {
   const courseInfo: CourseData[] = topCoursesQuery.data?.courseData ?? [];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 font-sans text-slate-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 font-sans text-slate-900 dark:text-slate-100">
       <header className="mb-8">
         <h1 className="text-2xl font-bold">Dashboard Overview</h1>
         <p className="text-slate-500">Real-time performance metrics for 2026.</p>
@@ -169,7 +169,7 @@ const Dashboard = () => {
       </div>
 
       {/* Top Courses Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h3 className="text-lg font-semibold">Top Performing Courses</h3>
         </div>
@@ -180,15 +180,15 @@ const Dashboard = () => {
             courseInfo.map((course) => (
               <div
                 key={course.id}
-                className="p-4 flex items-center justify-between hover:bg-gray-50 transition"
+                className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 <div className="flex items-center gap-4">
                   <img
                     src={course.thumbnail}
                     alt=""
-                    className="w-16 h-10 object-cover rounded-md bg-gray-200"
+                    className="w-16 h-10 object-cover rounded-md bg-gray-200 dark:bg-gray-700"
                   />
-                  <h4 className="font-medium text-slate-800">{course.title}</h4>
+                  <h4 className="font-medium text-slate-800 dark:text-slate-200">{course.title}</h4>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold">⭐ {course.averageRating}</p>
@@ -205,7 +205,7 @@ const Dashboard = () => {
 
 // Reusable Chart Wrapper
 const ChartContainer = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
     <h3 className="text-lg font-semibold mb-4">{title}</h3>
     <div className="h-64">
       <ResponsiveContainer width="100%" height="100%">
@@ -216,7 +216,7 @@ const ChartContainer = ({ title, children }: { title: string; children: React.Re
 );
 
 const StatCard = ({ title, value, icon, trend, isEarning = false }: any) => (
-  <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+  <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
     <div className="flex justify-between items-start mb-4">
       <div
         className={`p-2 rounded-lg ${isEarning ? "bg-green-50 text-green-600" : "bg-blue-50 text-blue-600"}`}

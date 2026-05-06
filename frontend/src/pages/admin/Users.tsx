@@ -264,11 +264,11 @@ const Users = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-slate-50/50 min-h-screen">
+    <div className="p-8 space-y-8 bg-slate-50/50 dark:bg-slate-950 min-h-screen">
       {/* HEADER & FILTER BAR */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tighter text-slate-900 flex items-center gap-3 uppercase">
+          <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-slate-100 flex items-center gap-3 uppercase">
             <UsersIcon className="text-indigo-600" size={32} /> User Directory
           </h1>
           <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">
@@ -276,7 +276,7 @@ const Users = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-200/60 backdrop-blur-md">
+        <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 backdrop-blur-md">
           <div className="relative flex-1 md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <Input
@@ -303,7 +303,7 @@ const Users = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-[2rem] shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
         <DataTable
           columns={columns}
           page={page}
@@ -319,7 +319,7 @@ const Users = () => {
 
       {/* CONFIRMATION MODAL */}
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent className="max-w-[350px] rounded-[2rem] border-none bg-white/90 backdrop-blur-2xl shadow-2xl p-8">
+        <DialogContent className="max-w-[350px] rounded-[2rem] border-none bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl p-8">
           <DialogHeader className="flex flex-col items-center space-y-4">
             <div className="h-16 w-16 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 animate-pulse">
               <AlertTriangle size={32} />

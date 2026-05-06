@@ -150,8 +150,8 @@ const Verification = () => {
   ];
   if (processing) return <Processing />;
   return (
-    <div className="w-full min-h-screen flex justify-center items-start bg-gray-50 p-6">
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-8">
+    <div className="w-full min-h-screen flex justify-center items-start bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
         <Stepper
           initialStep={1}
           backButtonText="Previous"

@@ -92,8 +92,8 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
 
   if (!conversationId) {
     return (
-      <div className="flex flex-col items-center justify-center h-[700px] w-full rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 text-slate-400">
-        <div className="p-5 rounded-full bg-white mb-4 shadow-sm border border-slate-100">
+      <div className="flex flex-col items-center justify-center h-[700px] w-full rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-400">
+        <div className="p-5 rounded-full bg-white dark:bg-slate-800 mb-4 shadow-sm border border-slate-100 dark:border-slate-700">
           <MessageCircle className="w-10 h-10 text-slate-300" />
         </div>
         <h3 className="font-semibold text-slate-600 text-lg">Select a Thread</h3>
@@ -103,15 +103,15 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
   }
 
   return (
-    <div className="flex flex-col h-[700px] w-full border border-slate-200 bg-white rounded-2xl shadow-xl overflow-hidden font-sans">
-      {/* --- Light Mode Header --- */}
-      <header className="px-6 py-4 border-b border-slate-100 bg-white/80 backdrop-blur-md flex items-center justify-between z-10 shadow-sm">
+    <div className="flex flex-col h-[700px] w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden font-sans">
+      {/* --- Header --- */}
+      <header className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between z-10 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
+          <div className="h-11 w-11 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-inner">
             <Hash className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-800 tracking-tight leading-none mb-1.5 flex items-center gap-2">
+            <h3 className="font-bold text-slate-800 dark:text-slate-100 tracking-tight leading-none mb-1.5 flex items-center gap-2">
               {title}
               <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
             </h3>
@@ -135,7 +135,7 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
       </header>
 
       {/* --- Message Area --- */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F8FAFC]">
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F8FAFC] dark:bg-slate-950">
         {localMessages.map((msg, idx) => {
           const isMe = String(msg.senderId) === String(currentUserId);
 
@@ -158,7 +158,7 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
                     "relative px-4 py-3 rounded-2xl text-[14.5px] leading-relaxed shadow-sm transition-all border",
                     isMe
                       ? "bg-indigo-600 text-white border-indigo-500 rounded-tr-none shadow-indigo-100 shadow-md"
-                      : "bg-white text-slate-700 border-slate-200 rounded-tl-none",
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 rounded-tl-none",
                   )}
                 >
                   <p className="break-words font-medium">{msg.content}</p>
@@ -176,8 +176,7 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
         <div ref={scrollRef} />
       </div>
 
-      {/* --- Light Mode Input Area --- */}
-      <footer className="p-5 border-t border-slate-100 bg-white">
+      <footer className="p-5 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
         <form onSubmit={handleSend} className="relative max-w-5xl mx-auto flex gap-3 items-center">
           <div className="relative flex-1 group">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -195,7 +194,7 @@ const ChatComponent = ({ conversationId, title = "Course Discussion" }: ChatComp
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Write a message..."
-              className="w-full pl-14 pr-12 py-7 bg-slate-50 border-slate-200 rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:bg-white text-slate-800 placeholder:text-slate-400 transition-all border shadow-inner"
+              className="w-full pl-14 pr-12 py-7 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:bg-white dark:focus-visible:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 transition-all border shadow-inner"
             />
 
             <div className="absolute right-3 top-1/2 -translate-y-1/2">

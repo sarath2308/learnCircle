@@ -108,11 +108,11 @@ const OTPVerificationForm = ({ role, email, onVerified, onResend }: OTPVerificat
   };
 
   return (
-    <div className="animate-fade-in max-w-md mx-auto mt-11 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-6">Verify Your Code</h2>
+    <div className="animate-fade-in max-w-md mx-auto mt-11 p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-center text-slate-900 dark:text-slate-100 mb-6">Verify Your Code</h2>
 
-      <p className="text-center text-gray-600 mb-4">We've sent a 6-digit verification code to:</p>
-      <p className="text-center font-medium mb-6">{email}</p>
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-4">We've sent a 6-digit verification code to:</p>
+      <p className="text-center font-medium text-slate-900 dark:text-slate-200 mb-6">{email}</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2 ">
@@ -142,21 +142,21 @@ const OTPVerificationForm = ({ role, email, onVerified, onResend }: OTPVerificat
 
         <Button
           type="submit"
-          className="w-full !bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full !bg-black dark:!bg-white text-white dark:!text-black disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading || !!errors.otp || otp.length !== 6}
         >
           {isLoading ? "Verifying..." : "Verify Code"}
         </Button>
 
         <div className="text-center mt-4">
-          <p className="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Didn't receive the code?</p>
           {canResend ? (
             <Button
               type="button"
               variant="link"
               onClick={handleResendOTP}
               disabled={isResending}
-              className="h-auto p-0 text-green-600 hover:underline"
+              className="h-auto p-0 text-green-600 dark:text-green-400 hover:underline"
             >
               {isResending ? (
                 <>
@@ -168,7 +168,7 @@ const OTPVerificationForm = ({ role, email, onVerified, onResend }: OTPVerificat
               )}
             </Button>
           ) : (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Resend in {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
             </p>
           )}

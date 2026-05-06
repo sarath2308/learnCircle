@@ -7,10 +7,10 @@ import { Command, Cpu, Globe, MoveRight, Plus, Sparkles, Trophy } from "lucide-r
 
 export default function LandingPage() {
   return (
-    <div className="bg-[#F8FAFC] text-slate-900 selection:bg-blue-600 selection:text-white overflow-x-hidden">
+    <div className="bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-600 selection:text-white overflow-x-hidden">
       {/* --- ELITE NAVBAR --- */}
       <nav className="fixed top-0 w-full z-[100] px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center bg-white/60 backdrop-blur-2xl border border-white shadow-[0_8px_32px_rgba(0,0,0,0.04)] rounded-2xl px-6 h-16">
+        <div className="max-w-7xl mx-auto flex justify-between items-center bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border border-white dark:border-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.04)] rounded-2xl px-6 h-16">
           <div className="flex items-center gap-8">
             <div className="text-xl font-[1000] tracking-tighter text-blue-600 flex items-center gap-1">
               <div className="w-2 h-6 bg-blue-600 rounded-full" />
@@ -35,7 +35,7 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Link to="/auth">
-              <Button className="bg-slate-900 hover:bg-blue-600 text-white rounded-xl px-6 text-xs font-bold transition-all duration-300">
+              <Button className="bg-slate-900 dark:bg-slate-100 hover:bg-blue-600 dark:hover:bg-blue-500 text-white dark:text-slate-900 rounded-xl px-6 text-xs font-bold transition-all duration-300">
                 Join the Circle
               </Button>
             </Link>
@@ -50,7 +50,7 @@ export default function LandingPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] mb-8"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] mb-8"
             >
               <Sparkles size={12} fill="currentColor" /> Admitting for 2026
             </motion.div>
@@ -58,7 +58,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-[clamp(3.5rem,10vw,8rem)] font-[1000] leading-[0.85] tracking-[-0.06em] text-slate-900 mb-12"
+              className="text-[clamp(3.5rem,10vw,8rem)] font-[1000] leading-[0.85] tracking-[-0.06em] text-slate-900 dark:text-slate-100 mb-12"
             >
               CRAFTING <br />
               <span className="text-blue-600 italic">ELITE</span> DEVS.
@@ -77,7 +77,7 @@ export default function LandingPage() {
             </motion.p>
             <div className="flex gap-4">
               <Link to="/auth">
-                <Button className="h-16 px-8 bg-blue-600 hover:bg-slate-900 text-white rounded-2xl font-black text-lg shadow-2xl shadow-blue-500/20 transition-all">
+                <Button className="h-16 px-8 bg-blue-600 hover:bg-slate-900 dark:hover:bg-slate-800 text-white rounded-2xl font-black text-lg shadow-2xl shadow-blue-500/20 transition-all">
                   Get Started <MoveRight className="ml-3" />
                 </Button>
               </Link>
@@ -88,9 +88,9 @@ export default function LandingPage() {
         {/* --- ASYMMETRIC BENTO GRID --- */}
         <section className="mt-20 grid grid-cols-1 md:grid-cols-12 gap-4 h-full">
           {/* Card 1: Large Visual */}
-          <div className="md:col-span-7 bg-white border border-slate-200 p-12 rounded-[3rem] flex flex-col justify-between min-h-[500px] shadow-sm hover:shadow-xl transition-all group">
+          <div className="md:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-12 rounded-[3rem] flex flex-col justify-between min-h-[500px] shadow-sm hover:shadow-xl transition-all group">
             <div className="flex justify-between items-start">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600">
                 <Command size={32} />
               </div>
               <div className="text-right text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -110,7 +110,7 @@ export default function LandingPage() {
 
           {/* Card 2: Metrics */}
           <div className="md:col-span-5 grid grid-rows-2 gap-4">
-            <div className="bg-blue-600 rounded-[3rem] p-10 text-white flex flex-col justify-between group overflow-hidden relative">
+            <div className="bg-blue-600 dark:bg-blue-700 rounded-[3rem] p-10 text-white flex flex-col justify-between group overflow-hidden relative">
               <div className="relative z-10">
                 <Trophy size={40} className="mb-6 opacity-50" />
                 <h4 className="text-2xl font-black">Top 1% Career Outcomes.</h4>
@@ -123,7 +123,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-slate-900 rounded-[3rem] p-10 text-white flex items-center justify-between">
+            <div className="bg-slate-900 dark:bg-slate-800 rounded-[3rem] p-10 text-white flex items-center justify-between">
               <div>
                 <h4 className="text-4xl font-black tracking-tighter">24/7</h4>
                 <p className="text-slate-500 text-xs font-black uppercase tracking-widest">
@@ -135,8 +135,8 @@ export default function LandingPage() {
           </div>
 
           {/* Card 3: Feature Horizontal */}
-          <div className="md:col-span-4 bg-white border border-slate-200 p-8 rounded-[3rem] flex flex-col items-center text-center justify-center">
-            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+          <div className="md:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-[3rem] flex flex-col items-center text-center justify-center">
+            <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
               <Cpu size={24} className="text-slate-400" />
             </div>
             <h5 className="font-black text-xl mb-2">Neural Learning</h5>
@@ -145,17 +145,17 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="md:col-span-8 bg-[#E2E8F0]/30 border border-white p-8 rounded-[3rem] flex items-center justify-between px-12">
+          <div className="md:col-span-8 bg-[#E2E8F0]/30 dark:bg-slate-800/50 border border-white dark:border-slate-700 p-8 rounded-[3rem] flex items-center justify-between px-12">
             <div className="flex -space-x-4">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="w-14 h-14 rounded-full border-4 border-white bg-slate-200 overflow-hidden shadow-lg"
+                  className="w-14 h-14 rounded-full border-4 border-white dark:border-slate-800 bg-slate-200 dark:bg-slate-700 overflow-hidden shadow-lg"
                 >
                   <img src={`https://i.pravatar.cc/150?u=${i + 10}`} alt="avatar" />
                 </div>
               ))}
-              <div className="w-14 h-14 rounded-full border-4 border-white bg-blue-600 flex items-center justify-center text-white text-xs font-black shadow-lg">
+              <div className="w-14 h-14 rounded-full border-4 border-white dark:border-slate-800 bg-blue-600 flex items-center justify-center text-white text-xs font-black shadow-lg">
                 <Plus size={16} />
               </div>
             </div>
@@ -171,7 +171,7 @@ export default function LandingPage() {
 
       {/* --- THE STRIPE-STYLE CTA --- */}
       <section className="py-32 container mx-auto px-6">
-        <div className="bg-white border border-slate-200 rounded-[4rem] p-12 md:p-32 text-center relative overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.03)]">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[4rem] p-12 md:p-32 text-center relative overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.03)]">
           <div className="relative z-10">
             <h2 className="text-5xl md:text-8xl font-[1000] tracking-tightest leading-none mb-12">
               READY TO <br /> <span className="text-blue-600 italic">TRANSCEND?</span>
@@ -179,19 +179,19 @@ export default function LandingPage() {
             <Link to="/auth">
               <Button
                 size="lg"
-                className="h-24 px-16 bg-slate-900 hover:bg-blue-600 text-white rounded-3xl font-black text-2xl transition-all"
+                className="h-24 px-16 bg-slate-900 dark:bg-slate-100 hover:bg-blue-600 dark:hover:bg-blue-500 text-white dark:text-slate-900 rounded-3xl font-black text-2xl transition-all"
               >
                 Apply for Admission
               </Button>
             </Link>
           </div>
           {/* Decorative blurred circles */}
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-100/50 blur-[100px] rounded-full" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-50 blur-[100px] rounded-full" />
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-100/50 dark:bg-blue-900/20 blur-[100px] rounded-full" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-50 dark:bg-indigo-900/20 blur-[100px] rounded-full" />
         </div>
       </section>
 
-      <footer className="py-20 border-t border-slate-100 bg-white">
+      <footer className="py-20 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-2xl font-[1000] tracking-tighter text-blue-600">learnCircle.</div>
           <div className="flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">

@@ -75,7 +75,7 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
 
   if (convLoading || msgLoading) {
     return (
-      <div className="flex h-[600px] w-full items-center justify-center bg-slate-50 rounded-2xl border">
+      <div className="flex h-[600px] w-full items-center justify-center bg-slate-50 dark:bg-slate-900 rounded-2xl border dark:border-slate-800">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
           <p className="text-sm font-medium text-slate-500">Securing connection...</p>
@@ -85,15 +85,15 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
   }
 
   return (
-    <div className="flex flex-col h-[700px] w-full border border-slate-200 bg-white rounded-2xl shadow-xl overflow-hidden transition-all">
+    <div className="flex flex-col h-[700px] w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden transition-all">
       {/* Header - Full Width */}
-      <header className="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between shadow-sm z-10">
+      <header className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+          <div className="h-10 w-10 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
             <GraduationCap className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-800 leading-none">Instructor Connect</h3>
+            <h3 className="font-bold text-slate-800 dark:text-slate-100 leading-none">Instructor Connect</h3>
             <div className="flex items-center gap-1.5 mt-1">
               <Circle className="h-2 w-2 fill-emerald-500 text-emerald-500 animate-pulse" />
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -108,7 +108,7 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
       </header>
 
       {/* Message List - Full Width */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#F8FAFC]">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#F8FAFC] dark:bg-slate-950">
         {localMessages.map((msg, idx) => {
           const isMe = msg.senderId === currentUserId;
 
@@ -127,7 +127,7 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
                 )}
               >
                 {!isMe && (
-                  <div className="h-8 w-8 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-800 flex-shrink-0 flex items-center justify-center">
                     <UserCircle2 className="w-5 h-5 text-slate-500" />
                   </div>
                 )}
@@ -138,7 +138,7 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
                       "px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm border transition-all",
                       isMe
                         ? "bg-indigo-600 text-white border-indigo-500 rounded-tr-none shadow-indigo-100"
-                        : "bg-white text-slate-700 border-slate-200 rounded-tl-none",
+                        : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 rounded-tl-none",
                     )}
                   >
                     {msg.content}
@@ -158,14 +158,14 @@ const InstructorConnectComponent = ({ courseId }: { courseId: string }) => {
       </div>
 
       {/* Input Area - Full Width */}
-      <footer className="p-4 bg-white border-t border-slate-100">
+      <footer className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
         <form onSubmit={handleSend} className="flex gap-3 items-center w-full max-w-none">
           <div className="relative flex-1">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask the instructor a question..."
-              className="w-full py-6 pl-4 pr-12 bg-slate-50 border-slate-200 rounded-xl focus-visible:ring-indigo-600 focus-visible:bg-white transition-all shadow-inner"
+              className="w-full py-6 pl-4 pr-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl focus-visible:ring-indigo-600 focus-visible:bg-white dark:focus-visible:bg-slate-900 text-slate-900 dark:text-slate-100 transition-all shadow-inner"
             />
           </div>
           <Button

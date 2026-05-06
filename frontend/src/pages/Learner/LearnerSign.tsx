@@ -81,31 +81,31 @@ const LearnerSign = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 relative">
-      <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-md border border-gray-200 z-10 max-w-xs w-full sm:w-80">
-        <h3 className="text-sm font-semibold text-gray-800 mb-2">Demo Login Credentials</h3>
-        <p className="text-xs text-gray-500 mb-4">Click to copy credentials for testing.</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 relative">
+      <div className="absolute top-4 right-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 z-10 max-w-xs w-full sm:w-80">
+        <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">Demo Login Credentials</h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Click to copy credentials for testing.</p>
         <div className="space-y-3 text-sm">
           <div className="flex flex-col">
-            <span className="text-gray-600 text-xs font-medium mb-1">Email</span>
+            <span className="text-gray-600 dark:text-gray-300 text-xs font-medium mb-1">Email</span>
             <div 
-              className="bg-blue-50 px-3 py-2 rounded text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors font-mono text-xs break-all border border-blue-100 flex justify-between items-center"
+              className="bg-blue-50 dark:bg-gray-700 px-3 py-2 rounded text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors font-mono text-xs break-all border border-blue-100 dark:border-gray-600 flex justify-between items-center"
               onClick={() => copyToClipboard("yevot78918@kynninc.com")}
               title="Click to copy email"
             >
               <span>yevot78918@kynninc.com</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider opacity-70 bg-white px-1.5 py-0.5 rounded shadow-sm border border-blue-200">Copy</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider opacity-70 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-sm border border-blue-200 dark:border-gray-600 text-gray-800 dark:text-gray-200">Copy</span>
             </div>
           </div>
           <div className="flex flex-col">
-            <span className="text-gray-600 text-xs font-medium mb-1">Password</span>
+            <span className="text-gray-600 dark:text-gray-300 text-xs font-medium mb-1">Password</span>
             <div 
-              className="bg-blue-50 px-3 py-2 rounded text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors font-mono text-xs break-all border border-blue-100 flex justify-between items-center"
+              className="bg-blue-50 dark:bg-gray-700 px-3 py-2 rounded text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors font-mono text-xs break-all border border-blue-100 dark:border-gray-600 flex justify-between items-center"
               onClick={() => copyToClipboard("Example@123")}
               title="Click to copy password"
             >
               <span>Example@123</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider opacity-70 bg-white px-1.5 py-0.5 rounded shadow-sm border border-blue-200">Copy</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider opacity-70 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-sm border border-blue-200 dark:border-gray-600 text-gray-800 dark:text-gray-200">Copy</span>
             </div>
           </div>
         </div>

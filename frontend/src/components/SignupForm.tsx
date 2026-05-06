@@ -130,16 +130,16 @@ const SignupForm = ({
     <div className="w-full max-w-md mx-auto my-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="mb-6 flex border-2 p-2 rounded-2xl items-center text-gray-500 hover:text-black"
+        className="mb-6 flex border-2 dark:border-gray-700 p-2 rounded-2xl items-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Role Selection
       </button>
 
-      <div className="shadow-md border border-gray-300 rounded-md p-6">
+      <div className="shadow-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-md p-6">
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold">Create {roleTitle} Account</h2>
-          <p className="text-gray-500 mt-1">Sign up to get started on your learning journey</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Create {roleTitle} Account</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Sign up to get started on your learning journey</p>
         </div>
 
         <div className="w-full flex justify-center mb-6">
@@ -156,10 +156,10 @@ const SignupForm = ({
 
         <div className="relative mb-4">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-gray-300" />
+            <span className="w-full border-t border-gray-300 dark:border-gray-700" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-gray-200 px-2 text-gray-500 rounded-2xl">
+            <span className="bg-gray-200 dark:bg-gray-700 px-2 text-gray-500 dark:text-gray-400 rounded-2xl">
               Or continue with email
             </span>
           </div>
@@ -174,8 +174,8 @@ const SignupForm = ({
               placeholder="Full Name"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300"
+              className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white ${
+                errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 dark:border-gray-600"
               }`}
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
@@ -189,8 +189,8 @@ const SignupForm = ({
               placeholder="Email"
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300"
+              className={`pl-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white ${
+                errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 dark:border-gray-600"
               }`}
             />
             {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
@@ -204,8 +204,8 @@ const SignupForm = ({
               placeholder="Password"
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
-              className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300"
+              className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white ${
+                errors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 dark:border-gray-600"
               }`}
             />
             <button
@@ -230,8 +230,8 @@ const SignupForm = ({
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-              className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                errors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300"
+              className={`pl-10 pr-10 w-full border rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white ${
+                errors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 dark:border-gray-600"
               }`}
             />
             <button
@@ -252,7 +252,7 @@ const SignupForm = ({
 
           <button
             type="submit"
-            className="w-full bg-black hover:bg-gray-800 text-white py-2 rounded-md cursor-pointer"
+            className="w-full bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-black py-2 rounded-md cursor-pointer"
           >
             {isLoading ? "Sending OTP..." : "Create Account"}
           </button>
@@ -262,7 +262,7 @@ const SignupForm = ({
           <button
             type="button"
             onClick={onSwitchToLogin}
-            className="text-sm text-gray-500 hover:text-black"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
           >
             Already have an account? Sign in
           </button>

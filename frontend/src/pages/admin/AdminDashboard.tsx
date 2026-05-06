@@ -38,11 +38,11 @@ const AdminDashboard = () => {
   const activeCourse = getTotalCourseQuery.data.totalCourseCount ?? 0;
   const totalSession = getTotalSessionQuery.data.sessionCount ?? 0;
   return (
-    <div className="min-h-screen bg-slate-50 p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 font-sans">
       {/* Admin Header */}
       <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
             Platform Intelligence
           </h1>
           <p className="text-slate-500 font-medium">
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 text-sm font-semibold">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             System Online
           </div>
@@ -91,10 +91,10 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Growth Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-slate-800">User & Content Scaling</h3>
-            <select className="bg-slate-50 border-none text-xs font-bold rounded-md px-2 py-1 outline-none text-slate-500">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">User & Content Scaling</h3>
+            <select className="bg-slate-50 dark:bg-slate-800 border-none text-xs font-bold rounded-md px-2 py-1 outline-none text-slate-500">
               <option>Last 6 Months</option>
               <option>Last Year</option>
             </select>
@@ -131,8 +131,8 @@ const AdminDashboard = () => {
         </div>
 
         {/* User Distribution */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <h3 className="text-lg font-bold text-slate-800 mb-6">User Segmentation</h3>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-6">User Segmentation</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -161,7 +161,7 @@ const AdminDashboard = () => {
                   ></span>
                   {item.name}
                 </div>
-                <span className="font-bold text-slate-800">{item.value}</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200">{item.value}</span>
               </div>
             ))}
           </div>
@@ -181,14 +181,14 @@ const AdminStatCard = ({ title, value, subValue, icon, color }: any) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
       <div className="flex justify-between items-start mb-4">
         <div className={`p-3 rounded-xl ${colors[color]}`}>
           {React.cloneElement(icon, { size: 24 })}
         </div>
       </div>
       <p className="text-slate-500 text-sm font-semibold">{title}</p>
-      <h3 className="text-3xl font-black text-slate-900 mt-1">{value}</h3>
+      <h3 className="text-3xl font-black text-slate-900 dark:text-slate-100 mt-1">{value}</h3>
       <p className="text-xs text-slate-400 mt-2 font-medium">{subValue}</p>
     </div>
   );
